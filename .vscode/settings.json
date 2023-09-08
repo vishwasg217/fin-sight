@@ -1,0 +1,6 @@
+{
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.extraPaths": [
+        "./venv/lib/python3.11/site-packages"
+    ]
+}

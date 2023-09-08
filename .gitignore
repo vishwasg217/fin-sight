@@ -1,2 +1,5 @@
 venv
 .env
+src/__pycache__
+AAPL.pdf
+example.pdf
