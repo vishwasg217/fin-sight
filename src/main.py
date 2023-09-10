@@ -4,42 +4,34 @@ script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
 
+from langchain.chains import RetrievalQA
+from langchain.chains.question_answering import load_qa_chain
+from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferWindowMemory
-from langchain.chains import ConversationalRetrievalChain
+
 
 import streamlit as st
 from dotenv import dotenv_values
 
-from src.utils import process_pdf, vector_store
+from src.utils import process_pdf, vector_store, chroma_db, faiss_db
 
 config = dotenv_values(".env")
 
 OPENAI_API_KEY = config["OPENAI_API_KEY"]
 
 
-def handle_query(query: str):
-    result = st.session_state.conversation({"question": query, "chat_history": ""})
-    history = st.session_state.memory.load_memory_variables({})['chat_history']
-    print(st.session_state.memory.load_memory_variables({})['chat_history'])
-    for i, msg in enumerate(history):
-        if i%2 == 0:
-            st.write("hello")
-            st.chat_message("user").write(msg.content)
-        else:
-            st.chat_message("assistant").write(msg.content)
+
 
 if __name__ == "__main__":
-
     if "memory" not in st.session_state:
-        st.session_state.memory = None
+            st.session_state.memory = None
 
     if "conversation" not in st.session_state:
-        st.session_state.conversation = None
+            st.session_state.conversation = None
 
     st.divider()
     
-    model = ChatOpenAI(openai_api_key=OPENAI_API_KEY, model_name="gpt-3.5-turbo")
+    model = ChatOpenAI(openai_api_key=OPENAI_API_KEY, max_tokens=2000)
 
     if "process_pdf" not in st.session_state:
         st.session_state.process_pdf = False
@@ -49,14 +41,16 @@ if __name__ == "__main__":
         st.session_state.process_pdf = True
         with st.spinner("Processing PDF..."):
             splitted_text = process_pdf(pdfs)
-            db = vector_store(splitted_text)
-        st.session_state.memory = ConversationBufferWindowMemory(memory_key='chat_history', return_messages=True, k=5)
-        st.session_state.conversation = ConversationalRetrievalChain.from_llm(llm=model, 
-                                                                            retriever=db.as_retriever(), 
-                                                                            memory=st.session_state.memory)
+            db = faiss_db(splitted_text)
+            st.session_state.qa = RetrievalQA.from_llm(llm=model, 
+                                                    retriever=db.as_retriever(), 
+                                                    return_source_documents=False,
+                                                    )
+        
 
     if st.session_state.process_pdf:
-        query = st.chat_input("Ask a question")
-        if query:
-            handle_query(query)
+        query = st.text_input("Ask a question")
+        if st.button("Ask"):
+            ans = st.session_state.qa.run(query)
+            st.write(ans)
 
