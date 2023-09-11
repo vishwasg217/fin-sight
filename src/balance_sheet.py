@@ -5,32 +5,16 @@ script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
 
-from langchain.chat_models import ChatOpenAI
-from langchain.output_parsers import PydanticOutputParser
-from langchain.prompts import PromptTemplate
-
-import streamlit as st
-import pandas as pd
 import requests
 from dotenv import dotenv_values
 
 from src.pydantic_models import BalanceSheetInsights
-from src.utils import format_json_to_multiline_string, insights
+from src.utils import insights, get_total_revenue
 
 config = dotenv_values(".env")
 OPENAI_API_KEY = config["OPENAI_API_KEY"]
 AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
 
-def get_total_revenue(symbol):
-    url = "https://www.alphavantage.co/query"
-    params = {
-        "function": "INCOME_STATEMENT",
-        "symbol": symbol,
-        "apikey": AV_API_KEY
-    }
-    response = requests.get(url, params=params)
-    data = response.json()
-    return float(data["annualReports"][0]["totalRevenue"])
 
 
 def metrics(data, total_revenue):

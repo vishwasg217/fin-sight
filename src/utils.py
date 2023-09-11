@@ -19,12 +19,14 @@ from dotenv import dotenv_values
 import weaviate
 from pypdf import PdfReader
 import streamlit as st
+import requests
 
 config = dotenv_values(".env")
 
 OPENAI_API_KEY = config["OPENAI_API_KEY"]
 WEAVIATE_URL = config["WEAVIATE_URL"]
 WEAVIATE_API_KEY = config["WEAVIATE_API_KEY"]
+AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
 
 def process_pdf(pdfs):
     docs = []
@@ -83,6 +85,30 @@ def format_json_to_multiline_string(data):
     
     recursive_format(data)
     return "\n".join(result)
+
+def get_total_revenue(symbol):
+    url = "https://www.alphavantage.co/query"
+    params = {
+        "function": "INCOME_STATEMENT",
+        "symbol": symbol,
+        "apikey": AV_API_KEY
+    }
+    response = requests.get(url, params=params)
+    data = response.json()
+    return float(data["annualReports"][0]["totalRevenue"])
+
+def get_total_debt(symbol):
+    url = "https://www.alphavantage.co/query"
+    params = {
+        "function": "BALANCE_SHEET",
+        "symbol": symbol,
+        "apikey": AV_API_KEY
+    }
+    response = requests.get(url, params=params)
+    data = response.json()
+    short_term = float(data["annualReports"][0]["shortTermDebt"])
+    long_term = float(data["annualReports"][0]["longTermDebt"])
+    return short_term + long_term
 
 def insights(type_of_data, data, pydantic_model):
     print(type_of_data)
