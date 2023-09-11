@@ -1,7 +1,6 @@
 
 import sys
 from pathlib import Path
-from faiss.swigfaiss import float_rand
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
@@ -9,7 +8,7 @@ sys.path.append(str(project_root))
 import requests
 from dotenv import dotenv_values
 
-from src.pydantic_models import BalanceSheetInsights
+from src.pydantic_models import CashFlowInsights
 from src.utils import insights, get_total_revenue, get_total_debt
 
 config = dotenv_values(".env")
@@ -37,7 +36,7 @@ def metrics(data, total_revenue, total_debt):
         "cash_flow_to_debt_ratio": cash_flow_to_debt_ratio
     }
 
-def cashflow(symbol):
+def cash_flow(symbol):
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "CASH_FLOW",
@@ -52,11 +51,11 @@ def cashflow(symbol):
     total_debt = get_total_debt(symbol)
 
     met = metrics(data, total_revenue, total_debt)
-    ins = insights("balance sheet", data, BalanceSheetInsights)
+    ins = insights("balance sheet", data, CashFlowInsights)
 
     return met, ins
 
 if __name__ == "__main__":
-    met, ins = cashflow("MSFT")
+    met, ins = cash_flow("MSFT")
     print("Metrics: ", met)
     print("Insights: ", ins)

@@ -8,8 +8,6 @@ sys.path.append(str(project_root))
 from langchain.vectorstores import Weaviate, Chroma, FAISS
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
-from langchain.document_loaders import TextLoader, PyPDFLoader
-from langchain.schema.document import Document
 from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
@@ -20,6 +18,7 @@ import weaviate
 from pypdf import PdfReader
 import streamlit as st
 import requests
+import time
 
 config = dotenv_values(".env")
 
@@ -87,6 +86,7 @@ def format_json_to_multiline_string(data):
     return "\n".join(result)
 
 def get_total_revenue(symbol):
+    time.sleep(5)
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "INCOME_STATEMENT",
@@ -98,6 +98,7 @@ def get_total_revenue(symbol):
     return float(data["annualReports"][0]["totalRevenue"])
 
 def get_total_debt(symbol):
+    time.sleep(5)
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "BALANCE_SHEET",
