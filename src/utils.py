@@ -11,6 +11,9 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.document_loaders import TextLoader, PyPDFLoader
 from langchain.schema.document import Document
 from langchain.llms import OpenAI
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts import PromptTemplate
+from langchain.output_parsers import PydanticOutputParser
 
 from dotenv import dotenv_values
 import weaviate
@@ -80,6 +83,42 @@ def format_json_to_multiline_string(data):
     
     recursive_format(data)
     return "\n".join(result)
+
+def insights(type_of_data, data, pydantic_model):
+    print(type_of_data)
+    parser = PydanticOutputParser(pydantic_object=pydantic_model)
+    template = """
+    You are tasked with generating insights about the company from the {type_of_data} below:
+
+    ----
+    {inputs}
+    ----
+
+    Generate insights about the company according to the following format:
+    ----
+    {output_format}
+    ----
+    """
+
+    prompt = PromptTemplate(
+        template=template,
+        input_variables=["type_of_data","inputs"],
+        partial_variables={"output_format": parser.get_format_instructions()}
+    )
+
+    model = ChatOpenAI(openai_api_key=OPENAI_API_KEY, max_tokens=2000)
+
+    data = format_json_to_multiline_string(data)
+
+    formatted_input = prompt.format(type_of_data=type_of_data, inputs=data)
+    print("-"*30)
+    print("Formatted Input:")
+    print(formatted_input)
+    print("-"*30)
+
+    response = model.predict(formatted_input)
+    parsed_output = parser.parse(response)
+    return parsed_output
 
 
 
