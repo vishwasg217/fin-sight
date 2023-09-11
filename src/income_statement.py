@@ -63,8 +63,7 @@ def income_statement(symbol):
     if response.status_code == 200:
         data = response.json()
         inc_stat = data["annualReports"][0]
-        df = pd.DataFrame([inc_stat])
-        # print(df)
+        
     else:
         print(f"Error: {response.status_code} - {response.text}")
 
