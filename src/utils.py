@@ -86,7 +86,7 @@ def format_json_to_multiline_string(data):
     return "\n".join(result)
 
 def get_total_revenue(symbol):
-    time.sleep(5)
+    time.sleep(3)
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "INCOME_STATEMENT",
@@ -98,7 +98,7 @@ def get_total_revenue(symbol):
     return float(data["annualReports"][0]["totalRevenue"])
 
 def get_total_debt(symbol):
-    time.sleep(5)
+    time.sleep(3)
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "BALANCE_SHEET",
@@ -114,18 +114,8 @@ def get_total_debt(symbol):
 def insights(type_of_data, data, pydantic_model):
     print(type_of_data)
     parser = PydanticOutputParser(pydantic_object=pydantic_model)
-    template = """
-    You are tasked with generating insights about the company from the {type_of_data} below:
-
-    ----
-    {inputs}
-    ----
-
-    Generate insights about the company according to the following format:
-    ----
-    {output_format}
-    ----
-    """
+    with open("prompts/insights.prompt", "r") as f:
+        template = f.read()
 
     prompt = PromptTemplate(
         template=template,

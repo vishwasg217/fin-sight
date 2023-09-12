@@ -23,11 +23,6 @@ OPENAI_API_KEY = config["OPENAI_API_KEY"]
 
 
 if __name__ == "__main__":
-    if "memory" not in st.session_state:
-            st.session_state.memory = None
-
-    if "conversation" not in st.session_state:
-            st.session_state.conversation = None
 
     st.divider()
     
