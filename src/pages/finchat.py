@@ -14,9 +14,12 @@ from dotenv import dotenv_values
 
 from src.utils import process_pdf, vector_store
 
-config = dotenv_values(".env")
+# config = dotenv_values(".env")
 
-OPENAI_API_KEY = config["OPENAI_API_KEY"]
+# OPENAI_API_KEY = config["OPENAI_API_KEY"]
+
+OPENAI_API_KEY = st.secrets["openai_api_key"]
+
 
 def handle_query(query: str):
     result = st.session_state.conversation({"question": query, "chat_history": ""})

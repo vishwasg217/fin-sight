@@ -15,10 +15,11 @@ from dotenv import dotenv_values
 
 from src.utils import process_pdf, vector_store, chroma_db, faiss_db
 
-config = dotenv_values(".env")
+# config = dotenv_values(".env")
 
-OPENAI_API_KEY = config["OPENAI_API_KEY"]
+# OPENAI_API_KEY = config["OPENAI_API_KEY"]
 
+OPENAI_API_KEY = st.secrets["openai_api_key"]
 
 
 

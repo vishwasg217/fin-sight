@@ -20,12 +20,17 @@ import streamlit as st
 import requests
 import time
 
-config = dotenv_values(".env")
+# config = dotenv_values(".env")
 
-OPENAI_API_KEY = config["OPENAI_API_KEY"]
-WEAVIATE_URL = config["WEAVIATE_URL"]
-WEAVIATE_API_KEY = config["WEAVIATE_API_KEY"]
-AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
+# OPENAI_API_KEY = config["OPENAI_API_KEY"]
+# WEAVIATE_URL = config["WEAVIATE_URL"]
+# WEAVIATE_API_KEY = config["WEAVIATE_API_KEY"]
+# AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
+
+OPENAI_API_KEY = st.secrets["openai_api_key"]
+WEAVIATE_URL = st.secrets["weaviate_url"]
+WEAVIATE_API_KEY = st.secrets["weaviate_api_key"]
+AV_API_KEY = st.secrets["av_api_key"]
 
 def process_pdf(pdfs):
     docs = []
