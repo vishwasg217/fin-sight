@@ -108,6 +108,7 @@ def get_total_debt(symbol):
     response = requests.get(url, params=params)
     data = response.json()
     short_term = float(data["annualReports"][0]["shortTermDebt"])
+    time.sleep(3)
     long_term = float(data["annualReports"][0]["longTermDebt"])
     return short_term + long_term
 
