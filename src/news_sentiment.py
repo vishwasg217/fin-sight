@@ -8,8 +8,23 @@ import streamlit as st
 import requests
 from datetime import datetime, timedelta
 import json
+import pandas as pd
 
 AV_API_KEY = st.secrets["av_api_key"]
+
+def classify_sentiment(mean_score):
+    if mean_score <= -0.35:
+        return "Bearish"
+    elif -0.35 < mean_score <= -0.15:
+        return "Somewhat-Bearish"
+    elif -0.15 < mean_score < 0.15:
+        return "Neutral"
+    elif 0.15 <= mean_score < 0.35:
+        return "Somewhat_Bullish"
+    elif mean_score >= 0.35:
+        return "Bullish"
+    else:
+        return "Undefined"
 
 def latest_news(symbol, max_feed):
 
@@ -53,17 +68,25 @@ def latest_news(symbol, max_feed):
                     break
             temp["sentiment_score"] = sentiment_score
             temp["sentiment_label"] = sentiment_label
-            
+
             news.append(temp)
 
         
     else:
         print(f"Error: {response.status_code} - {response.text}")
 
-    return news
+    news = pd.DataFrame(news)
+    news["sentiment_score"] = pd.to_numeric(news["sentiment_score"])
+    mean_sentiment_score  = news["sentiment_score"].mean()
+    mean_sentiment_class = classify_sentiment(mean_sentiment_score)
+
+    return {
+        "news": news,
+        "mean_sentiment_score": mean_sentiment_score,
+        "mean_sentiment_class": mean_sentiment_class
+    }
 
 if __name__ == "__main__":
-    news = latest_news("AAPL")
-    for i in news:
-        print(i)
+    news = latest_news("AAPL", 10)
+    print(news)
 

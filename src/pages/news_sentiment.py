@@ -16,6 +16,7 @@ st.write('This app shows the sentiment of the latest news articles about a compa
 
 ticker = st.text_input('Enter a ticker symbol')
 
+
 if "latest_news" not in st.session_state:
     st.session_state.latest_news = None
 
@@ -23,7 +24,13 @@ if st.button('Get Data'):
     with st.spinner('Getting latest news...'):
         st.session_state.latest_news = latest_news(ticker, 10)
 
-column_config = {
+
+
+if st.session_state.latest_news:
+
+    st.markdown("## Latest News")
+
+    column_config = {
             "title": st.column_config.Column(
                 "Title",
                 width="large",
@@ -44,11 +51,18 @@ column_config = {
                 "Sentiment Score",
                 min_value=-0.5,
                 max_value=0.5
+            ),
+            "sentiment_label": st.column_config.Column(
+               "Sentiment Label" 
             )
+
         }
 
-if st.session_state.latest_news :
-    st.dataframe(st.session_state.latest_news, column_config=column_config)
+    st.metric("Mean Sentiment Score", 
+              value=st.session_state.latest_news["mean_sentiment_score"], 
+              delta=st.session_state.latest_news["mean_sentiment_class"])
+    
+    st.dataframe(st.session_state.latest_news["news"], column_config=column_config)
 
 
 
