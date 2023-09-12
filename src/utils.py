@@ -13,7 +13,10 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 
-from dotenv import dotenv_values
+from llama_index import VectorStoreIndex, SimpleDirectoryReader
+from llama_index.vector_stores import WeaviateVectorStore
+
+# from dotenv import dotenv_values
 import weaviate
 from pypdf import PdfReader
 import streamlit as st

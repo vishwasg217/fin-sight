@@ -6,14 +6,17 @@ project_root = script_dir.parent
 sys.path.append(str(project_root))
 
 import requests
-from dotenv import dotenv_values
+import streamlit as st
+# from dotenv import dotenv_values
 
 from src.pydantic_models import CashFlowInsights
 from src.utils import insights, get_total_revenue, get_total_debt
 
-config = dotenv_values(".env")
-OPENAI_API_KEY = config["OPENAI_API_KEY"]
-AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
+# config = dotenv_values(".env")
+# OPENAI_API_KEY = config["OPENAI_API_KEY"]
+# AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
+
+AV_API_KEY = st.secrets["av_api_key"]
 
 def metrics(data, total_revenue, total_debt):
 
