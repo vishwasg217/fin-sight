@@ -1,7 +1,8 @@
 from ast import List
 import sys
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Sequence
+from llama_index.schema import Document
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
@@ -57,14 +58,28 @@ def process_pdf(pdfs):
         for page in file.pages:
             text += str(page.extract_text())
         
-        # docs.append(Document(page_content=text))
+        docs.append(Document(page_content=text))
 
     text_splitter = CharacterTextSplitter(separator="\n",
     chunk_size=2000,
     chunk_overlap=300,
     length_function=len)
-    # docs = text_splitter.split_documents(docs)
-    docs = text_splitter.split_text(text)
+    docs = text_splitter.split_documents(docs)
+    # docs = text_splitter.split_text(text)
+
+    return docs
+
+def process_pdf2(pdfs):
+    docs = Sequence
+    text = ""
+    for pdf in pdfs:
+        file = PdfReader(pdf)
+        for page in file.pages:
+            text += str(page.extract_text())
+        
+        docs.append(Document(page_content=text))
+
+    
 
     return docs
 
