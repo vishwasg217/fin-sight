@@ -72,7 +72,6 @@ def process_pdf(pdfs):
     return docs
 
 def process_pdf2(pdfs):
-    node_parser = SimpleNodeParser.from_defaults(chunk_size=1024, chunk_overlap=20)
     docs = []
     for pdf in [pdfs]:
             file = PdfReader(pdf)
@@ -82,7 +81,6 @@ def process_pdf2(pdfs):
             
             docs.append(Document(text=text))
 
-    # nodes = node_parser.get_nodes_from_documents(docs, show_progress=False)
     return docs
 
 
