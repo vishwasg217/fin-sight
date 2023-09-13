@@ -72,7 +72,7 @@ def income_statement(symbol):
 
 
 if __name__ == "__main__":
-    met, ins = income_statement("MSFT")
+    met, ins = income_statement("TSLA")
     print("Metrics: ", met)
     print("Insights", ins)
 

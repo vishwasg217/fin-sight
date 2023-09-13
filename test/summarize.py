@@ -29,3 +29,4 @@ llm = OpenAI(openai_api_key=OPENAI_API_KEY)
 chain = load_qa_chain(llm=llm, chain_type="map_reduce")
 query = "what is the total number of AI publications?"
 print(chain.run(input_documents=documents, question=query))
+

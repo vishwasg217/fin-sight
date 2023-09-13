@@ -1,5 +1,7 @@
+from ast import List
 import sys
 from pathlib import Path
+from typing import Literal
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
@@ -12,6 +14,7 @@ from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
+from langchain.llms import Clarifai
 
 from llama_index import VectorStoreIndex, SimpleDirectoryReader
 from llama_index.vector_stores import WeaviateVectorStore
@@ -34,6 +37,17 @@ OPENAI_API_KEY = st.secrets["openai_api_key"]
 WEAVIATE_URL = st.secrets["weaviate_url"]
 WEAVIATE_API_KEY = st.secrets["weaviate_api_key"]
 AV_API_KEY = st.secrets["av_api_key"]
+CLARIFY_AI_PAT = st.secrets["clarify_ai_pat"]
+
+USER_ID = 'openai'
+APP_ID = 'chat-completion'
+MODEL_ID = 'GPT-4'
+MODEL_VERSION_ID = 'ad16eda6ac054796bf9f348ab6733c72'
+
+def get_model(model_name: Literal["Clarifai", "OpenAI", "ChatOpenAI"]):
+    if model_name == "Clarifai":
+        model = Clarifai(pat=CLARIFY_AI_PAT, user_id=USER_ID, app_id=APP_ID, model_id=MODEL_ID, model_version_id=MODEL_VERSION_ID)
+    return model
 
 def process_pdf(pdfs):
     docs = []
@@ -60,11 +74,6 @@ def vector_store(documents):
     client = weaviate.Client(url=WEAVIATE_URL, auth_client_secret=weaviate.AuthApiKey(WEAVIATE_API_KEY))
     vectorstore = Weaviate.from_texts(documents, embeddings, client=client, by_text=False)
     return vectorstore
-
-def chroma_db(splitted_text):
-    embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
-    db = Chroma.from_texts(splitted_text, embeddings)
-    return db
 
 def faiss_db(splitted_text):
     embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
@@ -132,7 +141,7 @@ def insights(type_of_data, data, pydantic_model):
         partial_variables={"output_format": parser.get_format_instructions()}
     )
 
-    model = ChatOpenAI(openai_api_key=OPENAI_API_KEY, max_tokens=2000)
+    model = get_model("Clarifai")
 
     data = format_json_to_multiline_string(data)
 
