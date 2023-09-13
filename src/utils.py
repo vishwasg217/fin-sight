@@ -1,8 +1,7 @@
-from ast import List
 import sys
 from pathlib import Path
 from typing import Literal, Sequence
-from llama_index.schema import Document
+
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
@@ -19,6 +18,9 @@ from langchain.llms import Clarifai
 
 from llama_index import VectorStoreIndex, SimpleDirectoryReader
 from llama_index.vector_stores import WeaviateVectorStore
+from llama_index.schema import Document, TextNode
+from llama_index.node_parser import SimpleNodeParser
+
 
 # from dotenv import dotenv_values
 import weaviate
@@ -52,13 +54,13 @@ def get_model(model_name: Literal["Clarifai", "OpenAI", "ChatOpenAI"]):
 
 def process_pdf(pdfs):
     docs = []
-    text = ""
+    
     for pdf in pdfs:
         file = PdfReader(pdf)
+        text = ""
         for page in file.pages:
             text += str(page.extract_text())
-        
-        docs.append(Document(page_content=text))
+        # docs.append(Document(TextNode(text)))
 
     text_splitter = CharacterTextSplitter(separator="\n",
     chunk_size=2000,
@@ -70,17 +72,17 @@ def process_pdf(pdfs):
     return docs
 
 def process_pdf2(pdfs):
-    docs = Sequence
-    text = ""
-    for pdf in pdfs:
-        file = PdfReader(pdf)
-        for page in file.pages:
-            text += str(page.extract_text())
-        
-        docs.append(Document(page_content=text))
+    node_parser = SimpleNodeParser.from_defaults(chunk_size=1024, chunk_overlap=20)
+    docs = []
+    for pdf in [pdfs]:
+            file = PdfReader(pdf)
+            text = ""
+            for page in file.pages:
+                text += str(page.extract_text())
+            
+            docs.append(Document(text=text))
 
-    
-
+    # nodes = node_parser.get_nodes_from_documents(docs, show_progress=False)
     return docs
 
 
