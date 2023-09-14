@@ -7,11 +7,12 @@ sys.path.append(str(project_root))
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 
-from llama_index import VectorStoreIndex, SimpleDirectoryReader, ServiceContext, StorageContext
+from llama_index import VectorStoreIndex, ServiceContext, StorageContext
 from llama_index.vector_stores import WeaviateVectorStore
 from weaviate.embedded import EmbeddedOptions
 
 from src.utils import get_model, process_pdf2
+from src.pydantic_models import FiscalYearHighlights, StrategyOutlookFutureDirection, RiskManagement, CorporateGovernanceSocialResponsibility, InnovationRnD
 
 import streamlit as st
 import weaviate
@@ -35,15 +36,65 @@ def get_vector_index(documents):
     index = VectorStoreIndex.from_documents(documents, storage_context=storage_context, service_context=service_context)
     return index
 
+def report_insights(engine, section, pydantic_model):
+    parser = PydanticOutputParser(pydantic_object=pydantic_model)
+    prompt_template = PromptTemplate(
+        template=template,
+        input_variables=["section"],
+        partial_variables={"output_format": parser.get_format_instructions()}
+    )
+
+    formatted_input = prompt_template.format(section=section)
+    print(formatted_input)
+
+    response = engine.query(formatted_input)
+    parsed_response = parser.parse(response.response)
+    print(parsed_response)
+    return parsed_response
+
 template = """
-You are tasked with analyzing the annual report of the company, and generate a list of {content}.
-The {content} can vary anywhere between 5 - 10 points. The {content} should be in the form of a bulleted list.
-provide statistics on the {content} if possible.
+You are given the task of generating insights for {section} from the annual report. 
+
+Given below is the output format, which has the subsections.
+Write atleast 50 words for each subsection.
+Incase you don't have enough info you can just write: No information available
+---
+{output_format}
+---
+
 """
+
+sections = {
+    "Fiscal Year Highlights": FiscalYearHighlights,
+    "Strategy Outlook and Future Direction": StrategyOutlookFutureDirection,
+    "Risk Management": RiskManagement,
+    # "Corporate Governance and Social Responsibility": CorporateGovernanceSocialResponsibility,
+    "Innovation and R&D": InnovationRnD
+}
+
+section_states = [
+    "fiscal_year_highlights",
+    "strategy_outlook_future_direction",
+    "risk_management",
+    "innovation_and_r&d"
+]
+
 
 
 if "process_doc" not in st.session_state:
         st.session_state.process_doc = False
+
+if "fiscal_year_highlights" not in st.session_state:
+    st.session_state.fiscal_year_highlights = None
+
+if "strategy_outlook_future_direction" not in st.session_state:
+    st.session_state.strategy_outlook_future_direction = None
+
+if "risk_management" not in st.session_state:
+    st.session_state.risk_management = None
+
+if "innovation_and_rd" not in st.session_state:
+    st.session_state.innovation_and_rd = None
 
 pdfs = st.sidebar.file_uploader("Upload a PDF file")
 if st.sidebar.button("Process Document"):
@@ -57,17 +108,58 @@ if st.session_state.process_doc:
     # company_name = st.text_input("Enter the company name")
 
     if st.button("Ask"):
-        contents = ["Fiscal Year Highlights", "Risk Factors"] 
 
-        prompt = PromptTemplate(template=template,
-                            input_variables=["content"]
-                            )
         engine = st.session_state.index.as_query_engine()
 
-        for content in contents:
-            formatted_input = prompt.format(content=content)
-            response = engine.query(formatted_input)
-            st.write(response.response)
+        with st.spinner("Fiscal Year Highlights..."):
+            st.session_state.fiscal_year_highlights = report_insights(engine, "Fiscal Year Highlights", FiscalYearHighlights)
+
+        with st.spinner("Strategy Outlook and Future Direction..."):
+            st.session_state.strategy_outlook_future_direction = report_insights(engine, "Strategy Outlook and Future Direction", StrategyOutlookFutureDirection)
+
+        with st.spinner("Risk Management..."):
+            st.session_state.risk_management = report_insights(engine, "Risk Management", RiskManagement)
+        
+        with st.spinner("Innovation and R&D..."):
+            st.session_state.innovation_and_rd = report_insights(engine, "Innovation and R&D", InnovationRnD)
+        
+        tab1, tab2, tab3, tab4 = st.tabs(["Fiscal Year Highlights", "Strategy Outlook and Future Direction", "Risk Management", "Innovation and R&D"])
+
+        if st.session_state.fiscal_year_highlights:
+            
+            with tab1:
+                st.write("## Fiscal Year Highlights")
+                st.write("### Performance Highlights")
+                st.write(st.session_state.fiscal_year_highlights.performance_highlights)
+                st.write("### Major Events")
+                st.write(st.session_state.fiscal_year_highlights.major_events)
+                st.write("### Challenges Encountered")
+                st.write(st.session_state.fiscal_year_highlights.challenges_encountered)
+                st.write("### Milestone Achievements")
+                st.write(st.session_state.fiscal_year_highlights.milestone_achievements)
+                # st.write(st.session_state.fiscal_year_highlights)
+
+
+        if st.session_state.strategy_outlook_future_direction:
+            with tab2:
+                st.write("## Strategy Outlook and Future Direction")
+                st.write(st.session_state.strategy_outlook_future_direction)
+
+        if st.session_state.risk_management:
+            with tab3:
+                st.write("## Risk Management")
+                st.write(st.session_state.risk_management)
+
+        if st.session_state.innovation_and_rd:
+            with tab4:
+                st.write("## Innovation and R&D")
+                st.write(st.session_state.innovation_and_rd)
+
+            
+            
+             
+
+        
 
 
 
