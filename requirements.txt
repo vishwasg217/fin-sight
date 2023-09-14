@@ -18,11 +18,13 @@ cffi==1.15.1
 charset-normalizer==3.2.0
 Chroma==0.2.0
 chroma-hnswlib==0.7.2
-chromadb==0.4.9
+clarifai==9.8.1
+clarifai-grpc==9.8.2
 click==7.1.2
 coloredlogs==15.0.1
 cryptography==41.0.3
 dataclasses-json==0.5.14
+diskcache==5.6.3
 dotenv-python==0.0.1
 faiss-cpu==1.7.4
 fastapi==0.99.1
@@ -32,6 +34,8 @@ frozenlist==1.4.0
 fsspec==2023.9.0
 gitdb==4.0.10
 GitPython==3.1.35
+googleapis-common-protos==1.60.0
+grpcio==1.58.0
 h11==0.14.0
 httptools==0.6.0
 huggingface-hub==0.16.4
@@ -46,6 +50,7 @@ jsonschema-specifications==2023.7.1
 langchain==0.0.283
 langsmith==0.0.33
 llama-index==0.8.24.post1
+llama_cpp_python==0.2.2
 markdown-it-py==3.0.0
 MarkupSafe==2.1.3
 marshmallow==3.20.1
@@ -80,13 +85,14 @@ PyPika==0.48.9
 pyrate-limiter==3.1.0
 python-dateutil==2.8.2
 python-dotenv==1.0.0
+python-rapidjson==1.11
 pytz==2023.3.post1
 pytz-deprecation-shim==0.1.0.post0
 PyYAML==6.0.1
 referencing==0.30.2
 regex==2023.8.8
 requests==2.31.0
-rich==13.5.2
+rich==13.4.2
 rpds-py==0.10.2
 sec-edgar-downloader==5.0.0
 six==1.16.0
@@ -103,7 +109,8 @@ tokenizers==0.14.0
 toml==0.10.2
 toolz==0.12.0
 tornado==6.3.3
-tqdm==4.66.1
+tqdm==4.64.1
+tritonclient==2.34.0
 typing-inspect==0.9.0
 typing_extensions==4.7.1
 tzdata==2023.3
