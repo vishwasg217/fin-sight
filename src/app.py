@@ -12,6 +12,7 @@ st.title(":money_with_wings: FinSight")
 from src.income_statement import income_statement
 from src.balance_sheet import balance_sheet
 from src.cash_flow import cash_flow
+from src.utils import round_numeric
 
 ticker = st.text_input("Enter Ticker Symbol")
 
@@ -50,12 +51,12 @@ if st.session_state.output:
 
             col1, col2, col3 = st.columns(3)
 
-            col1.metric("Gross Profit Margin", round(st.session_state.output["income_statement_metrics"]["gross_profit_margin"], 2))
-            col2.metric("Operating Profit Margin", round(st.session_state.output["income_statement_metrics"]["operating_profit_margin"], 2))
-            col3.metric("Net Profit Margin", round(st.session_state.output["income_statement_metrics"]["net_profit_margin"], 2))
-            col1.metric("Cost Efficiency", round(st.session_state.output["income_statement_metrics"]["cost_efficiency"], 2))
-            col2.metric("SG&A Efficiency", round(st.session_state.output["income_statement_metrics"]["sg_and_a_efficiency"], 2))
-            col3.metric("Interest Coverage Ratio", round(st.session_state.output["income_statement_metrics"]["interest_coverage_ratio"], 2))
+            col1.metric("Gross Profit Margin", round_numeric(st.session_state.output["income_statement_metrics"]["gross_profit_margin"]))
+            col2.metric("Operating Profit Margin", round_numeric(st.session_state.output["income_statement_metrics"]["operating_profit_margin"]))
+            col3.metric("Net Profit Margin", round_numeric(st.session_state.output["income_statement_metrics"]["net_profit_margin"]))
+            col1.metric("Cost Efficiency", round_numeric(st.session_state.output["income_statement_metrics"]["cost_efficiency"]))
+            col2.metric("SG&A Efficiency", round_numeric(st.session_state.output["income_statement_metrics"]["sg_and_a_efficiency"]))
+            col3.metric("Interest Coverage Ratio", round_numeric(st.session_state.output["income_statement_metrics"]["interest_coverage_ratio"]))
 
 
         st.write("## Insights")
@@ -84,11 +85,11 @@ if st.session_state.output:
 
             col1, col2, col3 = st.columns(3)
 
-            col1.metric("Current Ratio", round(st.session_state.output["balance_sheet_metrics"]["current_ratio"], 2))
-            col2.metric("Debt to Equity Ratio", round(st.session_state.output["balance_sheet_metrics"]["debt_to_equity_ratio"], 2))
-            col3.metric("Quick Ratio", round(st.session_state.output["balance_sheet_metrics"]["quick_ratio"], 2))
-            col1.metric("Asset Turnover", round(st.session_state.output["balance_sheet_metrics"]["asset_turnover"], 2))
-            col2.metric("Equity Multiplier", round(st.session_state.output["balance_sheet_metrics"]["equity_multiplier"], 2))
+            col1.metric("Current Ratio", round_numeric(st.session_state.output["balance_sheet_metrics"]["current_ratio"], 2))
+            col2.metric("Debt to Equity Ratio", round_numeric(st.session_state.output["balance_sheet_metrics"]["debt_to_equity_ratio"], 2))
+            col3.metric("Quick Ratio", round_numeric(st.session_state.output["balance_sheet_metrics"]["quick_ratio"], 2))
+            col1.metric("Asset Turnover", round_numeric(st.session_state.output["balance_sheet_metrics"]["asset_turnover"], 2))
+            col2.metric("Equity Multiplier", round_numeric(st.session_state.output["balance_sheet_metrics"]["equity_multiplier"], 2))
 
         st.write("## Insights")
         st.write("### Liquidity Position")
@@ -116,11 +117,11 @@ if st.session_state.output:
 
             col1, col2, col3 = st.columns(3)
 
-            col1.metric("Operating Cash Flow Margin", round(st.session_state.output["cash_flow_metrics"]["operating_cash_flow_margin"], 2))
-            col2.metric("Capital Expenditure Coverage Ratio", round(st.session_state.output["cash_flow_metrics"]["capital_expenditure_coverage_ratio"], 2))
-            col3.metric("Dividend Coverage Ratio", round(st.session_state.output["cash_flow_metrics"]["dividend_coverage_ratio"], 2))
-            col1.metric("Cash Flow to Debt Ratio", round(st.session_state.output["cash_flow_metrics"]["cash_flow_to_debt_ratio"], 2))         
-            col2.metric("Free Cash Flow", "$ "+str("{:,}".format(st.session_state.output["cash_flow_metrics"]["free_cash_flow"])))
+            col1.metric("Operating Cash Flow Margin", round_numeric(st.session_state.output["cash_flow_metrics"]["operating_cash_flow_margin"], 2))
+            col2.metric("Capital Expenditure Coverage Ratio", round_numeric(st.session_state.output["cash_flow_metrics"]["capital_expenditure_coverage_ratio"], 2))
+            col3.metric("Dividend Coverage Ratio", round_numeric(st.session_state.output["cash_flow_metrics"]["dividend_coverage_ratio"], 2))
+            col1.metric("Cash Flow to Debt Ratio", round_numeric(st.session_state.output["cash_flow_metrics"]["cash_flow_to_debt_ratio"], 2))         
+            col2.metric("Free Cash Flow", "$ "+str("{:,}".format(round_numeric(st.session_state.output["cash_flow_metrics"]["free_cash_flow"]))))
 
 
         st.write("## Insights")

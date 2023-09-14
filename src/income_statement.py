@@ -10,7 +10,7 @@ import streamlit as st
 # from dotenv import dotenv_values
 
 from src.pydantic_models import IncomeStatementInsights
-from src.utils import insights
+from src.utils import insights, safe_float
 
 # config = dotenv_values(".env")
 # OPENAI_API_KEY = config["OPENAI_API_KEY"]
@@ -20,23 +20,41 @@ AV_API_KEY = st.secrets["av_api_key"]
 
 
 def metrics(data):
-    # Extracting values from the data
-    grossProfit = float(data["grossProfit"])
-    totalRevenue = float(data["totalRevenue"])
-    operatingIncome = float(data["operatingIncome"])
-    costOfRevenue = float(data["costOfRevenue"])
-    costofGoodsAndServicesSold = float(data["costofGoodsAndServicesSold"])
-    sellingGeneralAndAdministrative = float(data["sellingGeneralAndAdministrative"])
-    ebit = float(data["ebit"])
-    interestAndDebtExpense = float(data["interestAndDebtExpense"])
 
-    # Calculating metrics
-    gross_profit_margin = grossProfit / totalRevenue
-    operating_profit_margin = operatingIncome / totalRevenue
-    net_profit_margin = float(data["netIncome"]) / totalRevenue
-    cost_efficiency = totalRevenue / (costOfRevenue + costofGoodsAndServicesSold)
-    sg_and_a_efficiency = totalRevenue / sellingGeneralAndAdministrative
-    interest_coverage_ratio = ebit / interestAndDebtExpense
+    # Extracting values from the data
+    grossProfit = safe_float(data.get("grossProfit"))
+    totalRevenue = safe_float(data.get("totalRevenue"))
+    operatingIncome = safe_float(data.get("operatingIncome"))
+    costOfRevenue = safe_float(data.get("costOfRevenue"))
+    costofGoodsAndServicesSold = safe_float(data.get("costofGoodsAndServicesSold"))
+    sellingGeneralAndAdministrative = safe_float(data.get("sellingGeneralAndAdministrative"))
+    ebit = safe_float(data.get("ebit"))
+    interestAndDebtExpense = safe_float(data.get("interestAndDebtExpense"))
+    netIncome = safe_float(data["netIncome"])
+
+    # Calculate metrics, but check for N/A values in operands
+    gross_profit_margin = (
+        "N/A" if "N/A" in (grossProfit, totalRevenue) else grossProfit / totalRevenue
+    )
+    operating_profit_margin = (
+        "N/A" if "N/A" in (operatingIncome, totalRevenue) else operatingIncome / totalRevenue
+    )
+    net_profit_margin = (
+        "N/A" if "N/A" in (netIncome, totalRevenue) else netIncome / totalRevenue
+    )
+    cost_efficiency = (
+        "N/A"
+        if "N/A" in (totalRevenue, costOfRevenue, costofGoodsAndServicesSold)
+        else totalRevenue / (costOfRevenue + costofGoodsAndServicesSold)
+    )
+    sg_and_a_efficiency = (
+        "N/A"
+        if "N/A" in (totalRevenue, sellingGeneralAndAdministrative)
+        else totalRevenue / sellingGeneralAndAdministrative
+    )
+    interest_coverage_ratio = (
+        "N/A" if "N/A" in (ebit, interestAndDebtExpense) else ebit / interestAndDebtExpense
+    )
 
     # Returning the results
     return {
@@ -45,8 +63,10 @@ def metrics(data):
         "net_profit_margin": net_profit_margin,
         "cost_efficiency": cost_efficiency,
         "sg_and_a_efficiency": sg_and_a_efficiency,
-        "interest_coverage_ratio": interest_coverage_ratio
+        "interest_coverage_ratio": interest_coverage_ratio,
     }
+
+
 
 def income_statement(symbol):
     url = "https://www.alphavantage.co/query"

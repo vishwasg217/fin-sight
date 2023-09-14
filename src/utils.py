@@ -28,6 +28,7 @@ from pypdf import PdfReader
 import streamlit as st
 import requests
 import time
+import json
 
 # config = dotenv_values(".env")
 
@@ -96,9 +97,19 @@ def faiss_db(splitted_text):
     db.save_local("faiss_db")
     return db
 
-def model(query, db):
-    llm = OpenAI(OPENAI_API_KEY)
-    return llm.predict(query, db)
+def safe_float(value):
+        if value == "None":
+            return "N/A"
+        return float(value)
+
+def round_numeric(value, decimal_places=2):
+    if isinstance(value, (int, float)):
+        return round(value, decimal_places)
+    elif isinstance(value, str) and value.replace(".", "", 1).isdigit():
+        # Check if the string represents a numeric value
+        return round(float(value), decimal_places)
+    else:
+        return value
 
 def format_json_to_multiline_string(data):
     result = []
@@ -127,7 +138,9 @@ def get_total_revenue(symbol):
     }
     response = requests.get(url, params=params)
     data = response.json()
-    return float(data["annualReports"][0]["totalRevenue"])
+    total_revenue = safe_float(data["annualReports"][0]["totalRevenue"])
+
+    return total_revenue
 
 def get_total_debt(symbol):
     time.sleep(3)
@@ -139,9 +152,12 @@ def get_total_debt(symbol):
     }
     response = requests.get(url, params=params)
     data = response.json()
-    short_term = float(data["annualReports"][0]["shortTermDebt"])
+    short_term = safe_float(data["annualReports"][0]["shortTermDebt"])
     time.sleep(3)
-    long_term = float(data["annualReports"][0]["longTermDebt"])
+    long_term = safe_float(data["annualReports"][0]["longTermDebt"])
+
+    if short_term == "N/A" or long_term == "N/A":
+        return "N/A"
     return short_term + long_term
 
 def insights(type_of_data, data, pydantic_model):
@@ -158,7 +174,7 @@ def insights(type_of_data, data, pydantic_model):
 
     model = get_model("Clarifai")
 
-    data = format_json_to_multiline_string(data)
+    data = json.dumps(data)
 
     formatted_input = prompt.format(type_of_data=type_of_data, inputs=data)
     print("-"*30)

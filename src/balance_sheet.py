@@ -10,7 +10,7 @@ import streamlit as st
 # from dotenv import dotenv_values
 
 from src.pydantic_models import BalanceSheetInsights
-from src.utils import insights, get_total_revenue
+from src.utils import insights, get_total_revenue, safe_float
 
 # config = dotenv_values(".env")
 # OPENAI_API_KEY = config["OPENAI_API_KEY"]
@@ -21,29 +21,49 @@ AV_API_KEY = st.secrets["av_api_key"]
 
 
 def metrics(data, total_revenue):
-    totalCurrentAssets = float(data["totalCurrentAssets"])
-    totalCurrentLiabilities = float(data["totalCurrentLiabilities"])
-    totalLiabilities = float(data["totalLiabilities"])
-    totalShareholderEquity = float(data["totalShareholderEquity"])
-    totalAssets = float(data["totalAssets"])
-    inventory = float(data["inventory"])
 
+    # Extracting values from the data
+    totalCurrentAssets = safe_float(data.get("totalCurrentAssets"))
+    totalCurrentLiabilities = safe_float(data.get("totalCurrentLiabilities"))
+    totalLiabilities = safe_float(data.get("totalLiabilities"))
+    totalShareholderEquity = safe_float(data.get("totalShareholderEquity"))
+    totalAssets = safe_float(data.get("totalAssets"))
+    inventory = safe_float(data.get("inventory"))
 
-    current_ratio = totalCurrentAssets / totalCurrentLiabilities
-    debt_to_equity_ratio = totalLiabilities / totalShareholderEquity
-    quick_ratio = (totalCurrentAssets - inventory) / totalCurrentLiabilities
-    # Assuming you pass total revenue as an additional parameter to this function
+    # Calculate metrics, but check for N/A values in operands
+    current_ratio = (
+        "N/A"
+        if "N/A" in (totalCurrentAssets, totalCurrentLiabilities)
+        else totalCurrentAssets / totalCurrentLiabilities
+    )
+    debt_to_equity_ratio = (
+        "N/A"
+        if "N/A" in (totalLiabilities, totalShareholderEquity)
+        else totalLiabilities / totalShareholderEquity
+    )
+    quick_ratio = (
+        "N/A"
+        if "N/A" in (totalCurrentAssets, totalCurrentLiabilities, inventory)
+        else (totalCurrentAssets - inventory) / totalCurrentLiabilities
+    )
+    asset_turnover = (
+        "N/A" if "N/A" in (total_revenue, totalAssets) else total_revenue / totalAssets
+    )
+    equity_multiplier = (
+        "N/A"
+        if "N/A" in (totalAssets, totalShareholderEquity)
+        else totalAssets / totalShareholderEquity
+    )
 
-    asset_turnover = total_revenue / totalAssets
-    equity_multiplier = totalAssets / totalShareholderEquity
-
+    # Returning the results
     return {
         "current_ratio": current_ratio,
         "debt_to_equity_ratio": debt_to_equity_ratio,
         "quick_ratio": quick_ratio,
         "asset_turnover": asset_turnover,
-        "equity_multiplier": equity_multiplier
+        "equity_multiplier": equity_multiplier,
     }
+
 
 def balance_sheet(symbol):
     url = "https://www.alphavantage.co/query"

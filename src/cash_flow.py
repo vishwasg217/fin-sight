@@ -10,7 +10,7 @@ import streamlit as st
 # from dotenv import dotenv_values
 
 from src.pydantic_models import CashFlowInsights
-from src.utils import insights, get_total_revenue, get_total_debt
+from src.utils import insights, get_total_revenue, get_total_debt, safe_float
 
 # config = dotenv_values(".env")
 # OPENAI_API_KEY = config["OPENAI_API_KEY"]
@@ -20,16 +20,19 @@ AV_API_KEY = st.secrets["av_api_key"]
 
 def metrics(data, total_revenue, total_debt):
 
-    operatingCashFlow = float(data["operatingCashflow"])
-    capitalExpenditures = float(data["capitalExpenditures"])
-    dividendPayout = float(data["dividendPayout"])
-    netIncome = float(data["netIncome"])
+    # Helper function to safely convert to float or set to N/A
+    
 
-    operating_cash_flow_margin = operatingCashFlow / total_revenue
-    capital_expenditure_coverage_ratio = operatingCashFlow / capitalExpenditures
-    free_cash_flow = operatingCashFlow - capitalExpenditures
-    dividend_coverage_ratio = netIncome / dividendPayout
-    cash_flow_to_debt_ratio = operatingCashFlow / total_debt
+    operatingCashFlow = safe_float(data.get("operatingCashflow"))
+    capitalExpenditures = safe_float(data.get("capitalExpenditures"))
+    dividendPayout = safe_float(data.get("dividendPayout"))
+    netIncome = safe_float(data.get("netIncome"))
+
+    operating_cash_flow_margin = "N/A" if "N/A" in (operatingCashFlow, total_revenue) else operatingCashFlow / total_revenue
+    capital_expenditure_coverage_ratio = "N/A" if "N/A" in (operatingCashFlow, capitalExpenditures) else operatingCashFlow / capitalExpenditures
+    free_cash_flow = "N/A" if "N/A" in (operatingCashFlow, capitalExpenditures) else operatingCashFlow - capitalExpenditures
+    dividend_coverage_ratio = "N/A" if "N/A" in (dividendPayout, netIncome) else netIncome / dividendPayout
+    cash_flow_to_debt_ratio = "N/A" if "N/A" in (operatingCashFlow, total_debt) else operatingCashFlow / total_debt
 
     return {
         "operating_cash_flow_margin": operating_cash_flow_margin,
@@ -38,6 +41,7 @@ def metrics(data, total_revenue, total_debt):
         "dividend_coverage_ratio": dividend_coverage_ratio,
         "cash_flow_to_debt_ratio": cash_flow_to_debt_ratio
     }
+
 
 def cash_flow(symbol):
     url = "https://www.alphavantage.co/query"
@@ -59,6 +63,6 @@ def cash_flow(symbol):
     return met, ins
 
 if __name__ == "__main__":
-    met, ins = cash_flow("MSFT")
+    met, ins = cash_flow("TSLA")
     print("Metrics: ", met)
     print("Insights: ", ins)
