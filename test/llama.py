@@ -4,11 +4,13 @@ script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
 
-from llama_index import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
-from llama_index.vector_stores import WeaviateVectorStore, FaissVectorStore
-from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
 
-from src.utils import get_model
+from llama_index import VectorStoreIndex, SimpleDirectoryReader, ServiceContext, StorageContext
+from llama_index.vector_stores import WeaviateVectorStore, FaissVectorStore
+from weaviate.embedded import EmbeddedOptions
+
+from src.utils import get_model, process_pdf2
 
 import streamlit as st
 import weaviate
@@ -22,13 +24,30 @@ WEAVIATE_API_KEY = st.secrets["weaviate_api_key"]
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
+if "process_doc" not in st.session_state:
+        st.session_state.process_doc = False
 
-documents = SimpleDirectoryReader("data").load_data()
+    
+
+pdfs = st.file_uploader("Upload a PDF file")
+if st.sidebar.button("Process Document"):
+    with st.spinner("Processing Document..."):
+        documents = process_pdf2(pdfs)
+        st.session_state.process_doc = True
+
+
+# documents = SimpleDirectoryReader("data/microsoft").load_data()
 print(documents)
 
-from llama_index.storage.storage_context import StorageContext
+template = """
+You are tasked with analyzing the annual report of the company, and generate a list of Fiscal Year highlights.
+The highlights can vary anywhere between 5 - 10 points. The highlights should be in the form of a bulleted list.
+"""
 
-client = weaviate.Client(url=WEAVIATE_URL, auth_client_secret=weaviate.AuthApiKey(WEAVIATE_API_KEY))
+# client = weaviate.Client(url=WEAVIATE_URL, auth_client_secret=weaviate.AuthApiKey(WEAVIATE_API_KEY))
+
+client = weaviate.Client(embedded_options=EmbeddedOptions())
+
 llm = get_model("Clarifai")
 
 vector_store = WeaviateVectorStore(weaviate_client=client, index_name="LlamaIndex")
@@ -37,19 +56,21 @@ storage_context = StorageContext.from_defaults(vector_store=vector_store)
 service_context = ServiceContext.from_defaults(llm=llm)
 index = VectorStoreIndex.from_documents(documents, storage_context=storage_context, service_context=service_context)
 
+engine = index.as_query_engine()
 
-engine = index.as_query_engine(streaming=True)
+if st.session_state.process_doc:
+    company_name = st.text_input("Enter the company name")
+
+    if st.button("Ask"): 
+
+        prompt = PromptTemplate(template=template)
+        formatted_input = prompt.format()
 
 
-query = ""
-while True:
-    print("-"*30)
-    query = input("Ask a question: ")
-    if query == "exit":
-        break
-    ans = engine.query(query)
-    print(ans)
-    print("-"*30)
+        engine = st.session_state.index.as_query_engine()
+
+        response = engine.query("provide some fiscal year highlights for apple in 2022")
+        st.write(response.response)
 
 
 

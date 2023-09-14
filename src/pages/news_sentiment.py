@@ -7,6 +7,7 @@ sys.path.append(str(project_root))
 import streamlit as st
 
 from src.news_sentiment import latest_news
+from src.utils import round_numeric
 
 st.set_page_config(page_title='News Sentiment Analysis', page_icon=':newspaper:', layout='wide')
 
@@ -59,7 +60,7 @@ if st.session_state.latest_news:
         }
 
     st.metric("Mean Sentiment Score", 
-              value=st.session_state.latest_news["mean_sentiment_score"], 
+              value=round_numeric(st.session_state.latest_news["mean_sentiment_score"]), 
               delta=st.session_state.latest_news["mean_sentiment_class"])
     
     st.dataframe(st.session_state.latest_news["news"], column_config=column_config)

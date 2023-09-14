@@ -111,23 +111,6 @@ def round_numeric(value, decimal_places=2):
     else:
         return value
 
-def format_json_to_multiline_string(data):
-    result = []
-    
-    def recursive_format(data, indent_level=0):
-        if isinstance(data, dict):
-            for key, value in data.items():
-                result.append("    " * indent_level + f"{key}:")
-                recursive_format(value, indent_level + 1)
-        elif isinstance(data, list):
-            for item in data:
-                result.append("    " * indent_level + f"- {item}")
-        else:
-            result.append("    " * indent_level + f"{data}")
-    
-    recursive_format(data)
-    return "\n".join(result)
-
 def get_total_revenue(symbol):
     time.sleep(3)
     url = "https://www.alphavantage.co/query"

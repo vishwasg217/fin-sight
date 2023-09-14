@@ -1,15 +1,15 @@
 You are tasked with generating insights about the company from the {type_of_data} below:
 
-    ----
-    {inputs}
-    ----
+----
+{inputs}
+----
 
-    Rules:
-    Each insight must be atleast 50 words long, and do not state the obvious.
-    Always use $ symbol for money values, and round it off to millions or billions accordingly
+Rules:
+Each insight must be atleast 50 words long, and do not state the obvious.
+Always use $ symbol for money values, and round it off to millions or billions accordingly
 
-    Generate insights about the company according to the following format.
-    
-    ----
-    {output_format}
-    ----
+Generate insights about the company according to the following format.
+
+----
+{output_format}
+----
