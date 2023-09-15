@@ -9,9 +9,9 @@ import streamlit as st
 from src.news_sentiment import latest_news
 from src.utils import round_numeric
 
-st.set_page_config(page_title='News Sentiment Analysis', page_icon=':newspaper:', layout='wide')
+st.set_page_config(page_title='News Sentiment Analysis')
 
-st.title('News Sentiment Analysis')
+st.title(':newspaper:News Sentiment Analysis')
 
 st.write('This app shows the sentiment of the latest news articles about a company.')
 

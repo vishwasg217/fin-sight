@@ -72,17 +72,16 @@ def process_pdf(pdfs):
 
     return docs
 
-def process_pdf2(pdfs):
+def process_pdf2(pdf):
     docs = []
-    for pdf in [pdfs]:
-            file = PdfReader(pdf)
-            text = ""
-            for page in file.pages:
-                text += str(page.extract_text())
-            
-            docs.append(Document(text=text))
-
-    return docs
+    file = PdfReader(pdf)
+    text = ""
+    for page in file.pages:
+        text += str(page.extract_text())
+        
+    doc = Document(text=text)
+    # print(len(docs))
+    return [doc]
 
 
 def vector_store(documents):

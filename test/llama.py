@@ -27,6 +27,16 @@ openai.api_key = os.environ["OPENAI_API_KEY"]
 if "process_doc" not in st.session_state:
         st.session_state.process_doc = False
 
+def get_vector_index(nodes):
+    print(nodes)
+    client = weaviate.Client(embedded_options=EmbeddedOptions())
+    llm = get_model("Clarifai")
+    vector_store = WeaviateVectorStore(weaviate_client=client, index_name="LlamaIndex")
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
+    service_context = ServiceContext.from_defaults(llm=llm)
+    index = VectorStoreIndex(nodes=nodes, storage_context=storage_context, service_context=service_context)
+    return index
+
     
 
 pdfs = st.file_uploader("Upload a PDF file")
@@ -36,7 +46,7 @@ if st.sidebar.button("Process Document"):
         st.session_state.process_doc = True
 
 
-# documents = SimpleDirectoryReader("data/microsoft").load_data()
+documents = SimpleDirectoryReader("data/microsoft").load_data()
 print(documents)
 
 template = """
