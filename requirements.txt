@@ -18,7 +18,6 @@ cffi==1.15.1
 charset-normalizer==3.2.0
 Chroma==0.2.0
 chroma-hnswlib==0.7.3
-chromadb==0.4.10
 clarifai==9.8.1
 clarifai-grpc==9.8.2
 click==7.1.2
@@ -110,7 +109,7 @@ tokenizers==0.14.0
 toml==0.10.2
 toolz==0.12.0
 tornado==6.3.3
-tqdm==4.66.1
+tqdm==4.64.1
 tritonclient==2.34.0
 typing-inspect==0.9.0
 typing_extensions==4.7.1

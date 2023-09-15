@@ -22,7 +22,7 @@ import weaviate
 import os
 import openai
 import faiss
-import chromadb
+# import chromadb
 
 st.title(":card_index_dividers: Annual Report Analyzer")
 st.info("""
@@ -58,16 +58,16 @@ def get_vector_index(documents, vector_store):
         index = VectorStoreIndex.from_documents(documents, storage_context=storage_context)
     elif vector_store == "simple":
         index = VectorStoreIndex.from_documents(documents)
-    elif vector_store == "chroma":
-        chroma_client = chromadb.EphemeralClient()
-        chroma_collection = chroma_client.create_collection("quickstart")
-        embed_model = OpenAIEmbedding()
-        vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
-        storage_context = StorageContext.from_defaults(vector_store=vector_store)
-        service_context = ServiceContext.from_defaults(embed_model=embed_model)
-        index = VectorStoreIndex.from_documents(
-            documents, storage_context=storage_context, service_context=service_context
-        )
+    # elif vector_store == "chroma":
+    #     chroma_client = chromadb.EphemeralClient()
+    #     chroma_collection = chroma_client.create_collection("quickstart")
+    #     embed_model = OpenAIEmbedding()
+    #     vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+    #     storage_context = StorageContext.from_defaults(vector_store=vector_store)
+    #     service_context = ServiceContext.from_defaults(embed_model=embed_model)
+    #     index = VectorStoreIndex.from_documents(
+    #         documents, storage_context=storage_context, service_context=service_context
+    #     )
 
 
     return index
