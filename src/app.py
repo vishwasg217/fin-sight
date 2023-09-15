@@ -7,7 +7,12 @@ sys.path.append(str(project_root))
 
 import streamlit as st
 
+st.set_page_config(page_title="FinSight")
+
 st.title(":money_with_wings: FinSight")
+st.info("""
+FinSight is a web app that helps you analyze and gain financial insights on a com
+""")
 
 from src.income_statement import income_statement
 from src.balance_sheet import balance_sheet
