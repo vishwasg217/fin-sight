@@ -123,14 +123,6 @@ sections = {
     "Innovation and R&D": InnovationRnD
 }
 
-section_states = [
-    "fiscal_year_highlights",
-    "strategy_outlook_future_direction",
-    "risk_management",
-    "innovation_and_r&d"
-]
-
-
 
 if "process_doc" not in st.session_state:
         st.session_state.process_doc = False

@@ -81,7 +81,10 @@ def balance_sheet(symbol):
     met = metrics(data, total_revenue)
     ins = insights("balance sheet", data, BalanceSheetInsights)
 
-    return met, ins
+    return {
+        "metrics": met,
+        "insights": ins
+    }
 
 if __name__ == "__main__":
     met, ins = balance_sheet("MSFT")

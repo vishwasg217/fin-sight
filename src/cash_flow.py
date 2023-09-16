@@ -60,7 +60,10 @@ def cash_flow(symbol):
     met = metrics(data, total_revenue, total_debt)
     ins = insights("balance sheet", data, CashFlowInsights)
 
-    return met, ins
+    return {
+        "metrics": met,
+        "insights": ins
+    }
 
 if __name__ == "__main__":
     met, ins = cash_flow("TSLA")

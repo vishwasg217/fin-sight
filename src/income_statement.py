@@ -88,7 +88,10 @@ def income_statement(symbol):
     met = metrics(inc_stat)
     ins = insights("income statement", inc_stat, IncomeStatementInsights)
 
-    return met, ins
+    return {
+        "metrics": met,
+        "insights": ins
+    }
 
 
 if __name__ == "__main__":

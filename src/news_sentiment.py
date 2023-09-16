@@ -38,7 +38,7 @@ def latest_news(symbol, max_feed):
         "function": "NEWS_SENTIMENT",
         "tickers": symbol,
         "apikey": AV_API_KEY,
-        "sort": "LATEST",
+        "sort": "RELEVANCE",
     }
 
     # Send a GET request to the API
