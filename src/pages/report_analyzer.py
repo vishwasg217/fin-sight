@@ -76,7 +76,9 @@ template = """
 You are given the task of generating insights for {section} from the annual report of the company. 
 
 Given below is the output format, which has the subsections.
-Write atleast 50 words for each subsection. The sentences must be short and use bullet points if needed.
+Write atleast 50 words for each subsection. use bullet points.
+Always use $ symbol for money values, and round it off to millions or billions accordingly
+
 Incase you don't have enough info you can just write: No information available
 ---
 {output_format}
