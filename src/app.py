@@ -18,9 +18,13 @@ from src.income_statement import income_statement
 from src.balance_sheet import balance_sheet
 from src.cash_flow import cash_flow
 from src.news_sentiment import latest_news
+from src.company_overview import company_overview
 from src.utils import round_numeric
 
 ticker = st.text_input("Enter Ticker Symbol")
+
+if "company_overview" not in st.session_state:
+    st.session_state.company_overview = None
 
 if "income_statement" not in st.session_state:
     st.session_state.income_statement = None
@@ -35,6 +39,10 @@ if "latest_news" not in st.session_state:
     st.session_state.latest_news = None
 
 if st.button("Get Data"):
+
+    with st.spinner("Getting company overview..."):
+        st.session_state.company_overview = company_overview(ticker)
+
     with st.spinner("Generating income statement insights..."):
         st.session_state.income_statement = income_statement(ticker)
     
@@ -46,6 +54,46 @@ if st.button("Get Data"):
     
     with st.spinner('Getting latest news...'):
         st.session_state.latest_news = latest_news(ticker, 10)
+
+    
+if st.session_state.company_overview:
+    with st.container():
+        
+        st.write("# Company Overview")
+        # st.markdown("### Company Name:")
+        st.markdown(f"""### {st.session_state.company_overview["Name"]}""")
+        col1, col2, col3 = st.columns(3)
+        col1.markdown("### Symbol:")
+        col1.write(st.session_state.company_overview["Symbol"])
+        col2.markdown("### Exchange:")
+        col2.write(st.session_state.company_overview["Exchange"])
+        col3.markdown("### Currency:")
+        col3.write(st.session_state.company_overview["Currency"])
+
+        col1, col2, col3 = st.columns(3)
+        col1.markdown("### Sector:")
+        col1.write(st.session_state.company_overview["Sector"])
+        col2.markdown("### Industry:")
+        col2.write(st.session_state.company_overview["Industry"])
+        col3.write()
+        st.markdown("### Description:")
+        st.write(st.session_state.company_overview["Description"])
+        
+        col1, col2, col3 = st.columns(3)
+        col1.markdown("### Country:")
+        col1.write(st.session_state.company_overview["Country"])
+        col2.markdown("### Address:")
+        col2.write(st.session_state.company_overview["Address"])
+        col3.write()
+
+        col1, col2, col3 = st.columns(3)
+        col1.markdown("### Fiscal Year End:")
+        col1.write(st.session_state.company_overview["FiscalYearEnd"])
+        col2.markdown("### Latest Quarter:")
+        col2.write(st.session_state.company_overview["LatestQuarter"])
+        market_cap_formatted = "${:,.2f}".format(float(st.session_state.company_overview["MarketCapitalization"]))
+        col3.markdown("### Market Capitalization:")
+        col3.write(market_cap_formatted)
 
 
 tab1, tab2, tab3, tab4 = st.tabs(["Income Statement", "Balance Sheet", "Cash Flow", "News Sentiment"])
@@ -74,7 +122,7 @@ if st.session_state.income_statement:
 
         st.write("## Insights")
         st.write("### Revenue Health")
-        st.write(st.session_state.income_statement["insights"].revenue_health)
+        st.markdown(st.session_state.income_statement["insights"].revenue_health)
 
         st.write("### Operational Efficiency")
         st.write(st.session_state.income_statement["insights"].operational_efficiency)
