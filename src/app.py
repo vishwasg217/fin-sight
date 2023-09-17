@@ -36,8 +36,8 @@ if "balance_sheet" not in st.session_state:
 if "cash_flow" not in st.session_state:
     st.session_state.cash_flow = None
 
-if "latest_news" not in st.session_state:
-    st.session_state.latest_news = None
+if "news" not in st.session_state:
+    st.session_state.news = None
 
 if "all_outputs" not in st.session_state:
     st.session_state.all_outputs = None
@@ -57,15 +57,20 @@ if st.button("Get Data"):
         st.session_state.cash_flow = cash_flow(ticker)
     
     with st.spinner('Getting latest news...'):
-        st.session_state.latest_news = top_news(ticker, 10)
+        st.session_state.news = top_news(ticker, 10)
 
-    if st.session_state.company_overview and st.session_state.income_statement and st.session_state.balance_sheet and st.session_state.cash_flow and st.session_state.latest_news:
+    if st.session_state.company_overview and st.session_state.income_statement and st.session_state.balance_sheet and st.session_state.cash_flow and st.session_state.news:
         st.session_state.all_outputs = True
 
 if st.session_state.all_outputs:
     st.success("Insights successfully Generated!")
     if st.button("Generate PDF"):
-        gen_pdf(st.session_state.company_overview["Name"], st.session_state.company_overview)
+        gen_pdf(st.session_state.company_overview["Name"], 
+            st.session_state.company_overview,
+            st.session_state.income_statement,
+            st.session_state.balance_sheet,
+            st.session_state.cash_flow,
+            None)
         st.success("PDF successfully generated!")
         with open("pdf/final_report.pdf", "rb") as file:
             st.download_button(
@@ -75,54 +80,54 @@ if st.session_state.all_outputs:
                 mime="application/pdf"
             )
 
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Company Overview", "Income Statement", "Balance Sheet", "Cash Flow", "News Sentiment"])
 
-    
+
 if st.session_state.company_overview:
-    with st.container():
-        
-        st.write("# Company Overview")
-        # st.markdown("### Company Name:")
-        st.markdown(f"""### {st.session_state.company_overview["Name"]}""")
-        col1, col2, col3 = st.columns(3)
-        col1.markdown("### Symbol:")
-        col1.write(st.session_state.company_overview["Symbol"])
-        col2.markdown("### Exchange:")
-        col2.write(st.session_state.company_overview["Exchange"])
-        col3.markdown("### Currency:")
-        col3.write(st.session_state.company_overview["Currency"])
+    with tab1:
+        with st.container():
+            
+            st.write("# Company Overview")
+            # st.markdown("### Company Name:")
+            st.markdown(f"""### {st.session_state.company_overview["Name"]}""")
+            col1, col2, col3 = st.columns(3)
+            col1.markdown("### Symbol:")
+            col1.write(st.session_state.company_overview["Symbol"])
+            col2.markdown("### Exchange:")
+            col2.write(st.session_state.company_overview["Exchange"])
+            col3.markdown("### Currency:")
+            col3.write(st.session_state.company_overview["Currency"])
 
-        col1, col2, col3 = st.columns(3)
-        col1.markdown("### Sector:")
-        col1.write(st.session_state.company_overview["Sector"])
-        col2.markdown("### Industry:")
-        col2.write(st.session_state.company_overview["Industry"])
-        col3.write()
-        st.markdown("### Description:")
-        st.write(st.session_state.company_overview["Description"])
-        
-        col1, col2, col3 = st.columns(3)
-        col1.markdown("### Country:")
-        col1.write(st.session_state.company_overview["Country"])
-        col2.markdown("### Address:")
-        col2.write(st.session_state.company_overview["Address"])
-        col3.write()
+            col1, col2, col3 = st.columns(3)
+            col1.markdown("### Sector:")
+            col1.write(st.session_state.company_overview["Sector"])
+            col2.markdown("### Industry:")
+            col2.write(st.session_state.company_overview["Industry"])
+            col3.write()
+            st.markdown("### Description:")
+            st.write(st.session_state.company_overview["Description"])
+            
+            col1, col2, col3 = st.columns(3)
+            col1.markdown("### Country:")
+            col1.write(st.session_state.company_overview["Country"])
+            col2.markdown("### Address:")
+            col2.write(st.session_state.company_overview["Address"])
+            col3.write()
 
-        col1, col2, col3 = st.columns(3)
-        col1.markdown("### Fiscal Year End:")
-        col1.write(st.session_state.company_overview["FiscalYearEnd"])
-        col2.markdown("### Latest Quarter:")
-        col2.write(st.session_state.company_overview["LatestQuarter"])
-        market_cap_formatted = "${:,.2f}".format(float(st.session_state.company_overview["MarketCapitalization"]))
-        col3.markdown("### Market Capitalization:")
-        col3.write(market_cap_formatted)
+            col1, col2, col3 = st.columns(3)
+            col1.markdown("### Fiscal Year End:")
+            col1.write(st.session_state.company_overview["FiscalYearEnd"])
+            col2.markdown("### Latest Quarter:")
+            col2.write(st.session_state.company_overview["LatestQuarter"])
+            market_cap_formatted = "${:,.2f}".format(float(st.session_state.company_overview["MarketCapitalization"]))
+            col3.markdown("### Market Capitalization:")
+            col3.write(market_cap_formatted)
 
-
-tab1, tab2, tab3, tab4 = st.tabs(["Income Statement", "Balance Sheet", "Cash Flow", "News Sentiment"])
 
 
 if st.session_state.income_statement:
 
-    with tab1:
+    with tab2:
         
         st.write("# Income Statement")
         st.write("## Metrics")
@@ -156,7 +161,7 @@ if st.session_state.income_statement:
         st.write(st.session_state.income_statement["insights"].profit_retention)
 
 if st.session_state.balance_sheet:
-    with tab2:
+    with tab3:
         
         st.write("# Balance Sheet")
         st.write("## Metrics")
@@ -190,7 +195,7 @@ if st.session_state.balance_sheet:
         st.write(st.session_state.balance_sheet['insights'].overall_solvency)
 
 if st.session_state.cash_flow:
-    with tab3:
+    with tab4:
             
         st.write("# Cash Flow")
         st.write("## Metrics")
@@ -223,10 +228,10 @@ if st.session_state.cash_flow:
         st.write("### Debt Service Capability")
         st.write(st.session_state.cash_flow['insights'].debt_service_capability)
 
-if st.session_state.latest_news:
+if st.session_state.news:
     
-    with tab4:
-        st.markdown("## Latest News")
+    with tab5:
+        st.markdown("## Top News")
         column_config = {
                 "title": st.column_config.Column(
                     "Title",
@@ -256,8 +261,8 @@ if st.session_state.latest_news:
             }
 
         st.metric("Mean Sentiment Score", 
-                value=round_numeric(st.session_state.latest_news["mean_sentiment_score"]), 
-                delta=st.session_state.latest_news["mean_sentiment_class"])
+                value=round_numeric(st.session_state.news["mean_sentiment_score"]), 
+                delta=st.session_state.news["mean_sentiment_class"])
         
-        st.dataframe(st.session_state.latest_news["news"], column_config=column_config)
+        st.dataframe(st.session_state.news["news"], column_config=column_config)
 
