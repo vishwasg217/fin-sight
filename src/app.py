@@ -17,9 +17,10 @@ st.title(":money_with_wings: FinSight")
 from src.income_statement import income_statement
 from src.balance_sheet import balance_sheet
 from src.cash_flow import cash_flow
-from src.news_sentiment import latest_news
+from src.news_sentiment import top_news
 from src.company_overview import company_overview
 from src.utils import round_numeric
+from src.pdf_gen import gen_pdf
 
 ticker = st.text_input("Enter Ticker Symbol")
 
@@ -38,6 +39,9 @@ if "cash_flow" not in st.session_state:
 if "latest_news" not in st.session_state:
     st.session_state.latest_news = None
 
+if "all_outputs" not in st.session_state:
+    st.session_state.all_outputs = None
+
 if st.button("Get Data"):
 
     with st.spinner("Getting company overview..."):
@@ -53,7 +57,24 @@ if st.button("Get Data"):
         st.session_state.cash_flow = cash_flow(ticker)
     
     with st.spinner('Getting latest news...'):
-        st.session_state.latest_news = latest_news(ticker, 10)
+        st.session_state.latest_news = top_news(ticker, 10)
+
+    if st.session_state.company_overview and st.session_state.income_statement and st.session_state.balance_sheet and st.session_state.cash_flow and st.session_state.latest_news:
+        st.session_state.all_outputs = True
+
+if st.session_state.all_outputs:
+    st.success("Insights successfully Generated!")
+    if st.button("Generate PDF"):
+        gen_pdf(st.session_state.company_overview["Name"], st.session_state.company_overview)
+        st.success("PDF successfully generated!")
+        with open("pdf/final_report.pdf", "rb") as file:
+            st.download_button(
+                label="Download PDF",
+                data=file,
+                file_name="final_report.pdf",
+                mime="application/pdf"
+            )
+
 
     
 if st.session_state.company_overview:
@@ -118,8 +139,6 @@ if st.session_state.income_statement:
             col3.metric("Interest Coverage Ratio", round_numeric(st.session_state.income_statement["metrics"]["interest_coverage_ratio"], 2))
     
         
-
-
         st.write("## Insights")
         st.write("### Revenue Health")
         st.markdown(st.session_state.income_statement["insights"].revenue_health)

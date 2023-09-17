@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 script_dir = Path(__file__).resolve().parent
@@ -95,9 +96,9 @@ def income_statement(symbol):
 
 
 if __name__ == "__main__":
-    met, ins = income_statement("TSLA")
-    print("Metrics: ", met)
-    print("Insights", ins)
+    data = income_statement("TSLA")
+    print("Metrics: ", data['metrics'])
+    print("Insights", data['insights'])
 
 
 

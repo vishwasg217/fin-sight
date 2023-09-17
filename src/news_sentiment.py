@@ -26,7 +26,7 @@ def classify_sentiment(mean_score):
     else:
         return "Undefined"
 
-def latest_news(symbol, max_feed):
+def top_news(symbol, max_feed):
 
     current_datetime = datetime.now()
     one_year_ago = current_datetime - timedelta(days=365)
@@ -87,6 +87,6 @@ def latest_news(symbol, max_feed):
     }
 
 if __name__ == "__main__":
-    news = latest_news("AAPL", 10)
+    news = top_news("AAPL", 10)
     print(news)
 
