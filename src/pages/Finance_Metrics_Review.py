@@ -7,9 +7,9 @@ sys.path.append(str(project_root))
 
 import streamlit as st
 
-st.set_page_config(page_title="Finance Metrics Reviews", page_icon=":money_with_wings:")
+st.set_page_config(page_title="Finance Metrics Reviews")
 
-st.title(":money_with_wings: FinSight")
+st.title(":chart_with_upwards_trend: Finance Metrics Review")
 st.info("""
 Simply input the ticker symbol of your desired company and hit the 'Generate Insights' button. Allow a few moments for the system to compile the data and insights tailored to the selected company. Once done, you have the option to browse through these insights directly on the platform or download a comprehensive report by selecting 'Generate PDF', followed by 'Download PDF'.
 """)

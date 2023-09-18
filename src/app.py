@@ -8,8 +8,7 @@ import streamlit as st
 
 st.set_page_config(page_title=":money_with_wings: FinSight", page_icon=":money_with_wings:")
 
-st.title(":money_with_wings: FinSight")
-st.subheader("Financial Insights at Your Fingertip")
+st.title(":money_with_wings: FinSight \n\n **Financial Insights at Your Fingertip**")
 
 st.info("""
 
