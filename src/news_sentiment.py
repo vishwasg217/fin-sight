@@ -7,7 +7,6 @@ sys.path.append(str(project_root))
 import streamlit as st
 import requests
 from datetime import datetime, timedelta
-import json
 import pandas as pd
 
 AV_API_KEY = st.secrets["av_api_key"]

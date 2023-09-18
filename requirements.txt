@@ -91,6 +91,7 @@ pytz-deprecation-shim==0.1.0.post0
 PyYAML==6.0.1
 referencing==0.30.2
 regex==2023.8.8
+reportlab==4.0.4
 requests==2.31.0
 rich==13.4.2
 rpds-py==0.10.2
