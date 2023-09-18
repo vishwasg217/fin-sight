@@ -72,19 +72,8 @@ def get_vector_index(documents, vector_store):
 
     return index
 
-template = """
-You are given the task of generating insights for {section} from the annual report of the company. 
-
-Given below is the output format, which has the subsections.
-Write atleast 50 words for each subsection. use bullet points.
-Always use $ symbol for money values, and round it off to millions or billions accordingly
-
-Incase you don't have enough info you can just write: No information available
----
-{output_format}
----
-
-"""
+with open("prompts/report.prompt", "r") as f:
+    template = f.read()
 
 def report_insights(engine, section, pydantic_model):
     parser = PydanticOutputParser(pydantic_object=pydantic_model)
@@ -150,7 +139,7 @@ if st.sidebar.button("Process Document"):
 if st.session_state.process_doc:
     # company_name = st.text_input("Enter the company name")
 
-    if st.button("Ask"):
+    if st.button("Analyze Report"):
 
         engine = get_query_engine(st.session_state.index.as_query_engine(similarity_top_k=3))
 

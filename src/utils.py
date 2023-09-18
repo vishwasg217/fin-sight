@@ -109,6 +109,16 @@ def round_numeric(value, decimal_places=2):
         return round(float(value), decimal_places)
     else:
         return value
+    
+def format_currency(value):
+    if value == "N/A":
+        return value
+    if value >= 1_000_000_000:  # billion
+        return f"${value / 1_000_000_000:.2f} billion"
+    elif value >= 1_000_000:  # million
+        return f"${value / 1_000_000:.2f} million"
+    else:
+        return f"${value:.2f}"
 
 def get_total_revenue(symbol):
     time.sleep(3)

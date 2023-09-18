@@ -19,10 +19,18 @@ from src.balance_sheet import balance_sheet
 from src.cash_flow import cash_flow
 from src.news_sentiment import top_news
 from src.company_overview import company_overview
-from src.utils import round_numeric
+from src.utils import round_numeric, format_currency
 from src.pdf_gen import gen_pdf
+from src.ticker_symbol import get_all_company_names, get_ticker_symbol
 
-ticker = st.text_input("Enter Ticker Symbol")
+# all_company_names = get_all_company_names()
+
+
+# company_name = st.selectbox("Enter Company Name", all_company_names)
+# ticker = get_ticker_symbol(company_name)
+# st.write(f"Ticker Symbol: {ticker}")
+
+ticker = st.text_input("Enter ticker symbol")
 
 if "company_overview" not in st.session_state:
     st.session_state.company_overview = None
@@ -42,10 +50,11 @@ if "news" not in st.session_state:
 if "all_outputs" not in st.session_state:
     st.session_state.all_outputs = None
 
-if st.button("Get Data"):
+if st.button("Generate Insights"):
 
     with st.spinner("Getting company overview..."):
         st.session_state.company_overview = company_overview(ticker)
+        
 
     with st.spinner("Generating income statement insights..."):
         st.session_state.income_statement = income_statement(ticker)
@@ -82,6 +91,8 @@ if st.session_state.all_outputs:
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["Company Overview", "Income Statement", "Balance Sheet", "Cash Flow", "News Sentiment"])
 
+if st.session_state.company_overview == None:
+    st.error(f"No Data available")
 
 if st.session_state.company_overview:
     with tab1:
@@ -119,10 +130,8 @@ if st.session_state.company_overview:
             col1.write(st.session_state.company_overview["FiscalYearEnd"])
             col2.markdown("### Latest Quarter:")
             col2.write(st.session_state.company_overview["LatestQuarter"])
-            market_cap_formatted = "${:,.2f}".format(float(st.session_state.company_overview["MarketCapitalization"]))
             col3.markdown("### Market Capitalization:")
-            col3.write(market_cap_formatted)
-
+            col3.write(format_currency(st.session_state.company_overview["MarketCapitalization"]))
 
 
 if st.session_state.income_statement:
@@ -160,6 +169,7 @@ if st.session_state.income_statement:
         st.write("### Profit Retention")
         st.write(st.session_state.income_statement["insights"].profit_retention)
 
+
 if st.session_state.balance_sheet:
     with tab3:
         
@@ -194,6 +204,7 @@ if st.session_state.balance_sheet:
         st.write("### Overall Solvency")
         st.write(st.session_state.balance_sheet['insights'].overall_solvency)
 
+
 if st.session_state.cash_flow:
     with tab4:
             
@@ -208,9 +219,9 @@ if st.session_state.cash_flow:
             col2.metric("Capital Expenditure Coverage Ratio", round_numeric(st.session_state.cash_flow['metrics']['capital_expenditure_coverage_ratio'], 2))
             col3.metric("Dividend Coverage Ratio", round_numeric(st.session_state.cash_flow['metrics']['dividend_coverage_ratio'], 2))
             col1.metric("Cash Flow to Debt Ratio", round_numeric(st.session_state.cash_flow['metrics']['cash_flow_to_debt_ratio'], 2))
-                    
-            col2.metric("Free Cash Flow", "$ "+str("{:,}".format(round_numeric(st.session_state.cash_flow['metrics']['free_cash_flow']))))
-
+            
+            col2.metric("Free Cash Flow", format_currency(st.session_state.cash_flow['metrics']['free_cash_flow']))
+            
 
         st.write("## Insights")
         st.write("### Operational Cash Efficiency")

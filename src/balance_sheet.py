@@ -74,6 +74,9 @@ def balance_sheet(symbol):
     }
     response = requests.get(url, params=params)
     data = response.json()
+    if not data:
+            print(f"No data found for {symbol}")
+            return None
     data = data["annualReports"][0]
 
     total_revenue = get_total_revenue(symbol)

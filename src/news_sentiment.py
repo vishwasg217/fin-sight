@@ -45,32 +45,39 @@ def top_news(symbol, max_feed):
     response = requests.get(url, params=params)
     if response.status_code == 200:
         data = response.json()
-
+        if not data:
+            print(f"No data found for {symbol}")
+            print(data)
+            return None
         news = []
 
-        for i in data["feed"][:max_feed]:
-            temp = {}
-            temp["title"] = i["title"]
-            temp["url"] = i["url"]
-            temp["authors"] = i["authors"]
+        try:
+            for i in data["feed"][:max_feed]:
+                temp = {}
+                temp["title"] = i["title"]
+                temp["url"] = i["url"]
+                temp["authors"] = i["authors"]
 
-            topics = []
-            for j in i["topics"]:
-                topics.append(j["topic"])
-            temp["topics"] = topics
+                topics = []
+                for j in i["topics"]:
+                    topics.append(j["topic"])
+                temp["topics"] = topics
 
-            sentiment_score = ""
-            sentiment_label = ""
-            for j in i["ticker_sentiment"]:
-                if j["ticker"] == symbol:
-                    sentiment_score = j["ticker_sentiment_score"]
-                    sentiment_label = j["ticker_sentiment_label"]
-                    break
-            temp["sentiment_score"] = sentiment_score
-            temp["sentiment_label"] = sentiment_label
+                sentiment_score = ""
+                sentiment_label = ""
+                for j in i["ticker_sentiment"]:
+                    if j["ticker"] == symbol:
+                        sentiment_score = j["ticker_sentiment_score"]
+                        sentiment_label = j["ticker_sentiment_label"]
+                        break
+                temp["sentiment_score"] = sentiment_score
+                temp["sentiment_label"] = sentiment_label
 
-            news.append(temp)
+                news.append(temp)
 
+        except Exception as e:
+            print(e)
+            return None
         
     else:
         print(f"Error: {response.status_code} - {response.text}")

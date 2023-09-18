@@ -81,6 +81,9 @@ def income_statement(symbol):
     response = requests.get(url, params=params)
     if response.status_code == 200:
         data = response.json()
+        if not data:
+            print(f"No data found for {symbol}")
+            return None
         inc_stat = data["annualReports"][0]
         
     else:

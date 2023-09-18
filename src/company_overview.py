@@ -17,6 +17,9 @@ def company_overview(symbol):
     response = requests.get(url, params=params)
     if response.status_code == 200:
         data = response.json()
+        if not data:
+            print(f"No data found for {symbol}")
+            return None
         extracted_data = {
             "Symbol": data.get("Symbol"),
             "AssetType": data.get("AssetType"),
@@ -31,7 +34,7 @@ def company_overview(symbol):
             "Address": data.get("Address"),
             "FiscalYearEnd": data.get("FiscalYearEnd"),
             "LatestQuarter": data.get("LatestQuarter"),
-            "MarketCapitalization": data.get("MarketCapitalization"),
+            "MarketCapitalization": float(data.get("MarketCapitalization")),
         }
         
     else:
