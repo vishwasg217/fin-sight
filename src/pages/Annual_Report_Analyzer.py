@@ -26,8 +26,7 @@ import faiss
 
 st.title(":card_index_dividers: Annual Report Analyzer")
 st.info("""
-With this app you can analyze annual reports of companies and generate insights from them. All you need to do is upload the annual report of a company in PDF format and click on the process button.
-Once the document is processed, you can generate insights by clicking on the ask button.
+Begin by uploading the annual report of your chosen company in PDF format. Afterward, click on 'Process PDF'. Once the document has been processed, tap on 'Analyze Report' and the system will start its magic. After a brief wait, you'll be presented with a detailed analysis and insights derived from the report for your reading.
 """)
 
 OPENAI_API_KEY = st.secrets["openai_api_key"]
