@@ -24,6 +24,8 @@ import openai
 import faiss
 # import chromadb
 
+st.set_page_config(page_title="Annual Report Analyzer", page_icon=":card_index_dividers:", initial_sidebar_state="expanded")
+
 st.title(":card_index_dividers: Annual Report Analyzer")
 st.info("""
 Begin by uploading the annual report of your chosen company in PDF format. Afterward, click on 'Process PDF'. Once the document has been processed, tap on 'Analyze Report' and the system will start its magic. After a brief wait, you'll be presented with a detailed analysis and insights derived from the report for your reading.
