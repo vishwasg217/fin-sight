@@ -168,7 +168,6 @@ if st.session_state.process_doc:
             st.write(st.session_state.fiscal_year_highlights.challenges_encountered)
             st.write("### Milestone Achievements")
             st.write(str(st.session_state.fiscal_year_highlights.milestone_achievements))
-            # st.write(st.session_state.fiscal_year_highlights)
 
 
     if st.session_state.strategy_outlook_future_direction:

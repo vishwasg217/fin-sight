@@ -29,6 +29,7 @@ import streamlit as st
 import requests
 import time
 import json
+import plotly.graph_objects as go
 
 # config = dotenv_values(".env")
 
@@ -177,6 +178,58 @@ def insights(type_of_data, data, pydantic_model):
     response = model.predict(formatted_input)
     parsed_output = parser.parse(response)
     return parsed_output
+
+def format_string(s: str) -> str:
+    return ' '.join(word.capitalize() for word in s.split('_'))
+
+def create_time_series_chart(data, type_of_data: str, title: str):
+    yaxis_title = format_string(type_of_data)
+    fig = go.Figure(data=[go.Scatter(x=data['dates'], y=data[type_of_data], mode='lines+markers')])
+    fig.update_layout(title=title,
+                      xaxis_title='Date',
+                      yaxis_title=yaxis_title)
+    
+    return fig
+
+# data = {
+#     'dates': ['2022-01-01', '2022-01-02', '2022-01-03', '2022-01-04', '2022-01-05'],
+#     'temperature': [22, 24, 23, 22, 21],
+#     'humidity': [40, 42, 41, 40, 39]
+# }
+# # Create a temperature time series chart
+# temperature_chart = create_time_series_chart(data, 'temperature')
+# temperature_chart.show()
+
+# # Create a humidity time series chart
+# humidity_chart = create_time_series_chart(data, 'humidity')
+# humidity_chart.show()
+
+import plotly.graph_objects as go
+
+def create_donut_chart(data, type_of_data, hole_size=0.3):
+    
+
+    labels = list(data[type_of_data].keys())
+    values = list(data[type_of_data].values())
+    
+    fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=hole_size)])
+    fig.update_layout(title=format_string(type_of_data))
+    
+    return fig
+
+# # Example usage:
+# data = {
+#     'Oxygen': 4500,
+#     'Hydrogen': 2500,
+#     'Carbon_Dioxide': 1053,
+#     'Nitrogen': 500
+# }
+# chart = create_donut_chart(data, title="Donut Chart")
+# chart.show()
+
+
+
+
 
 
 

@@ -18,6 +18,26 @@ from src.utils import insights, get_total_revenue, get_total_debt, safe_float
 
 AV_API_KEY = st.secrets["av_api_key"]
 
+def charts(data):
+    dates = []
+    operating_cash_flow = []
+    cash_flow_from_investment = []
+    cash_flow_from_financing = []
+
+    for report in reversed(data["annualReports"]):
+        dates.append(report["fiscalDateEnding"])
+        operating_cash_flow.append(report["operatingCashflow"])
+        cash_flow_from_investment.append(report["cashflowFromInvestment"])
+        cash_flow_from_financing.append(report["cashflowFromFinancing"])
+
+    return {
+        "dates": dates,
+        "operating_cash_flow": operating_cash_flow,
+        "cash_flow_from_investment": cash_flow_from_investment,
+        "cash_flow_from_financing": cash_flow_from_financing
+    }
+    
+
 def metrics(data, total_revenue, total_debt):
 
     # Helper function to safely convert to float or set to N/A
@@ -55,20 +75,23 @@ def cash_flow(symbol):
     if not data:
         print(f"No data found for {symbol}")
         return None
-    data = data["annualReports"][0]
+    
+    chart_data = charts(data)
 
+    data = data["annualReports"][0]
     total_revenue = get_total_revenue(symbol)
     total_debt = get_total_debt(symbol)
-
     met = metrics(data, total_revenue, total_debt)
     ins = insights("balance sheet", data, CashFlowInsights)
 
     return {
         "metrics": met,
+        "chart_data": chart_data,
         "insights": ins
     }
 
 if __name__ == "__main__":
-    met, ins = cash_flow("TSLA")
-    print("Metrics: ", met)
-    print("Insights: ", ins)
+    data = cash_flow("AAPL")
+    print("Metrics: ", data['metrics'])
+    print("Chart Data: ", data['chart_data'])
+    print("Insights", data['insights'])

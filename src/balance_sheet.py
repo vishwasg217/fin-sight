@@ -1,6 +1,5 @@
 import sys
 from pathlib import Path
-from faiss.swigfaiss import float_rand
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
@@ -18,7 +17,29 @@ from src.utils import insights, get_total_revenue, safe_float
 
 AV_API_KEY = st.secrets["av_api_key"]
 
+def charts(data):
+    report = data['annualReports'][0]
+    asset_composition = {"total_current_assets": report['totalCurrentAssets'],
+        "total_non_current_assets": report['totalNonCurrentAssets']              
+    }
 
+    liabilities_composition = {
+        "total_current_liabilities": report['totalCurrentLiabilities'],
+        "total_non_current_liabilities": report['totalNonCurrentLiabilities']
+    }
+
+    debt_structure = {
+        "short_term_debt": report['shortTermDebt'],
+        "long_term_debt": report['longTermDebt']
+    }
+
+    return {
+        "asset_composition": asset_composition,
+        "liabilities_composition": liabilities_composition,
+        "debt_structure": debt_structure
+    }
+
+         
 
 def metrics(data, total_revenue):
 
@@ -77,21 +98,24 @@ def balance_sheet(symbol):
     if not data:
             print(f"No data found for {symbol}")
             return None
-    data = data["annualReports"][0]
+    
+    chart_data = charts(data)
 
+    report = data["annualReports"][0]
     total_revenue = get_total_revenue(symbol)
-
-    met = metrics(data, total_revenue)
-    ins = insights("balance sheet", data, BalanceSheetInsights)
+    met = metrics(report, total_revenue)
+    ins = insights("balance sheet", report, BalanceSheetInsights)
 
     return {
         "metrics": met,
+        "chart_data": chart_data,
         "insights": ins
     }
 
 if __name__ == "__main__":
-    met, ins = balance_sheet("MSFT")
-    print("Metrics: ", met)
-    print("Insights: ", ins)
+    data = balance_sheet("MSFT")
+    print("Metrics: ", data['metrics'])
+    print("Chart Data: ", data['charts'])
+    print("Insights", data['insights'])
 
 

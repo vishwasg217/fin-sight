@@ -8,6 +8,7 @@ sys.path.append(str(project_root))
 import pandas as pd
 import requests
 import streamlit as st
+import plotly.graph_objects as go
 # from dotenv import dotenv_values
 
 from src.pydantic_models import IncomeStatementInsights
@@ -18,6 +19,27 @@ from src.utils import insights, safe_float
 # AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
 
 AV_API_KEY = st.secrets["av_api_key"]
+
+def charts(data):
+    dates = []
+    total_revenue = []
+    net_income = []
+    interest_expense = []
+
+    for report in reversed(data["annualReports"]):
+        dates.append(report["fiscalDateEnding"])
+        total_revenue.append(report["totalRevenue"])
+        net_income.append(report["netIncome"])
+        interest_expense.append(report["interestAndDebtExpense"])
+
+    return {
+        "dates": dates,
+        "total_revenue": total_revenue,
+        "net_income": net_income,
+        "interest_expense": interest_expense
+    }
+
+
 
 
 def metrics(data):
@@ -84,16 +106,20 @@ def income_statement(symbol):
         if not data:
             print(f"No data found for {symbol}")
             return None
-        inc_stat = data["annualReports"][0]
+        
         
     else:
         print(f"Error: {response.status_code} - {response.text}")
 
+    chart_data = charts(data)
+
+    inc_stat = data["annualReports"][0]
     met = metrics(inc_stat)
     ins = insights("income statement", inc_stat, IncomeStatementInsights)
 
     return {
         "metrics": met,
+        "chart_data": chart_data,
         "insights": ins
     }
 
@@ -101,6 +127,7 @@ def income_statement(symbol):
 if __name__ == "__main__":
     data = income_statement("TSLA")
     print("Metrics: ", data['metrics'])
+    print("Chart Data: ", data['chart_data'])
     print("Insights", data['insights'])
 
 
