@@ -185,9 +185,12 @@ def format_string(s: str) -> str:
 def create_time_series_chart(data, type_of_data: str, title: str):
     yaxis_title = format_string(type_of_data)
     fig = go.Figure(data=[go.Scatter(x=data['dates'], y=data[type_of_data], mode='lines+markers')])
+    fig.update_layout(yaxis=dict(range=[0, max(data)]))
     fig.update_layout(title=title,
                       xaxis_title='Date',
                       yaxis_title=yaxis_title)
+    
+
     
     return fig
 

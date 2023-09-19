@@ -1,30 +1,16 @@
 import plotly.graph_objects as go
 
-def create_donut_chart(data, hole_size=0.3):
-    """
-    Create a donut chart using Plotly.
+def create_time_series_chart(data, labels):
+    fig = go.Figure(data=[go.Scatter(x=labels, y=data, mode='lines+markers')])
 
-    Parameters:
-    - data_dict: Dictionary where keys are labels and values are the corresponding data values.
-    - hole_size: Size of the hole in the donut chart (default is 0.3).
+    # Set y-axis to start from 0
+    fig.update_layout(yaxis=dict(range=[0, max(data)]))
 
-    Returns:
-    - A Plotly Figure object representing the donut chart.
-    """
-    
-    labels = list(data.keys())
-    values = list(data.values())
-    
-    fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=hole_size)])
-    
     return fig
 
-# Example usage:
-data = {
-    'Oxygen': 4500,
-    'Hydrogen': 2500,
-    'Carbon_Dioxide': 1053,
-    'Nitrogen': 500
-}
-chart = create_donut_chart(data)
+# Sample data
+dates = ['2022-01-01', '2022-01-02', '2022-01-03', '2022-01-04', '2022-01-05']
+values = [10, 15, 12, 17, 14]
+
+chart = create_time_series_chart(values, dates)
 chart.show()
