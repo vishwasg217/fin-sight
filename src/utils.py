@@ -210,7 +210,6 @@ def create_time_series_chart(data, type_of_data: str, title: str):
 import plotly.graph_objects as go
 
 def create_donut_chart(data, type_of_data, hole_size=0.3):
-    
 
     labels = list(data[type_of_data].keys())
     values = list(data[type_of_data].values())
@@ -229,6 +228,16 @@ def create_donut_chart(data, type_of_data, hole_size=0.3):
 # }
 # chart = create_donut_chart(data, title="Donut Chart")
 # chart.show()
+
+def create_bar_chart(data, type_of_data: str, title: str):
+    yaxis_title = format_string(type_of_data)
+    fig = go.Figure(data=[go.Bar(x=data['dates'], y=data[type_of_data])])
+    # fig.update_layout(yaxis=dict(range=[0, max(data[type_of_data])]))
+    fig.update_layout(title=title,
+                      xaxis_title='Date',
+                      yaxis_title=yaxis_title)
+   
+    return fig
 
 
 

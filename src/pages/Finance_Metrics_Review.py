@@ -20,7 +20,7 @@ from src.balance_sheet import balance_sheet
 from src.cash_flow import cash_flow
 from src.news_sentiment import top_news
 from src.company_overview import company_overview
-from src.utils import round_numeric, format_currency, create_time_series_chart, create_donut_chart
+from src.utils import round_numeric, format_currency, create_time_series_chart, create_donut_chart, create_bar_chart
 from src.pdf_gen import gen_pdf
 from src.ticker_symbol import get_all_company_names, get_ticker_symbol
 
@@ -161,7 +161,7 @@ if st.session_state.income_statement:
         st.write("## Insights")
         st.write("### Revenue Health")
         st.markdown(st.session_state.income_statement["insights"].revenue_health)
-        total_revenue_chart = create_time_series_chart(st.session_state.income_statement["chart_data"], 
+        total_revenue_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
                                                     "total_revenue", 
                                                     "Revenue Growth")
         st.write(total_revenue_chart)
@@ -174,14 +174,14 @@ if st.session_state.income_statement:
 
         st.write("### Debt Management")
         st.write(st.session_state.income_statement["insights"].debt_management)
-        interest_expense_chart = create_time_series_chart(st.session_state.income_statement["chart_data"], 
+        interest_expense_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
                                                         "interest_expense", 
                                                         "Debt Service Obligation")
         st.write(interest_expense_chart)
 
         st.write("### Profit Retention")
         st.write(st.session_state.income_statement["insights"].profit_retention)
-        net_income_chart = create_time_series_chart(st.session_state.income_statement["chart_data"], 
+        net_income_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
                                                 "net_income",
                                                 "Profitability Trend")
         st.write(net_income_chart)
@@ -249,21 +249,21 @@ if st.session_state.cash_flow:
         st.write("## Insights")
         st.write("### Operational Cash Efficiency")
         st.write(st.session_state.cash_flow['insights'].operational_cash_efficiency)
-        operating_cash_flow_chart = create_time_series_chart(st.session_state.cash_flow["chart_data"], 
+        operating_cash_flow_chart = create_bar_chart(st.session_state.cash_flow["chart_data"], 
                                                             "operating_cash_flow", 
                                                             "Operating Cash Flow Trend")
         st.write(operating_cash_flow_chart)
         
         st.write("### Investment Capability")
         st.write(st.session_state.cash_flow['insights'].investment_capability)
-        cash_flow_from_investment_chart = create_time_series_chart(st.session_state.cash_flow["chart_data"], 
+        cash_flow_from_investment_chart = create_bar_chart(st.session_state.cash_flow["chart_data"], 
                                                                 "cash_flow_from_investment", 
                                                                 "Investment Capability Trend")
         st.write(cash_flow_from_investment_chart)
 
         st.write("### Financial Flexibility")
         st.write(st.session_state.cash_flow['insights'].financial_flexibility)
-        cash_flow_from_financing_chart = create_time_series_chart(st.session_state.cash_flow["chart_data"], 
+        cash_flow_from_financing_chart = create_bar_chart(st.session_state.cash_flow["chart_data"], 
                                                                 "cash_flow_from_financing", 
                                                                 "Financial Flexibility Trend")
         st.write(cash_flow_from_financing_chart)
