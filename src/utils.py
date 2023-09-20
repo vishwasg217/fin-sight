@@ -49,9 +49,11 @@ APP_ID = 'chat-completion'
 MODEL_ID = 'GPT-4'
 MODEL_VERSION_ID = 'ad16eda6ac054796bf9f348ab6733c72'
 
-def get_model(model_name: Literal["Clarifai", "OpenAI", "ChatOpenAI"]):
+def get_model(model_name: Literal["Clarifai", "llama-2"]):
     if model_name == "Clarifai":
         model = Clarifai(pat=CLARIFY_AI_PAT, user_id=USER_ID, app_id=APP_ID, model_id=MODEL_ID, model_version_id=MODEL_VERSION_ID)
+    elif model_name == "llama-2":
+        model = Clarifai(pat=CLARIFY_AI_PAT, user_id="meta", app_id="Llama-2", model_id="llama2-70b-chat", model_version_id="6c27e86364ba461d98de95cddc559cb3")
     return model
 
 def process_pdf(pdfs):

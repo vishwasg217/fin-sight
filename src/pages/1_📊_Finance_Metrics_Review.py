@@ -7,7 +7,7 @@ sys.path.append(str(project_root))
 
 import streamlit as st
 
-st.set_page_config(page_title="Finance Metrics Reviews", page_icon=":chart_with_upwards_trend:", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Finance Metrics Reviews", page_icon=":bar_chart:", initial_sidebar_state="expanded")
 
 st.title(":chart_with_upwards_trend: Finance Metrics Review")
 st.info("""
@@ -32,6 +32,7 @@ from src.ticker_symbol import get_all_company_names, get_ticker_symbol
 # st.write(f"Ticker Symbol: {ticker}")
 
 ticker = st.text_input("Enter ticker symbol")
+st.warning("Example Tickers: Apple Inc. - AAPL, Microsoft Corporation - MSFT, Tesla Inc. - TSLA")
 
 if "company_overview" not in st.session_state:
     st.session_state.company_overview = None
@@ -56,7 +57,6 @@ if st.button("Generate Insights"):
     with st.spinner("Getting company overview..."):
         st.session_state.company_overview = company_overview(ticker)
         
-
     with st.spinner("Generating income statement insights..."):
         st.session_state.income_statement = income_statement(ticker)
     

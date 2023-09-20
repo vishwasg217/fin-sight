@@ -129,7 +129,15 @@ if "risk_management" not in st.session_state:
 if "innovation_and_rd" not in st.session_state:
     st.session_state.innovation_and_rd = None
 
-pdfs = st.sidebar.file_uploader("Upload a PDF file")
+
+pdfs = st.sidebar.file_uploader("Upload the annual report in PDF format", type="pdf")
+st.sidebar.info("""
+Example reports you can upload here: 
+- [Apple Inc.](https://s2.q4cdn.com/470004039/files/doc_financials/2022/q4/_10-K-2022-(As-Filed).pdf)
+- [Microsoft Corporation](https://microsoft.gcs-web.com/static-files/07cf3c30-cfc3-4567-b20f-f4b0f0bd5087)
+- [Tesla Inc.](https://digitalassets.tesla.com/tesla-contents/image/upload/IR/TSLA-Q4-2022-Update)
+""")
+
 if st.sidebar.button("Process Document"):
     with st.spinner("Processing Document..."):
         documents = process_pdf2(pdfs)
