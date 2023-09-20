@@ -113,9 +113,14 @@ def income_statement(symbol):
 
     chart_data = charts(data)
 
-    inc_stat = data["annualReports"][0]
-    met = metrics(inc_stat)
-    ins = insights("income statement", inc_stat, IncomeStatementInsights)
+    report = data["annualReports"][0]
+    met = metrics(report)
+
+    data_for_insights = {
+        "annual_report_data": report,
+        "historical_data": chart_data,
+    }
+    ins = insights("income statement", data_for_insights, IncomeStatementInsights)
 
     return {
         "metrics": met,

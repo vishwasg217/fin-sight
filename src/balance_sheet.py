@@ -104,7 +104,12 @@ def balance_sheet(symbol):
     report = data["annualReports"][0]
     total_revenue = get_total_revenue(symbol)
     met = metrics(report, total_revenue)
-    ins = insights("balance sheet", report, BalanceSheetInsights)
+
+    data_for_insights = {
+        "annual_report_data": report,
+        "historical_data": chart_data,
+    }
+    ins = insights("balance sheet", data_for_insights, BalanceSheetInsights)
 
     return {
         "metrics": met,

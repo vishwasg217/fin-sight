@@ -78,11 +78,16 @@ def cash_flow(symbol):
     
     chart_data = charts(data)
 
-    data = data["annualReports"][0]
+    report = data["annualReports"][0]
     total_revenue = get_total_revenue(symbol)
     total_debt = get_total_debt(symbol)
-    met = metrics(data, total_revenue, total_debt)
-    ins = insights("balance sheet", data, CashFlowInsights)
+    met = metrics(report, total_revenue, total_debt)
+
+    data_for_insights = {
+        "annual_report_data": report,
+        "historical_data": chart_data,
+    }
+    ins = insights("cash flow", data_for_insights, CashFlowInsights)
 
     return {
         "metrics": met,
@@ -95,3 +100,19 @@ if __name__ == "__main__":
     print("Metrics: ", data['metrics'])
     print("Chart Data: ", data['chart_data'])
     print("Insights", data['insights'])
+
+# if __name__ == "__main__":
+#     symbol = "AAPL"
+#     url = "https://www.alphavantage.co/query"
+#     params = {
+#         "function": "CASH_FLOW",
+#         "symbol": symbol,
+#         "apikey": AV_API_KEY
+#     }
+#     response = requests.get(url, params=params)
+#     data = response.json()
+#     if not data:
+#         print(f"No data found for {symbol}")
+    
+#     ans = charts(data)
+#     print(ans)
