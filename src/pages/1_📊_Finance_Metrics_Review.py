@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from git import exc
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
@@ -86,28 +87,29 @@ with col2:
     if "all_outputs" not in st.session_state:
         st.session_state.all_outputs = None
 
-    if st.button("Generate Insights"):
+    if ticker:
+        if st.button("Generate Insights"):
 
-        with st.spinner("Getting company overview..."):
-            st.session_state.company_overview = company_overview(ticker)
+            with st.spinner("Getting company overview..."):
+                st.session_state.company_overview = company_overview(ticker)
+                
+            with st.spinner("Generating income statement insights..."):
+                st.session_state.income_statement = income_statement(ticker, income_statement_feature_list)
             
-        with st.spinner("Generating income statement insights..."):
-            st.session_state.income_statement = income_statement(ticker)
-        
-        with st.spinner("Generating balance sheet insights..."):
-            st.session_state.balance_sheet = balance_sheet(ticker)
-        
-        with st.spinner("Generating cash flow insights..."):
-            st.session_state.cash_flow = cash_flow(ticker)
-        
-        with st.spinner('Getting latest news...'):
-            st.session_state.news = top_news(ticker, 10)
+            with st.spinner("Generating balance sheet insights..."):
+                st.session_state.balance_sheet = balance_sheet(ticker)
+            
+            with st.spinner("Generating cash flow insights..."):
+                st.session_state.cash_flow = cash_flow(ticker)
+            
+            with st.spinner('Getting latest news...'):
+                st.session_state.news = top_news(ticker, 10)
 
-        if st.session_state.company_overview and st.session_state.income_statement and st.session_state.balance_sheet and st.session_state.cash_flow and st.session_state.news:
-            st.session_state.all_outputs = True
+            if st.session_state.company_overview and st.session_state.income_statement and st.session_state.balance_sheet and st.session_state.cash_flow and st.session_state.news:
+                st.session_state.all_outputs = True
 
-        if st.session_state.company_overview == None:
-            st.error(f"No Data available")
+            if st.session_state.company_overview == None:
+                st.error(f"No Data available")
 
     if st.session_state.all_outputs:
         st.success("Insights successfully Generated!")
@@ -194,39 +196,53 @@ with col2:
             
             st.write("## Insights")
 
-            if revenue_health:
-                st.write("### Revenue Health")
-                st.markdown(st.session_state.income_statement["insights"].revenue_health)
-                total_revenue_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
-                                                            "total_revenue", 
-                                                            "Revenue Growth")
-                st.write(total_revenue_chart)
+            try:
+                if st.session_state.income_statement["insights"].revenue_health:
+                    st.write("### Revenue Health")
+                    st.markdown(st.session_state.income_statement["insights"].revenue_health)
+                    total_revenue_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
+                                                                "total_revenue", 
+                                                                "Revenue Growth")
+                    st.write(total_revenue_chart)
+            except:
+                st.error("This insight has not been generated")
 
 
-            if operational_efficiency:
-                st.write("### Operational Efficiency")
-                st.write(st.session_state.income_statement["insights"].operational_efficiency)
+            try:
+                if operational_efficiency:
+                    st.write("### Operational Efficiency")
+                    st.write(st.session_state.income_statement["insights"].operational_efficiency)
+            except:
+                st.error("This insight has not been generated")
 
-            if r_and_d_focus:
-                st.write("### R&D Focus")
-                st.write(st.session_state.income_statement["insights"].r_and_d_focus)
+            try:
+                if r_and_d_focus:
+                    st.write("### R&D Focus")
+                    st.write(st.session_state.income_statement["insights"].r_and_d_focus)
+            except:
+                st.error("This insight has not been generated")
 
-            if debt_management:
-                st.write("### Debt Management")
-                st.write(st.session_state.income_statement["insights"].debt_management)
-                interest_expense_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
-                                                                "interest_expense", 
-                                                                "Debt Service Obligation")
-                st.write(interest_expense_chart)
+            try:
+                if debt_management:
+                    st.write("### Debt Management")
+                    st.write(st.session_state.income_statement["insights"].debt_management)
+                    interest_expense_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
+                                                                    "interest_expense", 
+                                                                    "Debt Service Obligation")
+                    st.write(interest_expense_chart)
+            except:
+                st.error("This insight has not been generated")
 
-
-            if profit_retention:
-                st.write("### Profit Retention")
-                st.write(st.session_state.income_statement["insights"].profit_retention)
-                net_income_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
-                                                        "net_income",
-                                                        "Profitability Trend")
-                st.write(net_income_chart)
+            try:
+                if profit_retention:
+                    st.write("### Profit Retention")
+                    st.write(st.session_state.income_statement["insights"].profit_retention)
+                    net_income_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
+                                                            "net_income",
+                                                            "Profitability Trend")
+                    st.write(net_income_chart)
+            except:
+                st.error("This insight has not been generated")
 
 
     if st.session_state.balance_sheet:
