@@ -51,7 +51,7 @@ with col1:
 
     with st.expander("**Balance Sheet Insights**"):
         liquidity_position = st.toggle("Liquidity Position")
-        operational_efficiency = st.toggle("Operational efficiency")
+        operational_efficiency2 = st.toggle("Operational efficiency")
         capital_structure = st.toggle("Capital Structure")
         inventory_management = st.toggle("Inventory Management")
         overall_solvency = st.toggle("Overall Solvency")
@@ -65,7 +65,7 @@ with col1:
 
 
 with col2:
-    ticker = st.text_input("Enter ticker symbol")
+    ticker = st.text_input("**Enter ticker symbol**")
     st.warning("Example Tickers: Apple Inc. - AAPL, Microsoft Corporation - MSFT, Tesla Inc. - TSLA")
     st.write(income_statement_feature_list)
     if "company_overview" not in st.session_state:
@@ -193,32 +193,40 @@ with col2:
         
             
             st.write("## Insights")
-            st.write("### Revenue Health")
-            st.markdown(st.session_state.income_statement["insights"].revenue_health)
-            total_revenue_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
-                                                        "total_revenue", 
-                                                        "Revenue Growth")
-            st.write(total_revenue_chart)
 
-            st.write("### Operational Efficiency")
-            st.write(st.session_state.income_statement["insights"].operational_efficiency)
+            if revenue_health:
+                st.write("### Revenue Health")
+                st.markdown(st.session_state.income_statement["insights"].revenue_health)
+                total_revenue_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
+                                                            "total_revenue", 
+                                                            "Revenue Growth")
+                st.write(total_revenue_chart)
 
-            st.write("### R&D Focus")
-            st.write(st.session_state.income_statement["insights"].r_and_d_focus)
 
-            st.write("### Debt Management")
-            st.write(st.session_state.income_statement["insights"].debt_management)
-            interest_expense_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
-                                                            "interest_expense", 
-                                                            "Debt Service Obligation")
-            st.write(interest_expense_chart)
+            if operational_efficiency:
+                st.write("### Operational Efficiency")
+                st.write(st.session_state.income_statement["insights"].operational_efficiency)
 
-            st.write("### Profit Retention")
-            st.write(st.session_state.income_statement["insights"].profit_retention)
-            net_income_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
-                                                    "net_income",
-                                                    "Profitability Trend")
-            st.write(net_income_chart)
+            if r_and_d_focus:
+                st.write("### R&D Focus")
+                st.write(st.session_state.income_statement["insights"].r_and_d_focus)
+
+            if debt_management:
+                st.write("### Debt Management")
+                st.write(st.session_state.income_statement["insights"].debt_management)
+                interest_expense_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
+                                                                "interest_expense", 
+                                                                "Debt Service Obligation")
+                st.write(interest_expense_chart)
+
+
+            if profit_retention:
+                st.write("### Profit Retention")
+                st.write(st.session_state.income_statement["insights"].profit_retention)
+                net_income_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
+                                                        "net_income",
+                                                        "Profitability Trend")
+                st.write(net_income_chart)
 
 
     if st.session_state.balance_sheet:

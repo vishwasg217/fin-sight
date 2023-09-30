@@ -1,4 +1,3 @@
-import json
 import sys
 from pathlib import Path
 script_dir = Path(__file__).resolve().parent
@@ -12,13 +11,16 @@ import plotly.graph_objects as go
 # from dotenv import dotenv_values
 
 from src.pydantic_models import IncomeStatementInsights
-from src.utils import insights, safe_float
+from src.utils import insights, safe_float, generate_pydantic_model
+from src.fields import inc_stat_attributes, inc_stat_fields
 
 # config = dotenv_values(".env")
 # OPENAI_API_KEY = config["OPENAI_API_KEY"]
 # AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
 
 AV_API_KEY = st.secrets["av_api_key"]
+
+## 
 
 def charts(data):
     dates = []
@@ -91,7 +93,8 @@ def metrics(data):
 
 
 
-def income_statement(symbol):
+def income_statement(symbol, fields_to_include):
+    Model = generate_pydantic_model(fields_to_include, inc_stat_attributes, inc_stat_fields)
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "INCOME_STATEMENT",
@@ -120,7 +123,7 @@ def income_statement(symbol):
         "annual_report_data": report,
         "historical_data": chart_data,
     }
-    ins = insights("income statement", data_for_insights, IncomeStatementInsights)
+    ins = insights("income statement", data_for_insights, Model)
 
     return {
         "metrics": met,
@@ -130,11 +133,13 @@ def income_statement(symbol):
 
 
 if __name__ == "__main__":
-    data = income_statement("TSLA")
+    fields_to_include = [True, False, False, False, True]
+
+    data = income_statement("TSLA", fields_to_include)
     print("Metrics: ", data['metrics'])
     print("Chart Data: ", data['chart_data'])
     print("Insights", data['insights'])
-
+    
 
 
 
