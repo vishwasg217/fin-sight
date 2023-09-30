@@ -26,16 +26,14 @@ from src.pdf_gen import gen_pdf
 from src.ticker_symbol import get_all_company_names, get_ticker_symbol
 
 # all_company_names = get_all_company_names()
-
-
 # company_name = st.selectbox("Enter Company Name", all_company_names)
 # ticker = get_ticker_symbol(company_name)
 # st.write(f"Ticker Symbol: {ticker}")
 
+feature_error_message  = "No data ava"
 
 
-
-col1, col2 = st.columns([0.25, 0.75])
+col1, col2 = st.columns([0.25, 0.75], gap="large")
 
 with col1:
     st.write("""
@@ -68,7 +66,7 @@ with col1:
 with col2:
     ticker = st.text_input("**Enter ticker symbol**")
     st.warning("Example Tickers: Apple Inc. - AAPL, Microsoft Corporation - MSFT, Tesla Inc. - TSLA")
-    st.write(income_statement_feature_list)
+
     if "company_overview" not in st.session_state:
         st.session_state.company_overview = None
 
@@ -134,7 +132,6 @@ with col2:
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["Company Overview", "Income Statement", "Balance Sheet", "Cash Flow", "News Sentiment"])
 
 
-
     if st.session_state.company_overview:
         with tab1:
             with st.container():
@@ -197,7 +194,8 @@ with col2:
             st.write("## Insights")
 
             try:
-                if st.session_state.income_statement["insights"].revenue_health:
+                if revenue_health:
+                
                     st.write("### Revenue Health")
                     st.markdown(st.session_state.income_statement["insights"].revenue_health)
                     total_revenue_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
