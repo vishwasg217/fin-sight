@@ -16,6 +16,7 @@ from reportlab.platypus import Paragraph, Table, TableStyle, Spacer
 from reportlab.lib import colors
 import plotly.io as pio
 from io import BytesIO
+import tempfile
 
 
 from src.company_overview import company_overview
@@ -104,9 +105,11 @@ sub_header_style = ParagraphStyle(
 )
 
 def pdf_plotly_chart(fig):
-    img_bytes = pio.to_image(fig, format="png")
-    buffer = BytesIO(img_bytes)
-    img = Image(buffer, width=6*inch, height=4*inch)  
+    img_bytes = fig.to_image(format="png")
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+    temp_file.write(img_bytes)
+    temp_file.close()
+    img = Image(temp_file.name, width=5*inch, height=3*inch)
     return img
 
 def pdf_company_overview(data):
@@ -374,15 +377,15 @@ def gen_pdf(company_name, overview_data, income_statement_data, balance_sheet_da
     all_flowables.extend(cover_page(company_name))
     all_flowables.extend(pdf_company_overview(overview_data))
     all_flowables.extend(pdf_income_statement(income_statement_data['metrics'], income_statement_data['insights'], income_statement_data['chart_data']))
-    all_flowables.extend(pdf_balance_sheet(balance_sheet_data['metrics'], balance_sheet_data['insights'], balance_sheet_data['chart_data']))
-    all_flowables.extend(pdf_cash_flow(cash_flow_data['metrics'], cash_flow_data['insights'], cash_flow_data['chart_data']))
+    # all_flowables.extend(pdf_balance_sheet(balance_sheet_data['metrics'], balance_sheet_data['insights'], balance_sheet_data['chart_data']))
+    # all_flowables.extend(pdf_cash_flow(cash_flow_data['metrics'], cash_flow_data['insights'], cash_flow_data['chart_data']))
     # all_flowables.extend(pdf_news_sentiment(news_data))
     doc.build(all_flowables)
 
 if __name__ == "__main__":
     overview_data = company_overview("AAPL")
-    inc = income_statement("AAPL", [True, False, False, False, False])
-    bal = balance_sheet("AAPL", [True, False, True, False, True])
-    cash = cash_flow("AAPL", [True, True, True, False, False])
-    news = top_news("AAPL", 10)
-    gen_pdf("Apple Inc.", overview_data, inc, bal, cash, None)
+    inc = income_statement("AAPL", [True, True, False, False, False])
+    # bal = balance_sheet("AAPL", [True, False, True, False, True])
+    # cash = cash_flow("AAPL", [True, True, True, False, False])
+    # news = top_news("AAPL", 10)
+    gen_pdf("Apple Inc.", overview_data, inc, None, None, None)
