@@ -11,3 +11,24 @@ inc_stat_fields = {
 }
 
 inc_stat_attributes = ["revenue_health", "operational_efficiency", "r_and_d_focus", "debt_management", "profit_retention"]
+
+balance_sheet_fields = {
+    "liquidity_position": (str, Field(..., description=f"Must be more than {min_length} words. Insight into the company's ability to meet its short-term obligations using its short-term assets.")),
+    "operational_efficiency": (str, Field(..., description=f"Must be more than {min_length} words. Analysis of how efficiently the company is using its assets to generate sales.")),
+    "capital_structure": (str, Field(..., description=f"Must be more than {min_length} words. Insight into the company's financial leverage and its reliance on external liabilities versus internal equity.")),
+    "inventory_management": (str, Field(..., description=f"Must be more than {min_length} words. Analysis of the company's efficiency in managing, selling, and replacing its inventory.")),
+    "overall_solvency": (str, Field(..., description=f"Must be more than {min_length} words. Insight into the company's overall ability to meet its long-term debts and obligations."))
+}
+
+balance_sheet_attributes = ["liquidity_position", "operational_efficiency", "capital_structure", "inventory_management", "overall_solvency"]
+
+cashflow_fields = {
+    "operational_cash_efficiency": (str, Field(..., description=f"Must be more than {min_length} words. Insight into how efficiently the company is generating cash from its core operations.")),
+    "investment_capability": (str, Field(..., description=f"Must be more than {min_length} words. Indicates the company's ability to invest in its business using its operational cash flows.")),
+    "financial_flexibility": (str, Field(..., description=f"Must be more than {min_length} words. Demonstrates the cash left after all operational expenses and investments, which can be used for dividends, share buybacks, or further investments.")),
+    "dividend_sustainability": (str, Field(..., description=f"Must be more than {min_length} words. Indicates the company's ability to cover its dividend payouts with its net earnings.")),
+    "debt_service_capability": (str, Field(..., description=f"Must be more than {min_length} words. Analysis of the company's ability to service its debt using the operational cash flows."))
+}
+
+# Attributes list
+cashflow_attributes = ["operational_cash_efficiency", "investment_capability", "financial_flexibility", "dividend_sustainability", "debt_service_capability"]

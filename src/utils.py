@@ -157,10 +157,9 @@ def get_total_debt(symbol):
     return short_term + long_term
 
 def generate_pydantic_model(fields_to_include, attributes, base_fields):
-    attributes = ["revenue_health", "operational_efficiency", "r_and_d_focus", "debt_management", "profit_retention"]
     selected_fields = {attr: base_fields[attr] for attr, include in zip(attributes, fields_to_include) if include}
     
-    return create_model("DynamicIncomeStatementInsights", **selected_fields)
+    return create_model("DynamicModel", **selected_fields)
 
 def insights(type_of_data, data, pydantic_model):
     print(type_of_data)

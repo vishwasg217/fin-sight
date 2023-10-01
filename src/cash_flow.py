@@ -10,8 +10,8 @@ import streamlit as st
 # from dotenv import dotenv_values
 
 from src.pydantic_models import CashFlowInsights
-from src.utils import insights, get_total_revenue, get_total_debt, safe_float
-
+from src.utils import insights, get_total_revenue, get_total_debt, safe_float, generate_pydantic_model
+from src.fields import cashflow_fields, cashflow_attributes
 # config = dotenv_values(".env")
 # OPENAI_API_KEY = config["OPENAI_API_KEY"]
 # AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
@@ -63,7 +63,8 @@ def metrics(data, total_revenue, total_debt):
     }
 
 
-def cash_flow(symbol):
+def cash_flow(symbol, fields_to_include):
+    Model = generate_pydantic_model(fields_to_include, cashflow_attributes, cashflow_fields)
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "CASH_FLOW",
@@ -87,7 +88,7 @@ def cash_flow(symbol):
         "annual_report_data": report,
         "historical_data": chart_data,
     }
-    ins = insights("cash flow", data_for_insights, CashFlowInsights)
+    ins = insights("cash flow", data_for_insights, Model)
 
     return {
         "metrics": met,
@@ -96,7 +97,8 @@ def cash_flow(symbol):
     }
 
 if __name__ == "__main__":
-    data = cash_flow("AAPL")
+    fields = [True, True, False, False, False]
+    data = cash_flow("AAPL", fields)
     print("Metrics: ", data['metrics'])
     print("Chart Data: ", data['chart_data'])
     print("Insights", data['insights'])

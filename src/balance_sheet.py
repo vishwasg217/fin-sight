@@ -9,7 +9,8 @@ import streamlit as st
 # from dotenv import dotenv_values
 
 from src.pydantic_models import BalanceSheetInsights
-from src.utils import insights, get_total_revenue, safe_float
+from src.utils import insights, get_total_revenue, safe_float, generate_pydantic_model
+from src.fields import balance_sheet_fields, balance_sheet_attributes
 
 # config = dotenv_values(".env")
 # OPENAI_API_KEY = config["OPENAI_API_KEY"]
@@ -86,7 +87,8 @@ def metrics(data, total_revenue):
     }
 
 
-def balance_sheet(symbol):
+def balance_sheet(symbol, fields_to_include):
+    Model = generate_pydantic_model(fields_to_include, balance_sheet_attributes, balance_sheet_fields)
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "BALANCE_SHEET",
@@ -109,7 +111,7 @@ def balance_sheet(symbol):
         "annual_report_data": report,
         "historical_data": chart_data,
     }
-    ins = insights("balance sheet", data_for_insights, BalanceSheetInsights)
+    ins = insights("balance sheet", data_for_insights, Model)
 
     return {
         "metrics": met,
@@ -118,9 +120,10 @@ def balance_sheet(symbol):
     }
 
 if __name__ == "__main__":
-    data = balance_sheet("MSFT")
+    fields = [True, True, False, False, False]
+    data = balance_sheet("MSFT", fields)
     print("Metrics: ", data['metrics'])
-    print("Chart Data: ", data['charts'])
+    print("Chart Data: ", data['chart_data'])
     print("Insights", data['insights'])
 
 
