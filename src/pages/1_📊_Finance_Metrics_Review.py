@@ -1,3 +1,4 @@
+from math import e
 import sys
 from pathlib import Path
 from git import exc
@@ -39,7 +40,7 @@ with col1:
     st.write("""
     ### Select Features
     """)
-    with st.expander("**Income Statement Insights**"):
+    with st.expander("**Income Statement Insights**", expanded=True):
         revenue_health = st.toggle("Revenue Health")
         operational_efficiency = st.toggle("Operational Efficiency")
         r_and_d_focus = st.toggle("R&D Focus")
@@ -48,19 +49,23 @@ with col1:
 
         income_statement_feature_list = [revenue_health, operational_efficiency, r_and_d_focus, debt_management, profit_retention]
 
-    with st.expander("**Balance Sheet Insights**"):
+    with st.expander("**Balance Sheet Insights**", expanded=True):
         liquidity_position = st.toggle("Liquidity Position")
         operational_efficiency2 = st.toggle("Operational efficiency")
         capital_structure = st.toggle("Capital Structure")
         inventory_management = st.toggle("Inventory Management")
         overall_solvency = st.toggle("Overall Solvency")
 
-    with st.expander("**Cash Flow Insights**"):
+        balance_sheet_feature_list = [liquidity_position, operational_efficiency2, capital_structure, inventory_management, overall_solvency]
+
+    with st.expander("**Cash Flow Insights**", expanded=True):
         operational_cash_efficiency = st.toggle("Operational Cash Efficiency")
         investment_capability = st.toggle("Investment Capability")
         financial_flexibility = st.toggle("Financial Flexibility")
         dividend_sustainability = st.toggle("Dividend Sustainability")
         debt_service_capability = st.toggle("Debt Service Capability")
+
+        cash_flow_feature_list = [operational_cash_efficiency, investment_capability, financial_flexibility, dividend_sustainability, debt_service_capability]
 
 
 with col2:
@@ -95,10 +100,10 @@ with col2:
                 st.session_state.income_statement = income_statement(ticker, income_statement_feature_list)
             
             with st.spinner("Generating balance sheet insights..."):
-                st.session_state.balance_sheet = balance_sheet(ticker)
+                st.session_state.balance_sheet = balance_sheet(ticker, balance_sheet_feature_list)
             
             with st.spinner("Generating cash flow insights..."):
-                st.session_state.cash_flow = cash_flow(ticker)
+                st.session_state.cash_flow = cash_flow(ticker, cash_flow_feature_list)
             
             with st.spinner('Getting latest news...'):
                 st.session_state.news = top_news(ticker, 10)
@@ -262,27 +267,47 @@ with col2:
 
 
             st.write("## Insights")
-            st.write("### Liquidity Position")
-            st.write(st.session_state.balance_sheet['insights'].liquidity_position)
-            asset_comp_chart = create_donut_chart(st.session_state.balance_sheet["chart_data"],"asset_composition")
-            st.write(asset_comp_chart)        
 
-            st.write("### Operational Efficiency")
-            st.write(st.session_state.balance_sheet['insights'].operational_efficiency)
+            try:
+                if liquidity_position:
+                    st.write("### Liquidity Position")
+                    st.write(st.session_state.balance_sheet['insights'].liquidity_position)
+                    asset_comp_chart = create_donut_chart(st.session_state.balance_sheet["chart_data"],"asset_composition")
+                    st.write(asset_comp_chart)
+            except:
+                st.error("This insight has not been generated")     
 
-            st.write("### Capital Structure")
-            st.write(st.session_state.balance_sheet['insights'].capital_structure)
-            liabilities_comp_chart = create_donut_chart(st.session_state.balance_sheet["chart_data"],"liabilities_composition")
-            st.write(liabilities_comp_chart)
+            try:
+                if operational_efficiency2:
+                    st.write("### Operational Efficiency")
+                    st.write(st.session_state.balance_sheet['insights'].operational_efficiency)
+            except:
+                st.error("This insight has not been generated")
 
-            st.write("### Inventory Management")
-            st.write(st.session_state.balance_sheet['insights'].inventory_management)
+            try:
+                if capital_structure:
+                    st.write("### Capital Structure")
+                    st.write(st.session_state.balance_sheet['insights'].capital_structure)
+                    liabilities_comp_chart = create_donut_chart(st.session_state.balance_sheet["chart_data"],"liabilities_composition")
+                    st.write(liabilities_comp_chart)
+            except:
+                st.error("This insight has not been generated")
 
-            st.write("### Overall Solvency")
-            st.write(st.session_state.balance_sheet['insights'].overall_solvency)
-            liabilities_comp_chart = create_donut_chart(st.session_state.balance_sheet["chart_data"],"debt_structure")
-            st.write(liabilities_comp_chart)
+            try:
+                if inventory_management:
+                    st.write("### Inventory Management")
+                    st.write(st.session_state.balance_sheet['insights'].inventory_management)
+            except:
+                st.error("This insight has not been generated")
 
+            try:
+                if overall_solvency:
+                    st.write("### Overall Solvency")
+                    st.write(st.session_state.balance_sheet['insights'].overall_solvency)
+                    liabilities_comp_chart = create_donut_chart(st.session_state.balance_sheet["chart_data"],"debt_structure")
+                    st.write(liabilities_comp_chart)
+            except:
+                st.error("This insight has not been generated")
 
     if st.session_state.cash_flow:
         with tab4:
@@ -301,34 +326,54 @@ with col2:
                 
                 col2.metric("Free Cash Flow", format_currency(st.session_state.cash_flow['metrics']['free_cash_flow']))
                 
+            try:
+                if operational_cash_efficiency:
+                    st.write("## Insights")
+                    st.write("### Operational Cash Efficiency")
+                    st.write(st.session_state.cash_flow['insights'].operational_cash_efficiency)
+                    operating_cash_flow_chart = create_bar_chart(st.session_state.cash_flow["chart_data"], 
+                                                                        "operating_cash_flow", 
+                                                                        "Operating Cash Flow Trend")
+                    st.write(operating_cash_flow_chart)
+            except:
+                st.error("This insight has not been generated")
 
-            st.write("## Insights")
-            st.write("### Operational Cash Efficiency")
-            st.write(st.session_state.cash_flow['insights'].operational_cash_efficiency)
-            operating_cash_flow_chart = create_bar_chart(st.session_state.cash_flow["chart_data"], 
-                                                                "operating_cash_flow", 
-                                                                "Operating Cash Flow Trend")
-            st.write(operating_cash_flow_chart)
-            
-            st.write("### Investment Capability")
-            st.write(st.session_state.cash_flow['insights'].investment_capability)
-            cash_flow_from_investment_chart = create_bar_chart(st.session_state.cash_flow["chart_data"], 
-                                                                    "cash_flow_from_investment", 
-                                                                    "Investment Capability Trend")
-            st.write(cash_flow_from_investment_chart)
+            try:
+                if investment_capability  :      
+                    st.write("### Investment Capability")
+                    st.write(st.session_state.cash_flow['insights'].investment_capability)
+                    cash_flow_from_investment_chart = create_bar_chart(st.session_state.cash_flow["chart_data"], 
+                                                                            "cash_flow_from_investment", 
+                                                                            "Investment Capability Trend")
+                    st.write(cash_flow_from_investment_chart)
+            except:
+                st.error("This insight has not been generated")
 
-            st.write("### Financial Flexibility")
-            st.write(st.session_state.cash_flow['insights'].financial_flexibility)
-            cash_flow_from_financing_chart = create_bar_chart(st.session_state.cash_flow["chart_data"], 
-                                                                    "cash_flow_from_financing", 
-                                                                    "Financial Flexibility Trend")
-            st.write(cash_flow_from_financing_chart)
+            try:
+                if financial_flexibility:
+                    st.write("### Financial Flexibility")
+                    st.write(st.session_state.cash_flow['insights'].financial_flexibility)
+                    cash_flow_from_financing_chart = create_bar_chart(st.session_state.cash_flow["chart_data"], 
+                                                                            "cash_flow_from_financing", 
+                                                                            "Financial Flexibility Trend")
+                    st.write(cash_flow_from_financing_chart)
+            except:
+                st.error("This insight has not been generated")
 
-            st.write("### Dividend Sustainability")
-            st.write(st.session_state.cash_flow['insights'].dividend_sustainability)
+            try:
+                if dividend_sustainability:
+                    st.write("### Dividend Sustainability")
+                    st.write(st.session_state.cash_flow['insights'].dividend_sustainability)
+            except:
+                st.error("This insight has not been generated")
 
-            st.write("### Debt Service Capability")
-            st.write(st.session_state.cash_flow['insights'].debt_service_capability)
+            try: 
+                if debt_service_capability:
+                    st.write("### Debt Service Capability")
+                    st.write(st.session_state.cash_flow['insights'].debt_service_capability)
+            except:
+                st.error("This insight has not been generated")
+
 
     if st.session_state.news:
         
