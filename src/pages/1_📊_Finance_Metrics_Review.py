@@ -22,7 +22,7 @@ from src.balance_sheet import balance_sheet
 from src.cash_flow import cash_flow
 from src.news_sentiment import top_news
 from src.company_overview import company_overview
-from src.utils import round_numeric, format_currency, create_time_series_chart, create_donut_chart, create_bar_chart
+from src.utils import round_numeric, format_currency, create_donut_chart, create_bar_chart
 from src.pdf_gen import gen_pdf
 from src.ticker_symbol import get_all_company_names, get_ticker_symbol
 
@@ -31,39 +31,37 @@ from src.ticker_symbol import get_all_company_names, get_ticker_symbol
 # ticker = get_ticker_symbol(company_name)
 # st.write(f"Ticker Symbol: {ticker}")
 
-feature_error_message  = "No data ava"
 
-
-col1, col2 = st.columns([0.25, 0.75], gap="large")
+col1, col2 = st.columns([0.25, 0.75], gap="medium")
 
 with col1:
     st.write("""
-    ### Select Features
+    ### Select Insights
     """)
     with st.expander("**Income Statement Insights**", expanded=True):
-        revenue_health = st.toggle("Revenue Health")
-        operational_efficiency = st.toggle("Operational Efficiency")
-        r_and_d_focus = st.toggle("R&D Focus")
-        debt_management = st.toggle("Debt Management")
-        profit_retention = st.toggle("Profit Retention")
+        revenue_health = st.toggle("Revenue Health", value=True)
+        operational_efficiency = st.toggle("Operational Efficiency", value=True)
+        r_and_d_focus = st.toggle("R&D Focus", value=True)
+        debt_management = st.toggle("Debt Management", value=True)
+        profit_retention = st.toggle("Profit Retention", value=True)
 
         income_statement_feature_list = [revenue_health, operational_efficiency, r_and_d_focus, debt_management, profit_retention]
 
     with st.expander("**Balance Sheet Insights**", expanded=True):
-        liquidity_position = st.toggle("Liquidity Position")
-        operational_efficiency2 = st.toggle("Operational efficiency")
-        capital_structure = st.toggle("Capital Structure")
-        inventory_management = st.toggle("Inventory Management")
-        overall_solvency = st.toggle("Overall Solvency")
+        liquidity_position = st.toggle("Liquidity Position", value=True)
+        operational_efficiency2 = st.toggle("Operational efficiency", value=True)
+        capital_structure = st.toggle("Capital Structure", value=True)
+        inventory_management = st.toggle("Inventory Management", value=True)
+        overall_solvency = st.toggle("Overall Solvency", value=True)
 
         balance_sheet_feature_list = [liquidity_position, operational_efficiency2, capital_structure, inventory_management, overall_solvency]
 
     with st.expander("**Cash Flow Insights**", expanded=True):
-        operational_cash_efficiency = st.toggle("Operational Cash Efficiency")
-        investment_capability = st.toggle("Investment Capability")
-        financial_flexibility = st.toggle("Financial Flexibility")
-        dividend_sustainability = st.toggle("Dividend Sustainability")
-        debt_service_capability = st.toggle("Debt Service Capability")
+        operational_cash_efficiency = st.toggle("Operational Cash Efficiency", value=True)
+        investment_capability = st.toggle("Investment Capability", value=True)
+        financial_flexibility = st.toggle("Financial Flexibility", value=True)
+        dividend_sustainability = st.toggle("Dividend Sustainability", value=True)
+        debt_service_capability = st.toggle("Debt Service Capability", value=True)
 
         cash_flow_feature_list = [operational_cash_efficiency, investment_capability, financial_flexibility, dividend_sustainability, debt_service_capability]
 

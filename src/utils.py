@@ -187,11 +187,11 @@ def insights(type_of_data, data, pydantic_model):
     parsed_output = parser.parse(response)
     return parsed_output
 
-def format_string(s: str) -> str:
+def format_title(s: str) -> str:
     return ' '.join(word.capitalize() for word in s.split('_'))
 
 def create_time_series_chart(data, type_of_data: str, title: str):
-    yaxis_title = format_string(type_of_data)
+    yaxis_title = format_title(type_of_data)
     fig = go.Figure(data=[go.Scatter(x=data['dates'], y=data[type_of_data], mode='lines+markers')])
     fig.update_layout(yaxis=dict(range=[0, max(data)]))
     fig.update_layout(title=title,
@@ -223,7 +223,7 @@ def create_donut_chart(data, type_of_data, hole_size=0.3):
     values = list(data[type_of_data].values())
     
     fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=hole_size)])
-    fig.update_layout(title=format_string(type_of_data))
+    fig.update_layout(title=format_title(type_of_data))
     
     return fig
 
@@ -237,11 +237,11 @@ def create_donut_chart(data, type_of_data, hole_size=0.3):
 # chart = create_donut_chart(data, title="Donut Chart")
 # chart.show()
 
-def create_bar_chart(data, type_of_data: str, title: str):
-    yaxis_title = format_string(type_of_data)
+def create_bar_chart(data, type_of_data: str, title: str = None):
+    yaxis_title = format_title(type_of_data)
     fig = go.Figure(data=[go.Bar(x=data['dates'], y=data[type_of_data])])
     # fig.update_layout(yaxis=dict(range=[0, max(data[type_of_data])]))
-    fig.update_layout(title=title,
+    fig.update_layout(title=format_title(type_of_data),
                       xaxis_title='Date',
                       yaxis_title=yaxis_title)
    
