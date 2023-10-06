@@ -1,5 +1,13 @@
+import sys
+from pathlib import Path
+script_dir = Path(__file__).resolve().parent
+project_root = script_dir.parent
+sys.path.append(str(project_root))
+
 import requests
 import streamlit as st
+
+from src.utils import safe_float
 
 
 AV_API_KEY = st.secrets["av_api_key"]
@@ -34,7 +42,7 @@ def company_overview(symbol):
             "Address": data.get("Address"),
             "FiscalYearEnd": data.get("FiscalYearEnd"),
             "LatestQuarter": data.get("LatestQuarter"),
-            "MarketCapitalization": float(data.get("MarketCapitalization")),
+            "MarketCapitalization": safe_float(data.get("MarketCapitalization")),
         }
         
     else:
