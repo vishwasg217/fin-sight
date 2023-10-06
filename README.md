@@ -5,10 +5,18 @@
 
 Finsight is a cutting-edge finance AI assistant tailored to meet the needs of portfolio managers, investors, and finance enthusiasts. By leveraging `GPT-4` and financial data, Finsight provides deep insights and actionable summaries about a company, aiding in more informed investment decisions.
 
+![demo](docs/demo.gif)
+
 ## Features
 📊 **Finance Metrics Overview**:
 - Dive deep into core financial metrics extracted from the income statement, balance sheet, and cash flow.
 - Stay updated with the top news sentiment surrounding the company for the current year, ensuring you're always in the loop.
+- These are the different sections:
+  - **Company Overview**: Get a quick overview of the company.
+  - **Income Statement**: Understand the company's revenue and expenses.
+  - **Balance Sheet**: Get a grasp on the company's assets, liabilities, and shareholders' equity.
+  - **Cash Flow**: Understand the company's cash flow from operating, investing, and financing activities.
+  - **News Sentiment**: Stay updated with the top news sentiment surrounding the company for the current year.
 
 📄 **Annual Report Analyzer**:
 - Simply upload a company's annual report.
@@ -62,7 +70,7 @@ pip install -r requirements.txt
 
 5. **Run Finsight**:
 ```bash
-streamlit run src/app.py
+streamlit run src/🏡_Home.py
 ```
 
 After running the command, Streamlit will provide a local URL (usually `http://localhost:8501/`) which you can open in your web browser to access Finsight.
