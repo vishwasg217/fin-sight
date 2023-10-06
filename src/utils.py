@@ -40,10 +40,10 @@ from pydantic import create_model
 # AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
 
 OPENAI_API_KEY = st.secrets["openai_api_key"]
-WEAVIATE_URL = st.secrets["weaviate_url"]
-WEAVIATE_API_KEY = st.secrets["weaviate_api_key"]
+# WEAVIATE_URL = st.secrets["weaviate_url"]
+# WEAVIATE_API_KEY = st.secrets["weaviate_api_key"]
 AV_API_KEY = st.secrets["av_api_key"]
-CLARIFY_AI_PAT = st.secrets["clarify_ai_pat"]
+CLARIF_AI_PAT = st.secrets["clarify_ai_pat"]
 
 USER_ID = 'openai'
 APP_ID = 'chat-completion'
@@ -52,9 +52,9 @@ MODEL_VERSION_ID = 'ad16eda6ac054796bf9f348ab6733c72'
 
 def get_model(model_name: Literal["Clarifai", "llama-2"]):
     if model_name == "Clarifai":
-        model = Clarifai(pat=CLARIFY_AI_PAT, user_id=USER_ID, app_id=APP_ID, model_id=MODEL_ID, model_version_id=MODEL_VERSION_ID)
+        model = Clarifai(pat=CLARIF_AI_PAT, user_id=USER_ID, app_id=APP_ID, model_id=MODEL_ID, model_version_id=MODEL_VERSION_ID)
     elif model_name == "llama-2":
-        model = Clarifai(pat=CLARIFY_AI_PAT, user_id="meta", app_id="Llama-2", model_id="llama2-70b-chat", model_version_id="6c27e86364ba461d98de95cddc559cb3")
+        model = Clarifai(pat=CLARIF_AI_PAT, user_id="meta", app_id="Llama-2", model_id="llama2-70b-chat", model_version_id="6c27e86364ba461d98de95cddc559cb3")
     return model
 
 def process_pdf(pdfs):
@@ -88,11 +88,11 @@ def process_pdf2(pdf):
     return [doc]
 
 
-def vector_store(documents):
-    embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
-    client = weaviate.Client(url=WEAVIATE_URL, auth_client_secret=weaviate.AuthApiKey(WEAVIATE_API_KEY))
-    vectorstore = Weaviate.from_texts(documents, embeddings, client=client, by_text=False)
-    return vectorstore
+# def vector_store(documents):
+#     embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
+#     client = weaviate.Client(url=WEAVIATE_URL, auth_client_secret=weaviate.AuthApiKey(WEAVIATE_API_KEY))
+#     vectorstore = Weaviate.from_texts(documents, embeddings, client=client, by_text=False)
+#     return vectorstore
 
 def faiss_db(splitted_text):
     embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)

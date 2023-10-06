@@ -9,10 +9,9 @@ from langchain.output_parsers import PydanticOutputParser
 
 from llama_index import VectorStoreIndex, ServiceContext, StorageContext
 from llama_index.vector_stores import WeaviateVectorStore, FaissVectorStore, ChromaVectorStore
-from llama_index.embeddings import OpenAIEmbedding
-from weaviate.embedded import EmbeddedOptions
 from llama_index.tools import QueryEngineTool, ToolMetadata
 from llama_index.query_engine import SubQuestionQueryEngine
+from llama_index.embeddings import OpenAIEmbedding
 
 from src.utils import get_model, process_pdf2
 from src.pydantic_models import FiscalYearHighlights, StrategyOutlookFutureDirection, RiskManagement, CorporateGovernanceSocialResponsibility, InnovationRnD
@@ -39,24 +38,27 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
-
 def get_vector_index(documents, vector_store):
     print(documents)
     llm = get_model("Clarifai")
-    if vector_store == "weaviate":
-        client = weaviate.Client(embedded_options=EmbeddedOptions())
+    # if vector_store == "weaviate":
+    #     client = weaviate.Client(embedded_options=EmbeddedOptions())
         
-        vector_store = WeaviateVectorStore(weaviate_client=client, index_name="LlamaIndex")
-        storage_context = StorageContext.from_defaults(vector_store=vector_store)
-        service_context = ServiceContext.from_defaults(llm=llm)
-        index = VectorStoreIndex.from_documents(documents, storage_context=storage_context, service_context=service_context)
-    elif vector_store == "faiss":
+    #     vector_store = WeaviateVectorStore(weaviate_client=client, index_name="LlamaIndex")
+    #     storage_context = StorageContext.from_defaults(vector_store=vector_store)
+    #     service_context = ServiceContext.from_defaults(llm=llm)
+    #     index = VectorStoreIndex.from_documents(documents, storage_context=storage_context, service_context=service_context)
+    if vector_store == "faiss":
         d = 1536
         faiss_index = faiss.IndexFlatL2(d)
         vector_store = FaissVectorStore(faiss_index=faiss_index)
         storage_context = StorageContext.from_defaults(vector_store=vector_store)
-        service_context = ServiceContext.from_defaults(llm=llm)
-        index = VectorStoreIndex.from_documents(documents, storage_context=storage_context)
+        embed_model = OpenAIEmbedding()
+        # service_context = ServiceContext.from_defaults(embed_model=embed_model)
+        index = VectorStoreIndex.from_documents(documents, 
+            storage_context=storage_context, 
+            # service_context=service_context
+        )
     elif vector_store == "simple":
         index = VectorStoreIndex.from_documents(documents)
     # elif vector_store == "chroma":
@@ -69,7 +71,6 @@ def get_vector_index(documents, vector_store):
     #     index = VectorStoreIndex.from_documents(
     #         documents, storage_context=storage_context, service_context=service_context
     #     )
-
 
     return index
 

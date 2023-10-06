@@ -68,7 +68,26 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-5. **Run Finsight**:
+5. **Set up the Environment Variables**:
+```bash
+# create directory
+mkdir .streamlit
+
+# create toml file
+touch .streamlit/secrets.toml
+```
+
+```bash
+# add the following API keys
+av_api_key = "ALPHA_VANTAGE API KEY"
+
+openai_api_key = "OPEN AI API KEY"
+
+clarif_ai_pat = "CLARIF AI PAT"
+
+```
+
+1. **Run Finsight**:
 ```bash
 streamlit run src/🏡_Home.py
 ```
