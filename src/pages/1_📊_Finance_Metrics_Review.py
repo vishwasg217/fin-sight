@@ -91,29 +91,31 @@ with col2:
     if ticker:
         if st.button("Generate Insights"):
 
-            with st.spinner("Getting company overview..."):
+            with st.status("**Generating Insights...**"):
+
+                st.write("Getting company overview...")
                 st.session_state.company_overview = company_overview(ticker)
-                
-            with st.spinner("Generating income statement insights..."):
+                    
+                st.write("Generating income statement insights...")
                 st.session_state.income_statement = income_statement(ticker, income_statement_feature_list)
-            
-            with st.spinner("Generating balance sheet insights..."):
+                
+                st.write("Generating balance sheet insights...")
                 st.session_state.balance_sheet = balance_sheet(ticker, balance_sheet_feature_list)
-            
-            with st.spinner("Generating cash flow insights..."):
+                
+                st.write("Generating cash flow insights...")
                 st.session_state.cash_flow = cash_flow(ticker, cash_flow_feature_list)
-            
-            with st.spinner('Getting latest news...'):
+                
+                st.write('Getting latest news...')
                 st.session_state.news = top_news(ticker, 10)
 
-            if st.session_state.company_overview and st.session_state.income_statement and st.session_state.balance_sheet and st.session_state.cash_flow and st.session_state.news:
-                st.session_state.all_outputs = True
+                if st.session_state.company_overview and st.session_state.income_statement and st.session_state.balance_sheet and st.session_state.cash_flow and st.session_state.news:
+                    st.session_state.all_outputs = True
 
-            if st.session_state.company_overview == None:
-                st.error(f"No Data available")
+                if st.session_state.company_overview == None:
+                    st.error(f"No Data available")
 
     if st.session_state.all_outputs:
-        st.success("Insights successfully Generated!")
+        st.toast("Insights successfully Generated!")
         if st.button("Generate PDF"):
             gen_pdf(st.session_state.company_overview["Name"], 
                 st.session_state.company_overview,
@@ -121,7 +123,7 @@ with col2:
                 st.session_state.balance_sheet,
                 st.session_state.cash_flow,
                 None)
-            st.success("PDF successfully generated!")
+            st.toast("PDF successfully generated!")
             with open("pdf/final_report.pdf", "rb") as file:
                 st.download_button(
                     label="Download PDF",

@@ -4,11 +4,12 @@ script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
 
+
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 
 from llama_index import VectorStoreIndex, ServiceContext, StorageContext
-from llama_index.vector_stores import WeaviateVectorStore, FaissVectorStore, ChromaVectorStore
+from llama_index.vector_stores import FaissVectorStore
 from llama_index.tools import QueryEngineTool, ToolMetadata
 from llama_index.query_engine import SubQuestionQueryEngine
 from llama_index.embeddings import OpenAIEmbedding
@@ -54,10 +55,10 @@ def get_vector_index(documents, vector_store):
         vector_store = FaissVectorStore(faiss_index=faiss_index)
         storage_context = StorageContext.from_defaults(vector_store=vector_store)
         embed_model = OpenAIEmbedding()
-        # service_context = ServiceContext.from_defaults(embed_model=embed_model)
+        service_context = ServiceContext.from_defaults(embed_model=embed_model)
         index = VectorStoreIndex.from_documents(documents, 
-            storage_context=storage_context, 
-            # service_context=service_context
+            service_context=service_context,
+            # storage_context=storage_context
         )
     elif vector_store == "simple":
         index = VectorStoreIndex.from_documents(documents)
@@ -130,6 +131,9 @@ if "risk_management" not in st.session_state:
 if "innovation_and_rd" not in st.session_state:
     st.session_state.innovation_and_rd = None
 
+if "all_report_outputs" not in st.session_state:
+    st.session_state.all_report_outputs = None
+
 
 pdfs = st.sidebar.file_uploader("Upload the annual report in PDF format", type="pdf")
 st.sidebar.info("""
@@ -144,6 +148,9 @@ if st.sidebar.button("Process Document"):
         documents = process_pdf2(pdfs)
         st.session_state.index = get_vector_index(documents, vector_store="faiss")
         st.session_state.process_doc = True
+        
+
+    st.toast("Document Processsed!")
 
 
 if st.session_state.process_doc:
@@ -153,17 +160,28 @@ if st.session_state.process_doc:
 
         engine = get_query_engine(st.session_state.index.as_query_engine(similarity_top_k=3))
 
-        with st.spinner("Fiscal Year Highlights..."):
+        with st.status("**Analyzing Report...**"):
+
+            st.write("Fiscal Year Highlights...")
             st.session_state.fiscal_year_highlights = report_insights(engine, "Fiscal Year Highlights", FiscalYearHighlights)
 
-        with st.spinner("Strategy Outlook and Future Direction..."):
+            st.write("Strategy Outlook and Future Direction...")
             st.session_state.strategy_outlook_future_direction = report_insights(engine, "Strategy Outlook and Future Direction", StrategyOutlookFutureDirection)
 
-        with st.spinner("Risk Management..."):
+            st.write("Risk Management...")
             st.session_state.risk_management = report_insights(engine, "Risk Management", RiskManagement)
-        
-        with st.spinner("Innovation and R&D..."):
+            
+            st.write("Innovation and R&D...")
             st.session_state.innovation_and_rd = report_insights(engine, "Innovation and R&D", InnovationRnD)
+
+            if st.session_state.fiscal_year_highlights and st.session_state.strategy_outlook_future_direction and st.session_state.risk_management and st.session_state.innovation_and_rd:
+                st.session_state.all_report_outputs = True
+
+            st.toast("Report Analysis Complete!")
+        
+
+# if st.session_state.all_report_outputs:
+#     st.toast("Report Analysis Complete!")
         
     tab1, tab2, tab3, tab4 = st.tabs(["Fiscal Year Highlights", "Strategy Outlook and Future Direction", "Risk Management", "Innovation and R&D"])
 

@@ -1,25 +1,23 @@
 import sys
 from pathlib import Path
-from typing import Literal, Sequence
+from typing import Literal
 
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
 
 
-from langchain.vectorstores import Weaviate, Chroma, FAISS
+from langchain.vectorstores import FAISS
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
-from langchain.llms import OpenAI
-from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from langchain.llms import Clarifai
 
-from llama_index import VectorStoreIndex, SimpleDirectoryReader
-from llama_index.vector_stores import WeaviateVectorStore
-from llama_index.schema import Document, TextNode
-from llama_index.node_parser import SimpleNodeParser
+# from llama_index import VectorStoreIndex, SimpleDirectoryReader
+# from llama_index.vector_stores import WeaviateVectorStore
+from llama_index.schema import Document
+# from llama_index.node_parser import SimpleNodeParser
 
 
 # from dotenv import dotenv_values
@@ -101,7 +99,7 @@ def faiss_db(splitted_text):
     return db
 
 def safe_float(value):
-        if value == "None":
+        if value == "None" or value == None:
             return "N/A"
         return float(value)
 
