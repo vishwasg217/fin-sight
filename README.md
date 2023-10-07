@@ -87,7 +87,7 @@ clarif_ai_pat = "CLARIF AI PAT"
 
 ```
 
-1. **Run Finsight**:
+6. **Run Finsight**:
 ```bash
 streamlit run src/🏡_Home.py
 ```
