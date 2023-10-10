@@ -32,3 +32,26 @@ cashflow_fields = {
 
 # Attributes list
 cashflow_attributes = ["operational_cash_efficiency", "investment_capability", "financial_flexibility", "dividend_sustainability", "debt_service_capability"]
+
+fiscal_year_fields = {
+    "performance_highlights": (str, Field(..., description="Key performance and financial stats over the fiscal year.")),
+    "major_events": (str, Field(..., description="Highlight of significant events, acquisitions, or strategic shifts that occurred during the year.")),
+    "challenges_encountered": (str, Field(..., description="Challenges the company faced during the year and, if and how they managed or overcame them.")),
+}
+fiscal_year_attributes = ["performance_highlights", "major_events", "challenges_encountered"]
+
+strat_outlook_fields = {
+    "strategic_initiatives": (str, Field(..., description="The company's primary objectives and growth strategies for the upcoming years.")),
+    "market_outlook": (str, Field(..., description="Insights into the broader market, competitive landscape, and industry trends the company anticipates.")),
+    "product_roadmap": (str, Field(..., description="Upcoming launches, expansions, or innovations the company plans to roll out."))
+}
+
+strat_outlook_attributes = ["strategic_initiatives", "market_outlook", "product_roadmap"]
+
+risk_management_fields = {
+    "r_and_d_activities": (str, Field(..., description="Overview of the company's focus on research and development, major achievements, or breakthroughs.")),
+    "innovation_focus": (str, Field(..., description="Mention of new technologies, patents, or areas of research the company is diving into."))
+}
+
+risk_management_attributes = ["r_and_d_activities", "innovation_focus"]
+

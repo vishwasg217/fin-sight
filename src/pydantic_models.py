@@ -25,10 +25,10 @@ class CashFlowInsights(BaseModel):
 
 
 class FiscalYearHighlights(BaseModel):
-    performance_highlights: str = Field(..., description="Key performance metrics and financial stats over the fiscal year.")
+    performance_highlights: str = Field(..., description="Key performance and financial stats over the fiscal year.")
     major_events: str = Field(..., description="Highlight of significant events, acquisitions, or strategic shifts that occurred during the year.")
     challenges_encountered: str = Field(..., description="Challenges the company faced during the year and, if and how they managed or overcame them.")
-    milestone_achievements: str = Field(..., description="Milestones achieved in terms of projects, expansions, or any other notable accomplishments.")
+    # milestone_achievements: str = Field(..., description="Milestones achieved in terms of projects, expansions, or any other notable accomplishments.")
 
 
 class StrategyOutlookFutureDirection(BaseModel):
