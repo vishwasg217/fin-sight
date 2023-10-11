@@ -33,13 +33,9 @@ from pydantic import create_model
 # config = dotenv_values(".env")
 
 # OPENAI_API_KEY = config["OPENAI_API_KEY"]
-# WEAVIATE_URL = config["WEAVIATE_URL"]
-# WEAVIATE_API_KEY = config["WEAVIATE_API_KEY"]
 # AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
 
 OPENAI_API_KEY = st.secrets["openai_api_key"]
-# WEAVIATE_URL = st.secrets["weaviate_url"]
-# WEAVIATE_API_KEY = st.secrets["weaviate_api_key"]
 AV_API_KEY = st.secrets["av_api_key"]
 CLARIF_AI_PAT = st.secrets["clarify_ai_pat"]
 
@@ -82,15 +78,8 @@ def process_pdf2(pdf):
         text += str(page.extract_text())
         
     doc = Document(text=text)
-    # print(len(docs))
     return [doc]
 
-
-# def vector_store(documents):
-#     embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
-#     client = weaviate.Client(url=WEAVIATE_URL, auth_client_secret=weaviate.AuthApiKey(WEAVIATE_API_KEY))
-#     vectorstore = Weaviate.from_texts(documents, embeddings, client=client, by_text=False)
-#     return vectorstore
 
 def faiss_db(splitted_text):
     embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)

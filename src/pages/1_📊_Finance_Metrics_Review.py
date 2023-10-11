@@ -24,11 +24,6 @@ from src.utils import round_numeric, format_currency, create_donut_chart, create
 from src.pdf_gen import gen_pdf
 from src.ticker_symbol import get_all_company_names, get_ticker_symbol
 
-# all_company_names = get_all_company_names()
-# company_name = st.selectbox("Enter Company Name", all_company_names)
-# ticker = get_ticker_symbol(company_name)
-# st.write(f"Ticker Symbol: {ticker}")
-
 
 col1, col2 = st.columns([0.25, 0.75], gap="medium")
 

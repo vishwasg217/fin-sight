@@ -37,8 +37,7 @@ from langchain.output_parsers import PydanticOutputParser
 from langchain.prompts import PromptTemplate
 
 OPENAI_API_KEY = st.secrets["openai_api_key"]
-WEAVIATE_URL = st.secrets["weaviate_url"]
-WEAVIATE_API_KEY = st.secrets["weaviate_api_key"]
+
 
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 openai.api_key = os.environ["OPENAI_API_KEY"]

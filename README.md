@@ -77,6 +77,8 @@ mkdir .streamlit
 touch .streamlit/secrets.toml
 ```
 
+You can get your API keys here: [AlphaVantage](https://www.alphavantage.co/support/#api-key), [OpenAI](https://openai.com/blog/openai-api), [Clarif AI](https://docs.clarifai.com/clarifai-basics/authentication/personal-access-tokens/)
+
 ```bash
 # add the following API keys
 av_api_key = "ALPHA_VANTAGE API KEY"

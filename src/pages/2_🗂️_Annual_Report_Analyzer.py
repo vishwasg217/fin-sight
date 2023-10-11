@@ -28,7 +28,6 @@ import weaviate
 import os
 import openai
 import faiss
-# import chromadb
 
 st.set_page_config(page_title="Annual Report Analyzer", page_icon=":card_index_dividers:", initial_sidebar_state="expanded", layout="wide")
 
@@ -38,8 +37,6 @@ Begin by uploading the annual report of your chosen company in PDF format. After
 """)
 
 OPENAI_API_KEY = st.secrets["openai_api_key"]
-WEAVIATE_URL = st.secrets["weaviate_url"]
-WEAVIATE_API_KEY = st.secrets["weaviate_api_key"]
 
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 openai.api_key = os.environ["OPENAI_API_KEY"]
@@ -48,13 +45,7 @@ openai.api_key = os.environ["OPENAI_API_KEY"]
 def get_vector_index(documents, vector_store):
     print(documents)
     llm = get_model("Clarifai")
-    # if vector_store == "weaviate":
-    #     client = weaviate.Client(embedded_options=EmbeddedOptions())
-        
-    #     vector_store = WeaviateVectorStore(weaviate_client=client, index_name="LlamaIndex")
-    #     storage_context = StorageContext.from_defaults(vector_store=vector_store)
-    #     service_context = ServiceContext.from_defaults(llm=llm)
-    #     index = VectorStoreIndex.from_documents(documents, storage_context=storage_context, service_context=service_context)
+
     if vector_store == "faiss":
         d = 1536
         faiss_index = faiss.IndexFlatL2(d)
@@ -69,16 +60,7 @@ def get_vector_index(documents, vector_store):
         )
     elif vector_store == "simple":
         index = VectorStoreIndex.from_documents(documents)
-    # elif vector_store == "chroma":
-    #     chroma_client = chromadb.EphemeralClient()
-    #     chroma_collection = chroma_client.create_collection("quickstart")
-    #     embed_model = OpenAIEmbedding()
-    #     vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
-    #     storage_context = StorageContext.from_defaults(vector_store=vector_store)
-    #     service_context = ServiceContext.from_defaults(embed_model=embed_model)
-    #     index = VectorStoreIndex.from_documents(
-    #         documents, storage_context=storage_context, service_context=service_context
-    #     )
+
 
     return index
 
@@ -180,7 +162,6 @@ if st.sidebar.button("Process Document"):
 
 
 if st.session_state.process_doc:
-    # company_name = st.text_input("Enter the company name")
 
     col1, col2 = st.columns([0.25, 0.75])
 
