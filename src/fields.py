@@ -30,7 +30,6 @@ cashflow_fields = {
     "debt_service_capability": (str, Field(..., description=f"Must be more than {min_length} words. Analysis of the company's ability to service its debt using the operational cash flows."))
 }
 
-# Attributes list
 cashflow_attributes = ["operational_cash_efficiency", "investment_capability", "financial_flexibility", "dividend_sustainability", "debt_service_capability"]
 
 fiscal_year_fields = {
@@ -49,9 +48,17 @@ strat_outlook_fields = {
 strat_outlook_attributes = ["strategic_initiatives", "market_outlook", "product_roadmap"]
 
 risk_management_fields = {
+    "risk_factors": (str, Field(..., description="Primary risks the company acknowledges.")),
+    "risk_mitigation": (str, Field(..., description="Strategies for managing these risks."))
+}
+
+risk_management_attributes = ["risk_factors", "risk_mitigation"]
+
+
+innovation_fields = {
     "r_and_d_activities": (str, Field(..., description="Overview of the company's focus on research and development, major achievements, or breakthroughs.")),
     "innovation_focus": (str, Field(..., description="Mention of new technologies, patents, or areas of research the company is diving into."))
 }
 
-risk_management_attributes = ["r_and_d_activities", "innovation_focus"]
+innovation_attributes = ["r_and_d_activities", "innovation_focus"]
 

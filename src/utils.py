@@ -1,6 +1,5 @@
 import sys
 from pathlib import Path
-from typing import Literal
 
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
@@ -13,6 +12,7 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from langchain.llms import Clarifai
+from langchain.chat_models import ChatOpenAI
 
 # from llama_index import VectorStoreIndex, SimpleDirectoryReader
 # from llama_index.vector_stores import WeaviateVectorStore
@@ -29,7 +29,7 @@ import time
 import json
 import plotly.graph_objects as go
 from pydantic import create_model
-
+from langchain.llms import OpenAI
 # config = dotenv_values(".env")
 
 # OPENAI_API_KEY = config["OPENAI_API_KEY"]
@@ -42,10 +42,12 @@ CLARIF_AI_PAT = st.secrets["clarify_ai_pat"]
 USER_ID = 'openai'
 APP_ID = 'chat-completion'
 MODEL_ID = 'GPT-4'
-MODEL_VERSION_ID = 'ad16eda6ac054796bf9f348ab6733c72'
+MODEL_VERSION_ID = '4aa760933afa4a33a0e5b4652cfa92fa'
 
-def get_model(model_name: Literal["Clarifai", "llama-2"]):
-    if model_name == "Clarifai":
+def get_model(model_name, api_key):
+    if model_name == "openai":
+        model = ChatOpenAI(openai_api_key=api_key, model_name="gpt-4")
+    elif model_name == "Clarifai":
         model = Clarifai(pat=CLARIF_AI_PAT, user_id=USER_ID, app_id=APP_ID, model_id=MODEL_ID, model_version_id=MODEL_VERSION_ID)
     elif model_name == "llama-2":
         model = Clarifai(pat=CLARIF_AI_PAT, user_id="meta", app_id="Llama-2", model_id="llama2-70b-chat", model_version_id="6c27e86364ba461d98de95cddc559cb3")
@@ -148,9 +150,11 @@ def generate_pydantic_model(fields_to_include, attributes, base_fields):
     
     return create_model("DynamicModel", **selected_fields)
 
-def insights(type_of_data, data, pydantic_model):
+def insights(type_of_data, data, pydantic_model, api_key):
     print(type_of_data)
     parser = PydanticOutputParser(pydantic_object=pydantic_model)
+    output_format = json.loads(json.dumps(pydantic_model.schema(), default=lambda o: o.__dict__))['properties']
+    print("Pydantic Model: ", output_format)
     with open("prompts/insights.prompt", "r") as f:
         template = f.read()
 
@@ -159,20 +163,45 @@ def insights(type_of_data, data, pydantic_model):
         input_variables=["type_of_data","inputs"],
         partial_variables={"output_format": parser.get_format_instructions()}
     )
+    # prompt = PromptTemplate(
+    #     template=template,
+    #     input_variables=["type_of_data","inputs", "output_format"],
+    #     # partial_variables={"output_format": parser.get_format_instructions()}
+    # )
 
-    model = get_model("Clarifai")
+    model = get_model("openai", api_key)
 
     data = json.dumps(data)
 
     formatted_input = prompt.format(type_of_data=type_of_data, inputs=data)
+    # formatted_input = prompt.format(type_of_data=type_of_data, inputs=data, output_format=output_format)
+
     print("-"*30)
     print("Formatted Input:")
     print(formatted_input)
     print("-"*30)
 
+
     response = model.predict(formatted_input)
-    parsed_output = parser.parse(response)
-    return parsed_output
+    formatted_output = parser.parse(response)
+    return formatted_output
+
+    # print(response)
+    # print("type: ", type(response))
+    
+    # response = json.loads(response)
+
+    # if "properties" in response:
+    #     result = {}
+    #     for key, value in response["properties"].items():
+    #         result[key] = value["description"]
+    #     print(result)
+    #     return result
+    # else:
+    #     response = json.dumps(response)
+    #     parsed_output = parser.parse(response)
+    #     print("Parsed output: ", parsed_output)
+    #     return parsed_output
 
 def format_title(s: str) -> str:
     return ' '.join(word.capitalize() for word in s.split('_'))

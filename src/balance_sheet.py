@@ -87,7 +87,7 @@ def metrics(data, total_revenue):
     }
 
 
-def balance_sheet(symbol, fields_to_include):
+def balance_sheet(symbol, fields_to_include, api_key):
     Model = generate_pydantic_model(fields_to_include, balance_sheet_attributes, balance_sheet_fields)
     url = "https://www.alphavantage.co/query"
     params = {
@@ -111,7 +111,7 @@ def balance_sheet(symbol, fields_to_include):
         "annual_report_data": report,
         "historical_data": chart_data,
     }
-    ins = insights("balance sheet", data_for_insights, Model)
+    ins = insights("balance sheet", data_for_insights, Model, api_key)
 
     return {
         "metrics": met,

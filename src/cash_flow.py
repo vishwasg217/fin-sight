@@ -63,7 +63,7 @@ def metrics(data, total_revenue, total_debt):
     }
 
 
-def cash_flow(symbol, fields_to_include):
+def cash_flow(symbol, fields_to_include, api_key):
     Model = generate_pydantic_model(fields_to_include, cashflow_attributes, cashflow_fields)
     url = "https://www.alphavantage.co/query"
     params = {
@@ -88,7 +88,7 @@ def cash_flow(symbol, fields_to_include):
         "annual_report_data": report,
         "historical_data": chart_data,
     }
-    ins = insights("cash flow", data_for_insights, Model)
+    ins = insights("cash flow", data_for_insights, Model, api_key)
 
     return {
         "metrics": met,

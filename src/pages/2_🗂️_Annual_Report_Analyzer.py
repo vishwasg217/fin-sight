@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from token import OP
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
@@ -20,7 +21,7 @@ from src.fields import (
     fiscal_year_fields, fiscal_year_attributes, 
     strat_outlook_fields, strat_outlook_attributes, 
     risk_management_fields, risk_management_attributes, 
-    inc_stat_fields, inc_stat_attributes
+    innovation_fields, innovation_attributes
 )
 
 import streamlit as st
@@ -36,15 +37,15 @@ st.info("""
 Begin by uploading the annual report of your chosen company in PDF format. Afterward, click on 'Process PDF'. Once the document has been processed, tap on 'Analyze Report' and the system will start its magic. After a brief wait, you'll be presented with a detailed analysis and insights derived from the report for your reading.
 """)
 
-OPENAI_API_KEY = st.secrets["openai_api_key"]
+# OPENAI_API_KEY = st.secrets["openai_api_key"]
 
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
-openai.api_key = os.environ["OPENAI_API_KEY"]
+# os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+# openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
 def get_vector_index(documents, vector_store):
     print(documents)
-    llm = get_model("Clarifai")
+    llm = get_model("openai", OPENAI_API_KEY)
 
     if vector_store == "faiss":
         d = 1536
@@ -82,8 +83,8 @@ def report_insights(engine, section, fields_to_include, section_num):
         fields = risk_management_fields
         attribs = risk_management_attributes
     elif section_num == 4:
-        fields = inc_stat_fields
-        attribs = inc_stat_attributes
+        fields = innovation_fields
+        attribs = innovation_attributes
 
     Model = generate_pydantic_model(fields_to_include, attribs, fields)
 
@@ -142,180 +143,185 @@ if "innovation_and_rd" not in st.session_state:
 if "all_report_outputs" not in st.session_state:
     st.session_state.all_report_outputs = None
 
+OPENAI_API_KEY = st.sidebar.text_input("OpenAI API Key", type="password")
 
-pdfs = st.sidebar.file_uploader("Upload the annual report in PDF format", type="pdf")
-st.sidebar.info("""
-Example reports you can upload here: 
-- [Apple Inc.](https://s2.q4cdn.com/470004039/files/doc_financials/2022/q4/_10-K-2022-(As-Filed).pdf)
-- [Microsoft Corporation](https://microsoft.gcs-web.com/static-files/07cf3c30-cfc3-4567-b20f-f4b0f0bd5087)
-- [Tesla Inc.](https://digitalassets.tesla.com/tesla-contents/image/upload/IR/TSLA-Q4-2022-Update)
-""")
+if not OPENAI_API_KEY:
+    st.error("Please enter your OpenAI API Key")
 
-if st.sidebar.button("Process Document"):
-    with st.spinner("Processing Document..."):
-        documents = process_pdf2(pdfs)
-        st.session_state.index = get_vector_index(documents, vector_store="faiss")
-        st.session_state.process_doc = True
-        
+if OPENAI_API_KEY:
+    pdfs = st.sidebar.file_uploader("Upload the annual report in PDF format", type="pdf")
+    st.sidebar.info("""
+    Example reports you can upload here: 
+    - [Apple Inc.](https://s2.q4cdn.com/470004039/files/doc_financials/2022/q4/_10-K-2022-(As-Filed).pdf)
+    - [Microsoft Corporation](https://microsoft.gcs-web.com/static-files/07cf3c30-cfc3-4567-b20f-f4b0f0bd5087)
+    - [Tesla Inc.](https://digitalassets.tesla.com/tesla-contents/image/upload/IR/TSLA-Q4-2022-Update)
+    """)
 
-    st.toast("Document Processsed!")
-
-
-if st.session_state.process_doc:
-
-    col1, col2 = st.columns([0.25, 0.75])
-
-    with col1:
-        st.write("""
-            ### Select Insights
-        """)
-        
-        with st.expander("**Fiscal Year Highlights**", expanded=True):
-            performance_highlights = st.toggle("Performance Highlights", value=True)
-            major_events = st.toggle("Major Events", value=True)
-            challenges_encountered = st.toggle("Challenges Encountered", value=True)
-
-            fiscal_year_highlights_list = [performance_highlights, major_events, challenges_encountered]
-
-        with st.expander("**Strategy Outlook and Future Direction**", expanded=True):
-            strategic_initiatives = st.toggle("Strategic Initiatives", value=True)
-            market_outlook = st.toggle("Market Outlook", value=True)
-            product_roadmap = st.toggle("Product Roadmap", value=True)
-
-            strategy_outlook_future_direction_list = [strategic_initiatives, market_outlook, product_roadmap]
-
-        with st.expander("**Risk Management**", expanded=True):
-            risk_factors = st.toggle("Risk Factors", value=True)
-            risk_mitigation = st.toggle("Risk Mitigation", value=True)
-
-            risk_management_list = [risk_factors, risk_mitigation]
-
-        with st.expander("**Innovation and R&D**", expanded=True):
-            r_and_d_activities = st.toggle("R&D Activities", value=True)
-            innovation_focus = st.toggle("Innovation Focus", value=True)
-
-            innovation_and_rd_list = [r_and_d_activities, innovation_focus]
-
-
-    
-        
-
-    with col2:
-        if st.button("Analyze Report"):
-            engine = get_query_engine(st.session_state.index.as_query_engine(similarity_top_k=3))
-
-            with st.status("**Analyzing Report...**"):
-
-                st.write("Fiscal Year Highlights...")
-                st.session_state.fiscal_year_highlights = report_insights(engine, "Fiscal Year Highlights", fiscal_year_highlights_list, 1)
-
-                st.write("Strategy Outlook and Future Direction...")
-                st.session_state.strategy_outlook_future_direction = report_insights(engine, "Strategy Outlook and Future Direction", strategy_outlook_future_direction_list, 2)
-
-                st.write("Risk Management...")
-                st.session_state.risk_management = report_insights(engine, "Risk Management", risk_management_list, 3)
-                
-                st.write("Innovation and R&D...")
-                st.session_state.innovation_and_rd = report_insights(engine, "Innovation and R&D", innovation_and_rd_list, 4)
-
-                if st.session_state.fiscal_year_highlights and st.session_state.strategy_outlook_future_direction and st.session_state.risk_management and st.session_state.innovation_and_rd:
-                    st.session_state.all_report_outputs = True
-
-                st.toast("Report Analysis Complete!")
-        
-
-    # if st.session_state.all_report_outputs:
-    #     st.toast("Report Analysis Complete!")
-        
-        tab1, tab2, tab3, tab4 = st.tabs(["Fiscal Year Highlights", "Strategy Outlook and Future Direction", "Risk Management", "Innovation and R&D"])
-
-        if st.session_state.fiscal_year_highlights:
+    if st.sidebar.button("Process Document"):
+        with st.spinner("Processing Document..."):
+            documents = process_pdf2(pdfs)
+            st.session_state.index = get_vector_index(documents, vector_store="faiss")
+            st.session_state.process_doc = True
             
 
-            with tab1:
-                st.write("## Fiscal Year Highlights")
-                try: 
-                    if performance_highlights:
-                        st.write("### Performance Highlights")
-                        st.write(st.session_state.fiscal_year_highlights.performance_highlights)
-                except:
-                    st.error("This insight has not been generated")
-
-                try:
-                    if major_events:
-                        st.write("### Major Events")
-                        st.write(st.session_state.fiscal_year_highlights.major_events)
-                except:
-                    st.error("This insight has not been generated")
-                try:
-                    if challenges_encountered:
-                        st.write("### Challenges Encountered")
-                        st.write(st.session_state.fiscal_year_highlights.challenges_encountered)
-                except:
-                    st.error("This insight has not been generated")
-                # st.write("### Milestone Achievements")
-                # st.write(str(st.session_state.fiscal_year_highlights.milestone_achievements))
+        st.toast("Document Processsed!")
 
 
-        if st.session_state.strategy_outlook_future_direction:
-            with tab2:
-                st.write("## Strategy Outlook and Future Direction")
-                try:
-                    if strategic_initiatives:
-                        st.write("### Strategic Initiatives")
-                        st.write(st.session_state.strategy_outlook_future_direction.strategic_initiatives)
-                except:
-                    st.error("This insight has not been generated")
+    if st.session_state.process_doc:
 
-                try:
-                    if market_outlook:
-                        st.write("### Market Outlook")
-                        st.write(st.session_state.strategy_outlook_future_direction.market_outlook)
+        col1, col2 = st.columns([0.25, 0.75])
 
-                except:
-                    st.error("This insight has not been generated")
+        with col1:
+            st.write("""
+                ### Select Insights
+            """)
+            
+            with st.expander("**Fiscal Year Highlights**", expanded=True):
+                performance_highlights = st.toggle("Performance Highlights", value=True)
+                major_events = st.toggle("Major Events", value=True)
+                challenges_encountered = st.toggle("Challenges Encountered", value=True)
 
-                try:
-                    if product_roadmap:
-                        st.write("### Product Roadmap")
-                        st.write(st.session_state.strategy_outlook_future_direction.product_roadmap)
+                fiscal_year_highlights_list = [performance_highlights, major_events, challenges_encountered]
 
-                except:
-                    st.error("This insight has not been generated")
+            with st.expander("**Strategy Outlook and Future Direction**", expanded=True):
+                strategic_initiatives = st.toggle("Strategic Initiatives", value=True)
+                market_outlook = st.toggle("Market Outlook", value=True)
+                product_roadmap = st.toggle("Product Roadmap", value=True)
 
-        if st.session_state.risk_management:
-            with tab3:
-                st.write("## Risk Management")
+                strategy_outlook_future_direction_list = [strategic_initiatives, market_outlook, product_roadmap]
 
-                try:
-                    if risk_factors:
-                        st.write("### Risk Factors")
-                        st.write(st.session_state.risk_management.risk_factors)
-                except:
-                    st.error("This insight has not been generated")
+            with st.expander("**Risk Management**", expanded=True):
+                risk_factors = st.toggle("Risk Factors", value=True)
+                risk_mitigation = st.toggle("Risk Mitigation", value=True)
 
-                try:
-                    if risk_mitigation:
-                        st.write("### Risk Mitigation")
-                        st.write(st.session_state.risk_management.risk_mitigation)
-                except:
-                    st.error("This insight has not been generated")
+                risk_management_list = [risk_factors, risk_mitigation]
+
+            with st.expander("**Innovation and R&D**", expanded=True):
+                r_and_d_activities = st.toggle("R&D Activities", value=True)
+                innovation_focus = st.toggle("Innovation Focus", value=True)
+
+                innovation_and_rd_list = [r_and_d_activities, innovation_focus]
 
 
-        if st.session_state.innovation_and_rd:
-            with tab4:
-                st.write("## Innovation and R&D")
+        
+            
 
-                try:
-                    if r_and_d_activities:
-                        st.write("### R&D Activities")
-                        st.write(st.session_state.innovation_and_rd.r_and_d_activities)
-                except:
-                    st.error("This insight has not been generated")
+        with col2:
+            if st.button("Analyze Report"):
+                engine = get_query_engine(st.session_state.index.as_query_engine(similarity_top_k=3))
 
-                try:
-                    if innovation_focus:
-                        st.write("### Innovation Focus")
-                        st.write(st.session_state.innovation_and_rd.innovation_focus)
-                except:
-                    st.error("This insight has not been generated")
+                with st.status("**Analyzing Report...**"):
+
+                    st.write("Fiscal Year Highlights...")
+                    st.session_state.fiscal_year_highlights = report_insights(engine, "Fiscal Year Highlights", fiscal_year_highlights_list, 1)
+
+                    st.write("Strategy Outlook and Future Direction...")
+                    st.session_state.strategy_outlook_future_direction = report_insights(engine, "Strategy Outlook and Future Direction", strategy_outlook_future_direction_list, 2)
+
+                    st.write("Risk Management...")
+                    st.session_state.risk_management = report_insights(engine, "Risk Management", risk_management_list, 3)
+                    
+                    st.write("Innovation and R&D...")
+                    st.session_state.innovation_and_rd = report_insights(engine, "Innovation and R&D", innovation_and_rd_list, 4)
+
+                    if st.session_state.fiscal_year_highlights and st.session_state.strategy_outlook_future_direction and st.session_state.risk_management and st.session_state.innovation_and_rd:
+                        st.session_state.all_report_outputs = True
+
+                    st.toast("Report Analysis Complete!")
+            
+
+        # if st.session_state.all_report_outputs:
+        #     st.toast("Report Analysis Complete!")
+            
+            tab1, tab2, tab3, tab4 = st.tabs(["Fiscal Year Highlights", "Strategy Outlook and Future Direction", "Risk Management", "Innovation and R&D"])
+
+            if st.session_state.fiscal_year_highlights:
+                
+
+                with tab1:
+                    st.write("## Fiscal Year Highlights")
+                    try: 
+                        if performance_highlights:
+                            st.write("### Performance Highlights")
+                            st.write(st.session_state.fiscal_year_highlights.performance_highlights)
+                    except:
+                        st.error("This insight has not been generated")
+
+                    try:
+                        if major_events:
+                            st.write("### Major Events")
+                            st.write(st.session_state.fiscal_year_highlights.major_events)
+                    except:
+                        st.error("This insight has not been generated")
+                    try:
+                        if challenges_encountered:
+                            st.write("### Challenges Encountered")
+                            st.write(st.session_state.fiscal_year_highlights.challenges_encountered)
+                    except:
+                        st.error("This insight has not been generated")
+                    # st.write("### Milestone Achievements")
+                    # st.write(str(st.session_state.fiscal_year_highlights.milestone_achievements))
+
+
+            if st.session_state.strategy_outlook_future_direction:
+                with tab2:
+                    st.write("## Strategy Outlook and Future Direction")
+                    try:
+                        if strategic_initiatives:
+                            st.write("### Strategic Initiatives")
+                            st.write(st.session_state.strategy_outlook_future_direction.strategic_initiatives)
+                    except:
+                        st.error("This insight has not been generated")
+
+                    try:
+                        if market_outlook:
+                            st.write("### Market Outlook")
+                            st.write(st.session_state.strategy_outlook_future_direction.market_outlook)
+
+                    except:
+                        st.error("This insight has not been generated")
+
+                    try:
+                        if product_roadmap:
+                            st.write("### Product Roadmap")
+                            st.write(st.session_state.strategy_outlook_future_direction.product_roadmap)
+
+                    except:
+                        st.error("This insight has not been generated")
+
+            if st.session_state.risk_management:
+                with tab3:
+                    st.write("## Risk Management")
+
+                    try:
+                        if risk_factors:
+                            st.write("### Risk Factors")
+                            st.write(st.session_state.risk_management.risk_factors)
+                    except:
+                        st.error("This insight has not been generated")
+
+                    try:
+                        if risk_mitigation:
+                            st.write("### Risk Mitigation")
+                            st.write(st.session_state.risk_management.risk_mitigation)
+                    except:
+                        st.error("This insight has not been generated")
+
+
+            if st.session_state.innovation_and_rd:
+                with tab4:
+                    st.write("## Innovation and R&D")
+
+                    try:
+                        if r_and_d_activities:
+                            st.write("### R&D Activities")
+                            st.write(st.session_state.innovation_and_rd.r_and_d_activities)
+                    except:
+                        st.error("This insight has not been generated")
+
+                    try:
+                        if innovation_focus:
+                            st.write("### Innovation Focus")
+                            st.write(st.session_state.innovation_and_rd.innovation_focus)
+                    except:
+                        st.error("This insight has not been generated")
