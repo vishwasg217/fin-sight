@@ -10,13 +10,15 @@ import streamlit as st
 
 from src.pydantic_models import BalanceSheetInsights
 from src.utils import insights, get_total_revenue, safe_float, generate_pydantic_model
-from src.fields import balance_sheet_fields, balance_sheet_attributes
+# from src.fields import balance_sheet_fields, balance_sheet_attributes
+from src.fields2 import bal_sheet, balance_sheet_attributes
 
 # config = dotenv_values(".env")
 # OPENAI_API_KEY = config["OPENAI_API_KEY"]
 # AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
 
 AV_API_KEY = st.secrets["av_api_key"]
+OPENAI_API_KEY = st.secrets["openai_api_key"]
 
 def charts(data):
     report = data['annualReports'][0]
@@ -88,7 +90,6 @@ def metrics(data, total_revenue):
 
 
 def balance_sheet(symbol, fields_to_include, api_key):
-    Model = generate_pydantic_model(fields_to_include, balance_sheet_attributes, balance_sheet_fields)
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "BALANCE_SHEET",
@@ -111,7 +112,12 @@ def balance_sheet(symbol, fields_to_include, api_key):
         "annual_report_data": report,
         "historical_data": chart_data,
     }
-    ins = insights("balance sheet", data_for_insights, Model, api_key)
+
+    ins = {}
+    for i, field in enumerate(balance_sheet_attributes):
+        if fields_to_include[i]:
+            response = insights(field, "balance sheet", data_for_insights, str({field: bal_sheet[field]}), api_key)
+            ins[field] = response
 
     return {
         "metrics": met,
@@ -121,7 +127,7 @@ def balance_sheet(symbol, fields_to_include, api_key):
 
 if __name__ == "__main__":
     fields = [True, True, False, False, False]
-    data = balance_sheet("MSFT", fields)
+    data = balance_sheet("MSFT", fields, OPENAI_API_KEY)
     print("Metrics: ", data['metrics'])
     print("Chart Data: ", data['chart_data'])
     print("Insights", data['insights'])

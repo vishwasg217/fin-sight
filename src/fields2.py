@@ -20,7 +20,7 @@ bal_sheet = {
 balance_sheet_attributes = ["liquidity_position", "operational_efficiency", "capital_structure", "inventory_management", "overall_solvency"]
 
 
-cash_flow = {
+cashflow = {
     "operational_cash_efficiency": f"Must be more than {min_length} words. Insight into how efficiently the company is generating cash from its core operations.",
     "investment_capability": f"Must be more than {min_length} words. Indicates the company's ability to invest in its business using its operational cash flows.",
     "financial_flexibility": f"Must be more than {min_length} words. Demonstrates the cash left after all operational expenses and investments, which can be used for dividends, share buybacks, or further investments.",

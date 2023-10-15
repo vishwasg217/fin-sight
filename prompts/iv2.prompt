@@ -5,7 +5,7 @@ You are tasked with generating {insight_name} insight about the company for the 
 ----
 
 Rules:
-The insight must must not state the obvious.
+The insight must not state the obvious.
 Always use $ symbol for money values, and round it off to millions or billions accordingly
 
 Generate the insight as per the given description:
