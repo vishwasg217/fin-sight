@@ -96,13 +96,16 @@ else:
                     st.session_state.company_overview = company_overview(ticker)
                         
                     st.write("Generating income statement insights...")
-                    st.session_state.income_statement = income_statement(ticker, income_statement_feature_list, OPENAI_API_KEY)
+                    if any(income_statement_feature_list):
+                        st.session_state.income_statement = income_statement(ticker, income_statement_feature_list, OPENAI_API_KEY)
                     
                     st.write("Generating balance sheet insights...")
-                    st.session_state.balance_sheet = balance_sheet(ticker, balance_sheet_feature_list, OPENAI_API_KEY)
+                    if any(balance_sheet_feature_list):
+                        st.session_state.balance_sheet = balance_sheet(ticker, balance_sheet_feature_list, OPENAI_API_KEY)
                     
                     st.write("Generating cash flow insights...")
-                    st.session_state.cash_flow = cash_flow(ticker, cash_flow_feature_list, OPENAI_API_KEY)
+                    if any(cash_flow_feature_list):
+                        st.session_state.cash_flow = cash_flow(ticker, cash_flow_feature_list, OPENAI_API_KEY)
                     
                     st.write('Getting latest news...')
                     st.session_state.news = top_news(ticker, 10)
@@ -201,7 +204,7 @@ else:
                     if revenue_health:
                     
                         st.write("### Revenue Health")
-                        st.markdown(st.session_state.income_statement["insights"].revenue_health)
+                        st.markdown(st.session_state.income_statement["insights"]["revenue_health"])
                         total_revenue_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
                                                                     "total_revenue", 
                                                                     "Revenue Growth")
@@ -213,21 +216,21 @@ else:
                 try:
                     if operational_efficiency:
                         st.write("### Operational Efficiency")
-                        st.write(st.session_state.income_statement["insights"].operational_efficiency)
+                        st.write(st.session_state.income_statement["insights"]["operational_efficiency"])
                 except:
                     st.error("This insight has not been generated")
 
                 try:
                     if r_and_d_focus:
                         st.write("### R&D Focus")
-                        st.write(st.session_state.income_statement["insights"].r_and_d_focus)
+                        st.write(st.session_state.income_statement["insights"]["r_and_d_focus"])
                 except:
                     st.error("This insight has not been generated")
 
                 try:
                     if debt_management:
                         st.write("### Debt Management")
-                        st.write(st.session_state.income_statement["insights"].debt_management)
+                        st.write(st.session_state.income_statement["insights"]["debt_management"])
                         interest_expense_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
                                                                         "interest_expense", 
                                                                         "Debt Service Obligation")
@@ -238,7 +241,7 @@ else:
                 try:
                     if profit_retention:
                         st.write("### Profit Retention")
-                        st.write(st.session_state.income_statement["insights"].profit_retention)
+                        st.write(st.session_state.income_statement["insights"]["profit_retention"])
                         net_income_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
                                                                 "net_income",
                                                                 "Profitability Trend")
