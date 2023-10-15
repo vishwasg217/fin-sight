@@ -1,5 +1,7 @@
 import sys
 from pathlib import Path
+
+from PIL.Image import OPEN
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
@@ -13,12 +15,14 @@ import plotly.graph_objects as go
 from src.pydantic_models import IncomeStatementInsights
 from src.utils import insights, safe_float, generate_pydantic_model
 from src.fields import inc_stat_attributes, inc_stat_fields
+from src.fields2 import inc_stat, inc_stat_attributes
 
 # config = dotenv_values(".env")
 # OPENAI_API_KEY = config["OPENAI_API_KEY"]
 # AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
 
 AV_API_KEY = st.secrets["av_api_key"]
+OPENAI_API_KEY = st.secrets["openai_api_key"]
 
 ## 
 
@@ -94,7 +98,6 @@ def metrics(data):
 
 
 def income_statement(symbol, fields_to_include, api_key):
-    Model = generate_pydantic_model(fields_to_include, inc_stat_attributes, inc_stat_fields)
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "INCOME_STATEMENT",
@@ -123,7 +126,12 @@ def income_statement(symbol, fields_to_include, api_key):
         "annual_report_data": report,
         "historical_data": chart_data,
     }
-    ins = insights("income statement", data_for_insights, Model, api_key)
+
+    ins = {}
+    for i, field in enumerate(inc_stat_attributes):
+        if fields_to_include[i]:
+            response = insights(field, "income statement", data_for_insights, str({field: inc_stat[field]}), api_key)
+            ins[field] = response
 
     return {
         "metrics": met,
@@ -135,7 +143,7 @@ def income_statement(symbol, fields_to_include, api_key):
 if __name__ == "__main__":
     fields_to_include = [True, False, False, False, True]
 
-    data = income_statement("TSLA", fields_to_include)
+    data = income_statement("TSLA", fields_to_include, OPENAI_API_KEY)
     print("Metrics: ", data['metrics'])
     print("Chart Data: ", data['chart_data'])
     print("Insights", data['insights'])

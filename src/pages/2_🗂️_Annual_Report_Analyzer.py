@@ -46,7 +46,6 @@ Begin by uploading the annual report of your chosen company in PDF format. After
 def get_vector_index(documents, vector_store):
     print(documents)
     llm = get_model("openai", OPENAI_API_KEY)
-
     if vector_store == "faiss":
         d = 1536
         faiss_index = faiss.IndexFlatL2(d)

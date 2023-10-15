@@ -46,7 +46,7 @@ MODEL_VERSION_ID = '4aa760933afa4a33a0e5b4652cfa92fa'
 
 def get_model(model_name, api_key):
     if model_name == "openai":
-        model = ChatOpenAI(openai_api_key=api_key, model_name="gpt-4")
+        model = ChatOpenAI(openai_api_key=api_key, model_name="gpt-3.5-turbo")
     elif model_name == "Clarifai":
         model = Clarifai(pat=CLARIF_AI_PAT, user_id=USER_ID, app_id=APP_ID, model_id=MODEL_ID, model_version_id=MODEL_VERSION_ID)
     elif model_name == "llama-2":
@@ -73,7 +73,6 @@ def process_pdf(pdfs):
     return docs
 
 def process_pdf2(pdf):
-    docs = []
     file = PdfReader(pdf)
     text = ""
     for page in file.pages:
@@ -150,31 +149,24 @@ def generate_pydantic_model(fields_to_include, attributes, base_fields):
     
     return create_model("DynamicModel", **selected_fields)
 
-def insights(type_of_data, data, pydantic_model, api_key):
+def insights(insight_name, type_of_data, data, output_format, api_key):
     print(type_of_data)
-    parser = PydanticOutputParser(pydantic_object=pydantic_model)
-    output_format = json.loads(json.dumps(pydantic_model.schema(), default=lambda o: o.__dict__))['properties']
-    print("Pydantic Model: ", output_format)
-    with open("prompts/insights.prompt", "r") as f:
+    
+    with open("prompts/iv2.prompt", "r") as f:
         template = f.read()
 
+    
     prompt = PromptTemplate(
         template=template,
-        input_variables=["type_of_data","inputs"],
-        partial_variables={"output_format": parser.get_format_instructions()}
+        input_variables=["insight_name","type_of_data","inputs", "output_format"],
+        # partial_variables={"output_format": parser.get_format_instructions()}
     )
-    # prompt = PromptTemplate(
-    #     template=template,
-    #     input_variables=["type_of_data","inputs", "output_format"],
-    #     # partial_variables={"output_format": parser.get_format_instructions()}
-    # )
 
     model = get_model("openai", api_key)
 
     data = json.dumps(data)
 
-    formatted_input = prompt.format(type_of_data=type_of_data, inputs=data)
-    # formatted_input = prompt.format(type_of_data=type_of_data, inputs=data, output_format=output_format)
+    formatted_input = prompt.format(insight_name=insight_name,type_of_data=type_of_data, inputs=data, output_format=output_format)
 
     print("-"*30)
     print("Formatted Input:")
@@ -183,25 +175,9 @@ def insights(type_of_data, data, pydantic_model, api_key):
 
 
     response = model.predict(formatted_input)
-    formatted_output = parser.parse(response)
-    return formatted_output
+    return response
 
-    # print(response)
-    # print("type: ", type(response))
     
-    # response = json.loads(response)
-
-    # if "properties" in response:
-    #     result = {}
-    #     for key, value in response["properties"].items():
-    #         result[key] = value["description"]
-    #     print(result)
-    #     return result
-    # else:
-    #     response = json.dumps(response)
-    #     parsed_output = parser.parse(response)
-    #     print("Parsed output: ", parsed_output)
-    #     return parsed_output
 
 def format_title(s: str) -> str:
     return ' '.join(word.capitalize() for word in s.split('_'))

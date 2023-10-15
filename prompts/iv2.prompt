@@ -1,0 +1,15 @@
+You are tasked with generating {insight_name} insight about the company for the {type_of_data} data given below:
+
+----
+{inputs}
+----
+
+Rules:
+The insight must must not state the obvious.
+Always use $ symbol for money values, and round it off to millions or billions accordingly
+
+Generate the insight as per the given description:
+
+----
+{output_format}
+----
