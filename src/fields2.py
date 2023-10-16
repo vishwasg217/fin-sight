@@ -12,12 +12,12 @@ inc_stat_attributes = ["revenue_health", "operational_efficiency", "r_and_d_focu
 
 bal_sheet = {
     "liquidity_position": f"Must be more than {min_length} words. Insight into the company's ability to meet its short-term obligations using its short-term assets.",
-    "operational_efficiency": f"Must be more than {min_length} words. Analysis of how efficiently the company is using its assets to generate sales.",
+    "assets_efficiency": f"Must be more than {min_length} words. Analysis of how efficiently the company is using its assets to generate sales.",
     "capital_structure": f"Must be more than {min_length} words. Insight into the company's financial leverage and its reliance on external liabilities versus internal equity.",
     "inventory_management": f"Must be more than {min_length} words. Analysis of the company's efficiency in managing, selling, and replacing its inventory.",
     "overall_solvency": f"Must be more than {min_length} words. Insight into the company's overall ability to meet its long-term debts and obligations."
 }
-balance_sheet_attributes = ["liquidity_position", "operational_efficiency", "capital_structure", "inventory_management", "overall_solvency"]
+balance_sheet_attributes = ["liquidity_position", "assets_efficiency", "capital_structure", "inventory_management", "overall_solvency"]
 
 
 cashflow = {
@@ -29,3 +29,33 @@ cashflow = {
 }
 
 cashflow_attributes = ["operational_cash_efficiency", "investment_capability", "financial_flexibility", "dividend_sustainability", "debt_service_capability"]
+
+fiscal_year = {
+    "performance_highlights": "Key performance and financial stats over the fiscal year.",
+    "major_events": "Highlight of significant events, acquisitions, or strategic shifts that occurred during the year.",
+    "challenges_encountered": "Challenges the company faced during the year and, if and how they managed or overcame them."
+}
+
+fiscal_year_attributes = ["performance_highlights", "major_events", "challenges_encountered"]
+
+strat_outlook = {
+    "strategic_initiatives": "The company's primary objectives and growth strategies for the upcoming years.",
+    "market_outlook": "Insights into the broader market, competitive landscape, and industry trends the company anticipates.",
+    "product_roadmap": "Upcoming launches, expansions, or innovations the company plans to roll out."
+}
+
+strat_outlook_attributes = ["strategic_initiatives", "market_outlook", "product_roadmap"]
+
+risk_management = {
+    "risk_factors": "Primary risks the company acknowledges.",
+    "risk_mitigation": "Strategies for managing these risks."
+}
+
+risk_management_attributes = ["risk_factors", "risk_mitigation"]
+
+innovation = {
+    "r_and_d_activities": "Overview of the company's focus on research and development, major achievements, or breakthroughs.",
+    "innovation_focus": "Mention of new technologies, patents, or areas of research the company is diving into."
+}
+
+innovation_attributes = ["r_and_d_activities", "innovation_focus"]

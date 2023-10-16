@@ -17,11 +17,18 @@ from llama_index.embeddings import OpenAIEmbedding
 
 from src.utils import get_model, process_pdf2, generate_pydantic_model
 from src.pydantic_models import FiscalYearHighlights, StrategyOutlookFutureDirection, RiskManagement, CorporateGovernanceSocialResponsibility, InnovationRnD
-from src.fields import (
-    fiscal_year_fields, fiscal_year_attributes, 
-    strat_outlook_fields, strat_outlook_attributes, 
-    risk_management_fields, risk_management_attributes, 
-    innovation_fields, innovation_attributes
+# from src.fields import (
+#     fiscal_year_fields, fiscal_year_attributes, 
+#     strat_outlook_fields, strat_outlook_attributes, 
+#     risk_management_fields, risk_management_attributes, 
+#     innovation_fields, innovation_attributes
+# )
+
+from src.fields2 import (
+    fiscal_year, fiscal_year_attributes,
+    strat_outlook, strat_outlook_attributes,
+    risk_management, risk_management_attributes,
+    innovation, innovation_attributes
 )
 
 import streamlit as st
@@ -64,43 +71,50 @@ def get_vector_index(documents, vector_store):
 
     return index
 
-with open("prompts/report.prompt", "r") as f:
-    template = f.read()
 
-def report_insights(engine, section, fields_to_include, section_num):
+
+def generate_insight(engine, insight_name, section_name, output_format):
+
+    with open("prompts/report.prompt", "r") as f:
+        template = f.read()
+
+    prompt_template = PromptTemplate(
+        template=template,
+        input_variables=['insight_name', 'section_name', 'output_format']
+    )
+
+    formatted_input = prompt_template.format(insight_name=insight_name, section_name=section_name, output_format=output_format)
+    print(formatted_input)
+    response = engine.query(formatted_input)
+    return response
+    
+
+
+def report_insights(engine, section_name, fields_to_include, section_num):
 
     fields = None
     attribs = None
 
     if section_num == 1:
-        fields = fiscal_year_fields
+        fields = fiscal_year
         attribs = fiscal_year_attributes
     elif section_num == 2:
-        fields = strat_outlook_fields
+        fields = strat_outlook
         attribs = strat_outlook_attributes
     elif section_num == 3:
-        fields = risk_management_fields
+        fields = risk_management
         attribs = risk_management_attributes
     elif section_num == 4:
-        fields = innovation_fields
+        fields = innovation
         attribs = innovation_attributes
 
-    Model = generate_pydantic_model(fields_to_include, attribs, fields)
-
-    parser = PydanticOutputParser(pydantic_object=Model)
-    prompt_template = PromptTemplate(
-        template=template,
-        input_variables=["section"],
-        partial_variables={"output_format": parser.get_format_instructions()}
-    )
-
-    formatted_input = prompt_template.format(section=section)
-    print(formatted_input)
-
-    response = engine.query(formatted_input)
-    parsed_response = parser.parse(response.response)
-    print(parsed_response)
-    return parsed_response
+    ins = {}
+    for i, field in enumerate(attribs):
+        if fields_to_include[i]:
+            response = generate_insight(engine, field, section_name, str({field: fields[field]}))
+            ins[field] = response
+            
+    return ins
 
 def get_query_engine(engine):
     query_engine_tools = [

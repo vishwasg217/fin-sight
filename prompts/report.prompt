@@ -1,4 +1,6 @@
-You are given the task of generating insights for {section} from the annual report of the company. 
+You are tasked with generating {insight_name} insight about the company for the {section_name} section from the annual report of the company:
+
+
 
 Given below is the output format, which has the subsections.
 Must use bullet points.

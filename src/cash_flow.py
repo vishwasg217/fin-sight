@@ -95,7 +95,6 @@ def cash_flow(symbol, fields_to_include, api_key):
             ins[field] = response
 
 
-
     return {
         "metrics": met,
         "chart_data": chart_data,
