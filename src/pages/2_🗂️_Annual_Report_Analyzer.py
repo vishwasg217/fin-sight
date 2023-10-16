@@ -308,6 +308,8 @@ if OPENAI_API_KEY:
                         if st.session_state['performance_highlights']:
                             st.write("### Performance Highlights")
                             st.write(st.session_state['performance_highlights'])
+                        else:
+                            st.error("fiscal Year Highlights insight has not been generated")
                 except:
                     st.error("This insight has not been generated")
 
@@ -316,6 +318,8 @@ if OPENAI_API_KEY:
                         if st.session_state["major_events"]:
                             st.write("### Major Events")
                             st.write(st.session_state["major_events"])
+                        else:
+                            st.error("Major Events insight has not been generated")
                 except:
                     st.error("This insight has not been generated")
                 try:
@@ -323,6 +327,8 @@ if OPENAI_API_KEY:
                         if st.session_state["challenges_encountered"]:
                             st.write("### Challenges Encountered")
                             st.write(st.session_state["challenges_encountered"])
+                        else:
+                            st.error("Challenges Encountered insight has not been generated")
                 except:
                     st.error("This insight has not been generated")
                 # st.write("### Milestone Achievements")
@@ -334,24 +340,32 @@ if OPENAI_API_KEY:
                 st.write("## Strategy Outlook and Future Direction")
                 try:
                     if strategic_initiatives:
-                        st.write("### Strategic Initiatives")
-                        st.write(st.session_state["strategic_initiatives"])
+                        if st.session_state["strategic_initiatives"]:
+                            st.write("### Strategic Initiatives")
+                            st.write(st.session_state["strategic_initiatives"])
+                        else:
+                            st.error("Strategic Initiatives insight has not been generated")
                 except:
                     st.error("This insight has not been generated")
 
                 try:
                     if market_outlook:
-                        st.write("### Market Outlook")
-                        st.write(st.session_state["market_outlook"])
+                        if st.session_state["market_outlook"]:
+                            st.write("### Market Outlook")
+                            st.write(st.session_state["market_outlook"])
+                        else:
+                            st.error("Market Outlook insight has not been generated")
 
                 except:
                     st.error("This insight has not been generated")
 
                 try:
                     if product_roadmap:
-                        st.write("### Product Roadmap")
-                        st.write(st.session_state["product_roadmap"])
-
+                        if st.session_state["product_roadmap"]:
+                            st.write("### Product Roadmap")
+                            st.write(st.session_state["product_roadmap"])
+                        else:
+                            st.error("Product Roadmap insight has not been generated")
                 except:
                     st.error("This insight has not been generated")
 
@@ -360,15 +374,21 @@ if OPENAI_API_KEY:
 
                 try:
                     if risk_factors:
-                        st.write("### Risk Factors")
-                        st.write(st.session_state["risk_factors"])
+                        if st.session_state["risk_factors"]:
+                            st.write("### Risk Factors")
+                            st.write(st.session_state["risk_factors"])
+                        else:
+                            st.error("Risk Factors insight has not been generated")
                 except:
                     st.error("This insight has not been generated")
 
                 try:
                     if risk_mitigation:
-                        st.write("### Risk Mitigation")
-                        st.write(st.session_state["risk_mitigation"])
+                        if st.session_state["risk_mitigation"]:
+                            st.write("### Risk Mitigation")
+                            st.write(st.session_state["risk_mitigation"])
+                        else:
+                            st.error("Risk Mitigation insight has not been generated")
                 except:
                     st.error("This insight has not been generated")
 
@@ -379,14 +399,20 @@ if OPENAI_API_KEY:
 
                     try:
                         if r_and_d_activities:
-                            st.write("### R&D Activities")
-                            st.write(st.session_state["r_and_d_activities"])
+                            if st.session_state["r_and_d_activities"]:
+                                st.write("### R&D Activities")
+                                st.write(st.session_state["r_and_d_activities"])
+                            else:
+                                st.error("R&D Activities insight has not been generated")
                     except:
                         st.error("This insight has not been generated")
 
                     try:
                         if innovation_focus:
-                            st.write("### Innovation Focus")
-                            st.write(st.session_state["innovation_focus"])
+                            if st.session_state["innovation_focus"]:
+                                st.write("### Innovation Focus")
+                                st.write(st.session_state["innovation_focus"])
+                            else:
+                                st.error("Innovation Focus insight has not been generated")
                     except:
                         st.error("This insight has not been generated")
