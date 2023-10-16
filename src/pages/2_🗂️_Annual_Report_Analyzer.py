@@ -1,3 +1,4 @@
+import enum
 import sys
 from pathlib import Path
 from token import OP
@@ -36,6 +37,7 @@ import weaviate
 import os
 import openai
 import faiss
+import time
 
 st.set_page_config(page_title="Annual Report Analyzer", page_icon=":card_index_dividers:", initial_sidebar_state="expanded", layout="wide")
 
@@ -43,6 +45,7 @@ st.title(":card_index_dividers: Annual Report Analyzer")
 st.info("""
 Begin by uploading the annual report of your chosen company in PDF format. Afterward, click on 'Process PDF'. Once the document has been processed, tap on 'Analyze Report' and the system will start its magic. After a brief wait, you'll be presented with a detailed analysis and insights derived from the report for your reading.
 """)
+
 
 # OPENAI_API_KEY = st.secrets["openai_api_key"]
 
@@ -86,7 +89,7 @@ def generate_insight(engine, insight_name, section_name, output_format):
     formatted_input = prompt_template.format(insight_name=insight_name, section_name=section_name, output_format=output_format)
     print(formatted_input)
     response = engine.query(formatted_input)
-    return response
+    return response.response
     
 
 
@@ -113,8 +116,10 @@ def report_insights(engine, section_name, fields_to_include, section_num):
         if fields_to_include[i]:
             response = generate_insight(engine, field, section_name, str({field: fields[field]}))
             ins[field] = response
-            
-    return ins
+
+    return {
+        "insights": ins
+    }
 
 def get_query_engine(engine):
     query_engine_tools = [
@@ -137,24 +142,29 @@ sections = {
     "Innovation and R&D": InnovationRnD
 }
 
+for insight in fiscal_year_attributes:
+    if insight not in st.session_state:
+        st.session_state[insight] = None
+
+for insight in strat_outlook_attributes:
+    if insight not in st.session_state:
+        st.session_state[insight] = None
+
+for insight in risk_management_attributes:
+    if insight not in st.session_state:
+        st.session_state[insight] = None
+
+for insight in innovation_attributes:
+    if insight not in st.session_state:
+        st.session_state[insight] = None
+
+if "end_time" not in st.session_state:
+    st.session_state.end_time = None
+
 
 if "process_doc" not in st.session_state:
         st.session_state.process_doc = False
 
-if "fiscal_year_highlights" not in st.session_state:
-    st.session_state.fiscal_year_highlights = None
-
-if "strategy_outlook_future_direction" not in st.session_state:
-    st.session_state.strategy_outlook_future_direction = None
-
-if "risk_management" not in st.session_state:
-    st.session_state.risk_management = None
-
-if "innovation_and_rd" not in st.session_state:
-    st.session_state.innovation_and_rd = None
-
-if "all_report_outputs" not in st.session_state:
-    st.session_state.all_report_outputs = None
 
 OPENAI_API_KEY = st.sidebar.text_input("OpenAI API Key", type="password")
 
@@ -216,109 +226,151 @@ if OPENAI_API_KEY:
                 innovation_and_rd_list = [r_and_d_activities, innovation_focus]
 
 
-        
-            
-
         with col2:
             if st.button("Analyze Report"):
                 engine = get_query_engine(st.session_state.index.as_query_engine(similarity_top_k=3))
+                start_time = time.time()
 
                 with st.status("**Analyzing Report...**"):
 
-                    st.write("Fiscal Year Highlights...")
-                    st.session_state.fiscal_year_highlights = report_insights(engine, "Fiscal Year Highlights", fiscal_year_highlights_list, 1)
 
-                    st.write("Strategy Outlook and Future Direction...")
-                    st.session_state.strategy_outlook_future_direction = report_insights(engine, "Strategy Outlook and Future Direction", strategy_outlook_future_direction_list, 2)
+                    if any(fiscal_year_highlights_list):
+                        st.write("Fiscal Year Highlights...")
 
-                    st.write("Risk Management...")
-                    st.session_state.risk_management = report_insights(engine, "Risk Management", risk_management_list, 3)
-                    
-                    st.write("Innovation and R&D...")
-                    st.session_state.innovation_and_rd = report_insights(engine, "Innovation and R&D", innovation_and_rd_list, 4)
+                        for i, insight in enumerate(fiscal_year_attributes):
+                            if st.session_state[insight]:
+                                fiscal_year_highlights_list[i] = False
 
-                    if st.session_state.fiscal_year_highlights and st.session_state.strategy_outlook_future_direction and st.session_state.risk_management and st.session_state.innovation_and_rd:
-                        st.session_state.all_report_outputs = True
+                        response = report_insights(engine, "Fiscal Year Highlights", fiscal_year_highlights_list, 1)
+
+                        for key, value in response["insights"].items():
+                            st.session_state[key] = value
+
+                    if any(strategy_outlook_future_direction_list):
+                        st.write("Strategy Outlook and Future Direction...")
+
+                        for i, insight in enumerate(strat_outlook_attributes):
+                            if st.session_state[insight]:
+                                strategy_outlook_future_direction_list[i] = False
+                        response = report_insights(engine, "Strategy Outlook and Future Direction", strategy_outlook_future_direction_list, 2)
+
+                        for key, value in response["insights"].items():
+                            st.session_state[key] = value
+
+
+                    if any(risk_management_list):
+                        st.write("Risk Management...")
+
+                        for i, insight in enumerate(risk_management_attributes):
+                            if st.session_state[insight]:
+                                risk_management_list[i] = False
+                        
+                        response = report_insights(engine, "Risk Management", risk_management_list, 3)
+
+                        for key, value in response["insights"].items():
+                            st.session_state[key] = value
+
+                    if any(innovation_and_rd_list):
+                        st.write("Innovation and R&D...")
+
+                        for i, insight in enumerate(innovation_attributes):
+                            if st.session_state[insight]:
+                                innovation_and_rd_list[i] = False
+
+                        response = report_insights(engine, "Innovation and R&D", innovation_and_rd_list, 4)
+                        st.session_state.innovation_and_rd = response
+
+                        for key, value in response["insights"].items():
+                            st.session_state[key] = value
+
+                    st.session_state["end_time"] = time.time() - start_time
+
+
 
                     st.toast("Report Analysis Complete!")
             
+            if st.session_state.end_time:
+                st.write("Report Analysis Time", st.session_state.end_time)
+
 
         # if st.session_state.all_report_outputs:
         #     st.toast("Report Analysis Complete!")
             
             tab1, tab2, tab3, tab4 = st.tabs(["Fiscal Year Highlights", "Strategy Outlook and Future Direction", "Risk Management", "Innovation and R&D"])
 
-            if st.session_state.fiscal_year_highlights:
+            
                 
 
-                with tab1:
-                    st.write("## Fiscal Year Highlights")
-                    try: 
-                        if performance_highlights:
+            with tab1:
+                st.write("## Fiscal Year Highlights")
+                try: 
+                    if performance_highlights:
+                        if st.session_state['performance_highlights']:
                             st.write("### Performance Highlights")
-                            st.write(st.session_state.fiscal_year_highlights.performance_highlights)
-                    except:
-                        st.error("This insight has not been generated")
+                            st.write(st.session_state['performance_highlights'])
+                except:
+                    st.error("This insight has not been generated")
 
-                    try:
-                        if major_events:
+                try:
+                    if major_events:
+                        if st.session_state["major_events"]:
                             st.write("### Major Events")
-                            st.write(st.session_state.fiscal_year_highlights.major_events)
-                    except:
-                        st.error("This insight has not been generated")
-                    try:
-                        if challenges_encountered:
+                            st.write(st.session_state["major_events"])
+                except:
+                    st.error("This insight has not been generated")
+                try:
+                    if challenges_encountered:
+                        if st.session_state["challenges_encountered"]:
                             st.write("### Challenges Encountered")
-                            st.write(st.session_state.fiscal_year_highlights.challenges_encountered)
-                    except:
-                        st.error("This insight has not been generated")
-                    # st.write("### Milestone Achievements")
-                    # st.write(str(st.session_state.fiscal_year_highlights.milestone_achievements))
+                            st.write(st.session_state["challenges_encountered"])
+                except:
+                    st.error("This insight has not been generated")
+                # st.write("### Milestone Achievements")
+                # st.write(str(st.session_state.fiscal_year_highlights.milestone_achievements))
 
 
-            if st.session_state.strategy_outlook_future_direction:
-                with tab2:
-                    st.write("## Strategy Outlook and Future Direction")
-                    try:
-                        if strategic_initiatives:
-                            st.write("### Strategic Initiatives")
-                            st.write(st.session_state.strategy_outlook_future_direction.strategic_initiatives)
-                    except:
-                        st.error("This insight has not been generated")
+            
+            with tab2:
+                st.write("## Strategy Outlook and Future Direction")
+                try:
+                    if strategic_initiatives:
+                        st.write("### Strategic Initiatives")
+                        st.write(st.session_state["strategic_initiatives"])
+                except:
+                    st.error("This insight has not been generated")
 
-                    try:
-                        if market_outlook:
-                            st.write("### Market Outlook")
-                            st.write(st.session_state.strategy_outlook_future_direction.market_outlook)
+                try:
+                    if market_outlook:
+                        st.write("### Market Outlook")
+                        st.write(st.session_state["market_outlook"])
 
-                    except:
-                        st.error("This insight has not been generated")
+                except:
+                    st.error("This insight has not been generated")
 
-                    try:
-                        if product_roadmap:
-                            st.write("### Product Roadmap")
-                            st.write(st.session_state.strategy_outlook_future_direction.product_roadmap)
+                try:
+                    if product_roadmap:
+                        st.write("### Product Roadmap")
+                        st.write(st.session_state["product_roadmap"])
 
-                    except:
-                        st.error("This insight has not been generated")
+                except:
+                    st.error("This insight has not been generated")
 
-            if st.session_state.risk_management:
-                with tab3:
-                    st.write("## Risk Management")
+            with tab3:
+                st.write("## Risk Management")
 
-                    try:
-                        if risk_factors:
-                            st.write("### Risk Factors")
-                            st.write(st.session_state.risk_management.risk_factors)
-                    except:
-                        st.error("This insight has not been generated")
+                try:
+                    if risk_factors:
+                        st.write("### Risk Factors")
+                        st.write(st.session_state["risk_factors"])
+                except:
+                    st.error("This insight has not been generated")
 
-                    try:
-                        if risk_mitigation:
-                            st.write("### Risk Mitigation")
-                            st.write(st.session_state.risk_management.risk_mitigation)
-                    except:
-                        st.error("This insight has not been generated")
+                try:
+                    if risk_mitigation:
+                        st.write("### Risk Mitigation")
+                        st.write(st.session_state["risk_mitigation"])
+                except:
+                    st.error("This insight has not been generated")
 
 
             if st.session_state.innovation_and_rd:
@@ -328,13 +380,13 @@ if OPENAI_API_KEY:
                     try:
                         if r_and_d_activities:
                             st.write("### R&D Activities")
-                            st.write(st.session_state.innovation_and_rd.r_and_d_activities)
+                            st.write(st.session_state["r_and_d_activities"])
                     except:
                         st.error("This insight has not been generated")
 
                     try:
                         if innovation_focus:
                             st.write("### Innovation Focus")
-                            st.write(st.session_state.innovation_and_rd.innovation_focus)
+                            st.write(st.session_state["innovation_focus"])
                     except:
                         st.error("This insight has not been generated")
