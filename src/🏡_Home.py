@@ -1,6 +1,5 @@
 import sys
 from pathlib import Path
-from fastapi.openapi import docs
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
