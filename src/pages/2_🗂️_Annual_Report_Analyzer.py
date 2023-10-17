@@ -385,26 +385,25 @@ if OPENAI_API_KEY:
                     st.error("This insight has not been generated")
 
 
-            if st.session_state.innovation_and_rd:
-                with tab4:
-                    st.write("## Innovation and R&D")
+            with tab4:
+                st.write("## Innovation and R&D")
 
-                    try:
-                        if r_and_d_activities:
-                            if st.session_state["r_and_d_activities"]:
-                                st.write("### R&D Activities")
-                                st.write(st.session_state["r_and_d_activities"])
-                            else:
-                                st.error("R&D Activities insight has not been generated")
-                    except:
-                        st.error("This insight has not been generated")
+                try:
+                    if r_and_d_activities:
+                        if st.session_state["r_and_d_activities"]:
+                            st.write("### R&D Activities")
+                            st.write(st.session_state["r_and_d_activities"])
+                        else:
+                            st.error("R&D Activities insight has not been generated")
+                except:
+                    st.error("This insight has not been generated")
 
-                    try:
-                        if innovation_focus:
-                            if st.session_state["innovation_focus"]:
-                                st.write("### Innovation Focus")
-                                st.write(st.session_state["innovation_focus"])
-                            else:
-                                st.error("Innovation Focus insight has not been generated")
-                    except:
-                        st.error("This insight has not been generated")
+                try:
+                    if innovation_focus:
+                        if st.session_state["innovation_focus"]:
+                            st.write("### Innovation Focus")
+                            st.write(st.session_state["innovation_focus"])
+                        else:
+                            st.error("Innovation Focus insight has not been generated")
+                except:
+                    st.error("This insight has not been generated")
