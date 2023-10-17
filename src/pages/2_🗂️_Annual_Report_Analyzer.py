@@ -2,6 +2,7 @@ import enum
 import sys
 from pathlib import Path
 from token import OP
+from cv2 import exp
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
@@ -134,13 +135,6 @@ def get_query_engine(engine):
     s_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_tools)
     return s_engine
 
-sections = {
-    "Fiscal Year Highlights": FiscalYearHighlights,
-    "Strategy Outlook and Future Direction": StrategyOutlookFutureDirection,
-    "Risk Management": RiskManagement,
-    # "Corporate Governance and Social Responsibility": CorporateGovernanceSocialResponsibility,
-    "Innovation and R&D": InnovationRnD
-}
 
 for insight in fiscal_year_attributes:
     if insight not in st.session_state:
@@ -200,28 +194,28 @@ if OPENAI_API_KEY:
             """)
             
             with st.expander("**Fiscal Year Highlights**", expanded=True):
-                performance_highlights = st.toggle("Performance Highlights", value=True)
-                major_events = st.toggle("Major Events", value=True)
-                challenges_encountered = st.toggle("Challenges Encountered", value=True)
+                performance_highlights = st.toggle("Performance Highlights")
+                major_events = st.toggle("Major Events")
+                challenges_encountered = st.toggle("Challenges Encountered")
 
                 fiscal_year_highlights_list = [performance_highlights, major_events, challenges_encountered]
 
             with st.expander("**Strategy Outlook and Future Direction**", expanded=True):
-                strategic_initiatives = st.toggle("Strategic Initiatives", value=True)
-                market_outlook = st.toggle("Market Outlook", value=True)
-                product_roadmap = st.toggle("Product Roadmap", value=True)
+                strategic_initiatives = st.toggle("Strategic Initiatives")
+                market_outlook = st.toggle("Market Outlook")
+                product_roadmap = st.toggle("Product Roadmap")
 
                 strategy_outlook_future_direction_list = [strategic_initiatives, market_outlook, product_roadmap]
 
             with st.expander("**Risk Management**", expanded=True):
-                risk_factors = st.toggle("Risk Factors", value=True)
-                risk_mitigation = st.toggle("Risk Mitigation", value=True)
+                risk_factors = st.toggle("Risk Factors")
+                risk_mitigation = st.toggle("Risk Mitigation")
 
                 risk_management_list = [risk_factors, risk_mitigation]
 
             with st.expander("**Innovation and R&D**", expanded=True):
-                r_and_d_activities = st.toggle("R&D Activities", value=True)
-                innovation_focus = st.toggle("Innovation Focus", value=True)
+                r_and_d_activities = st.toggle("R&D Activities")
+                innovation_focus = st.toggle("Innovation Focus")
 
                 innovation_and_rd_list = [r_and_d_activities, innovation_focus]
 
