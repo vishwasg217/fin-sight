@@ -11,7 +11,6 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
-from langchain.llms import Clarifai
 from langchain.chat_models import ChatOpenAI
 
 # from llama_index import VectorStoreIndex, SimpleDirectoryReader
@@ -37,7 +36,7 @@ from langchain.llms import OpenAI
 
 OPENAI_API_KEY = st.secrets["openai_api_key"]
 AV_API_KEY = st.secrets["av_api_key"]
-CLARIF_AI_PAT = st.secrets["clarify_ai_pat"]
+
 
 USER_ID = 'openai'
 APP_ID = 'chat-completion'
@@ -47,10 +46,7 @@ MODEL_VERSION_ID = '4aa760933afa4a33a0e5b4652cfa92fa'
 def get_model(model_name, api_key):
     if model_name == "openai":
         model = ChatOpenAI(openai_api_key=api_key, model_name="gpt-3.5-turbo")
-    elif model_name == "Clarifai":
-        model = Clarifai(pat=CLARIF_AI_PAT, user_id=USER_ID, app_id=APP_ID, model_id=MODEL_ID, model_version_id=MODEL_VERSION_ID)
-    elif model_name == "llama-2":
-        model = Clarifai(pat=CLARIF_AI_PAT, user_id="meta", app_id="Llama-2", model_id="llama2-70b-chat", model_version_id="6c27e86364ba461d98de95cddc559cb3")
+   
     return model
 
 def process_pdf(pdfs):

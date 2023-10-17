@@ -27,8 +27,8 @@ Finsight is a cutting-edge finance AI assistant tailored to meet the needs of po
   - **Innovation and R&D**: Get a grasp on the company's commitment to innovation and its R&D endeavors.
 
 ## Tech Stack 
-**Streamlit**: Powers the frontend, providing a seamless user interface. **LangChain**: Acts as the foundation for integrating the LLM into the web app.
-**ClarifAI**: Eases the process of developing workflows and accessing LLMs.
+**Streamlit**: Powers the frontend, providing a seamless user interface. 
+**LangChain**: Acts as the foundation for integrating the LLM into the web app.
 **Llama Index**: The data framework behind the Research Agent Generator (RAG) and agent-based features, such as the Annual Report Analyzer.
 **Alpha Vantage**: The go-to API service for fetching the most recent financial data about companies.
 
@@ -77,7 +77,7 @@ mkdir .streamlit
 touch .streamlit/secrets.toml
 ```
 
-You can get your API keys here: [AlphaVantage](https://www.alphavantage.co/support/#api-key), [OpenAI](https://openai.com/blog/openai-api), [Clarif AI](https://docs.clarifai.com/clarifai-basics/authentication/personal-access-tokens/)
+You can get your API keys here: [AlphaVantage](https://www.alphavantage.co/support/#api-key), [OpenAI](https://openai.com/blog/openai-api)
 
 ```bash
 # add the following API keys
@@ -85,7 +85,6 @@ av_api_key = "ALPHA_VANTAGE API KEY"
 
 openai_api_key = "OPEN AI API KEY"
 
-clarif_ai_pat = "CLARIF AI PAT"
 
 ```
 
