@@ -31,27 +31,33 @@ pd.set_option("display.width", None)
 pd.set_option("display.max_colwidth", None)
 
 
+company = input("Enter company name: ")
+
 # load pdfs
+if company == "apple":
+    reader = SimpleDirectoryReader(
+        input_files=["data/apple/AAPL.pdf"]
+    )
+    docs = reader.load_data()
 
 
-reader = SimpleDirectoryReader(
-    input_files=["data/apple/AAPL.pdf"]
-)
+elif company =="meta":
+    reader = SimpleDirectoryReader(
+        input_files=["data/meta/meta.pdf"]
+    )
 
-aapl = reader.load_data()
-
+    docs = reader.load_data()
 
 
 node_parser = UnstructuredElementNodeParser()
 
-aapl_nodes = node_parser.get_nodes_from_documents(aapl, show_progress=True)
-aapl_base_nodes, aapl_node_mappings = node_parser.get_base_nodes_and_mappings(aapl_nodes)
+nodes = node_parser.get_nodes_from_documents(docs, show_progress=True)
+base_nodes, node_mappings = node_parser.get_base_nodes_and_mappings(nodes)
 
 
-
-vector_index = VectorStoreIndex(aapl_base_nodes)
-vector_retriever = vector_index.as_retriever(similarity_top_k=2)
-query_engine = vector_index.as_query_engine(similarity_top_k=2)
+vector_index = VectorStoreIndex(base_nodes)
+vector_retriever = vector_index.as_retriever(similarity_top_k=3)
+query_engine = vector_index.as_query_engine(similarity_top_k=3)
 
 # recursive_retriever = RecursiveRetriever(
 #     "vector",
@@ -69,8 +75,8 @@ query_engine_tool = [
     QueryEngineTool(
         query_engine=query_engine,
         metadata=ToolMetadata(
-            name = "Apple",
-            description="provides information about Apple financials for the year 2022",
+            name = company,
+            description=f"provides information about {company} financials for the year 2022",
         ),
     )
 ]
@@ -97,7 +103,19 @@ Incase you don't have enough info you can just write: No information available
 query = ""
 
 while query != "exit":
-    query = input("Enter query: ")
+    query = input("ENTER QUERY: ")
     response = sub_query_engine.query(query)
     print("-"*50)
     print(str(response))
+    print("-"*50)
+
+{
+  "Business": "Item 1: ",
+  "Risk Factors": "Item 1A, Item 7A",
+  "MD&A": "Item 7",
+  "Financial Statements": "Item 8",
+  "Management's Report on Internal Control Over Financial Reporting": "Item 9A",
+  "Report of Independent Registered Public Accounting Firm": "Item 8",
+  "Corporate Governance": "Item 10"
+}
+
