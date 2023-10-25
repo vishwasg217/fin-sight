@@ -1,6 +1,5 @@
 import sys
 from pathlib import Path
-
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
@@ -12,10 +11,10 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from langchain.chat_models import ChatOpenAI
-
 # from llama_index import VectorStoreIndex, SimpleDirectoryReader
 # from llama_index.vector_stores import WeaviateVectorStore
 from llama_index.schema import Document
+from llama_index.llms import OpenAI
 # from llama_index.node_parser import SimpleNodeParser
 
 
@@ -46,7 +45,6 @@ MODEL_VERSION_ID = '4aa760933afa4a33a0e5b4652cfa92fa'
 def get_model(model_name, api_key):
     if model_name == "openai":
         model = ChatOpenAI(openai_api_key=api_key, model_name="gpt-3.5-turbo")
-   
     return model
 
 def process_pdf(pdfs):

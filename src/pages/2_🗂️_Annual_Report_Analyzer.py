@@ -1,6 +1,5 @@
 import sys
 from pathlib import Path
-
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
@@ -14,6 +13,8 @@ from llama_index.vector_stores import FaissVectorStore
 from llama_index.tools import QueryEngineTool, ToolMetadata
 from llama_index.query_engine import SubQuestionQueryEngine
 from llama_index.embeddings import OpenAIEmbedding
+from llama_index.schema import Document
+from llama_index.node_parser import UnstructuredElementNodeParser
 
 from src.utils import get_model, process_pdf2, generate_pydantic_model
 from src.pydantic_models import FiscalYearHighlights, StrategyOutlookFutureDirection, RiskManagement, CorporateGovernanceSocialResponsibility, InnovationRnD
@@ -37,6 +38,8 @@ import os
 import openai
 import faiss
 import time
+from pypdf import PdfReader
+
 
 st.set_page_config(page_title="Annual Report Analyzer", page_icon=":card_index_dividers:", initial_sidebar_state="expanded", layout="wide")
 
@@ -48,12 +51,24 @@ Begin by uploading the annual report of your chosen company in PDF format. After
 
 # OPENAI_API_KEY = st.secrets["openai_api_key"]
 
-# os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+
 # openai.api_key = os.environ["OPENAI_API_KEY"]
 
+def process_pdf(pdf):
+    file = PdfReader(pdf)
 
-def get_vector_index(documents, vector_store):
-    print(documents)
+    document_list = []
+    for page in file.pages:
+        document_list.append(Document(text=str(page.extract_text())))
+
+    node_paser = UnstructuredElementNodeParser()
+    nodes = node_paser.get_nodes_from_documents(document_list, show_progress=True)
+    
+    return nodes
+
+
+def get_vector_index(nodes, vector_store):
+    print(nodes)
     llm = get_model("openai", OPENAI_API_KEY)
     if vector_store == "faiss":
         d = 1536
@@ -63,12 +78,12 @@ def get_vector_index(documents, vector_store):
         # embed_model = OpenAIEmbedding()
         # service_context = ServiceContext.from_defaults(embed_model=embed_model)
         service_context = ServiceContext.from_defaults(llm=llm) 
-        index = VectorStoreIndex.from_documents(documents, 
+        index = VectorStoreIndex(nodes, 
             service_context=service_context,
             storage_context=storage_context
         )
     elif vector_store == "simple":
-        index = VectorStoreIndex.from_documents(documents)
+        index = VectorStoreIndex.from_documents(nodes)
 
 
     return index
@@ -121,6 +136,9 @@ def report_insights(engine, section_name, fields_to_include, section_num):
     }
 
 def get_query_engine(engine):
+    llm = get_model("openai", OPENAI_API_KEY)
+    service_context = ServiceContext.from_defaults(llm=llm)
+
     query_engine_tools = [
         QueryEngineTool(
             query_engine=engine,
@@ -130,7 +148,12 @@ def get_query_engine(engine):
             ),
         ),
     ]
-    s_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_tools)
+
+
+    s_engine = SubQuestionQueryEngine.from_defaults(
+        query_engine_tools=query_engine_tools,
+        service_context=service_context
+    )
     return s_engine
 
 
@@ -159,6 +182,9 @@ if "process_doc" not in st.session_state:
 
 
 OPENAI_API_KEY = st.sidebar.text_input("OpenAI API Key", type="password")
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+
+st.write(os.environ["OPENAI_API_KEY"])
 
 if not OPENAI_API_KEY:
     st.error("Please enter your OpenAI API Key")
@@ -174,8 +200,8 @@ if OPENAI_API_KEY:
 
     if st.sidebar.button("Process Document"):
         with st.spinner("Processing Document..."):
-            documents = process_pdf2(pdfs)
-            st.session_state.index = get_vector_index(documents, vector_store="faiss")
+            nodes = process_pdf(pdfs)
+            st.session_state.index = get_vector_index(nodes, vector_store="faiss")
             st.session_state.process_doc = True
             
 
@@ -275,14 +301,14 @@ if OPENAI_API_KEY:
                         for key, value in response["insights"].items():
                             st.session_state[key] = value
 
-                    st.session_state["end_time"] = time.time() - start_time
+                    st.session_state["end_time"] = "{:.2f}".format((time.time() - start_time))
 
 
 
                     st.toast("Report Analysis Complete!")
             
             if st.session_state.end_time:
-                st.write("Report Analysis Time", st.session_state.end_time)
+                st.write("Report Analysis Time: ", st.session_state.end_time, "s")
 
 
         # if st.session_state.all_report_outputs:

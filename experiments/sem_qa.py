@@ -22,8 +22,10 @@ import nest_asyncio
 nest_asyncio.apply()
 
 import streamlit as st
+import os
 
 OPENAI_API_KEY = st.secrets["openai_api_key"]
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 pd.set_option("display.max_rows", None)
 pd.set_option("display.max_columns", None)
