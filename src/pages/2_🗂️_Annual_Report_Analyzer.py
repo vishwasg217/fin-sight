@@ -184,8 +184,6 @@ if "process_doc" not in st.session_state:
 OPENAI_API_KEY = st.sidebar.text_input("OpenAI API Key", type="password")
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
-st.write(os.environ["OPENAI_API_KEY"])
-
 if not OPENAI_API_KEY:
     st.error("Please enter your OpenAI API Key")
 
