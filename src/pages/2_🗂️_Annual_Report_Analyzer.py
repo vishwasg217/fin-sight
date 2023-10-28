@@ -181,6 +181,9 @@ if "process_doc" not in st.session_state:
         st.session_state.process_doc = False
 
 
+st.sidebar.info("""
+You can get your OpenAI API key [here](https://openai.com/blog/openai-api)
+""")
 OPENAI_API_KEY = st.sidebar.text_input("OpenAI API Key", type="password")
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 

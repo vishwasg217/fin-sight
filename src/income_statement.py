@@ -1,11 +1,10 @@
 import sys
 from pathlib import Path
-
-from PIL.Image import OPEN
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 sys.path.append(str(project_root))
 
+import os
 import pandas as pd
 import requests
 import streamlit as st
@@ -21,8 +20,10 @@ from src.fields2 import inc_stat, inc_stat_attributes
 # OPENAI_API_KEY = config["OPENAI_API_KEY"]
 # AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
 
-AV_API_KEY = st.secrets["av_api_key"]
+# AV_API_KEY = st.secrets["av_api_key"]
 OPENAI_API_KEY = st.secrets["openai_api_key"]
+
+AV_API_KEY = os.environ.get("ALPHA_VANTAGE_API_KEY")
 
 ## 
 
@@ -31,6 +32,8 @@ def charts(data):
     total_revenue = []
     net_income = []
     interest_expense = []
+
+    print(data)
 
     for report in reversed(data["annualReports"]):
         dates.append(report["fiscalDateEnding"])

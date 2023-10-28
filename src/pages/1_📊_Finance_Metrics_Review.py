@@ -25,12 +25,21 @@ from src.utils import round_numeric, format_currency, create_donut_chart, create
 from src.pdf_gen import gen_pdf
 from src.fields2 import inc_stat, inc_stat_attributes, bal_sheet, balance_sheet_attributes, cashflow, cashflow_attributes
 
+st.sidebar.info("""
+You can get your API keys here: [OpenAI](https://openai.com/blog/openai-api), [AlphaVantage](https://www.alphavantage.co/support/#api-key), 
+""")
+
 OPENAI_API_KEY = st.sidebar.text_input("Enter OpenAI API key", type="password")
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+
+AV_API_KEY = st.sidebar.text_input("Enter Alpha Vantage API key", type="password")
+os.environ["AV_API_KEY"] = AV_API_KEY
 
 
 if not OPENAI_API_KEY:
     st.error("Please enter your OpenAI API Key")
+elif not AV_API_KEY:
+    st.error("Please enter your Alpha Vantage API Key")
 else:
 
 

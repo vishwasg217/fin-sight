@@ -167,7 +167,6 @@ def insights(insight_name, type_of_data, data, output_format, api_key):
     print(formatted_input)
     print("-"*30)
 
-
     response = model.predict(formatted_input)
     return response
 
