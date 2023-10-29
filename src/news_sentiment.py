@@ -8,8 +8,12 @@ import streamlit as st
 import requests
 from datetime import datetime, timedelta
 import pandas as pd
+import os
 
-AV_API_KEY = st.secrets["av_api_key"]
+# AV_API_KEY = st.secrets["av_api_key"]
+
+AV_API_KEY = os.environ.get("AV_API_KEY")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 def classify_sentiment(mean_score):
     if mean_score <= -0.35:
@@ -49,6 +53,9 @@ def top_news(symbol, max_feed):
             print(data)
             return None
         news = []
+
+        if "Error Message" in data:
+            return {"Error": data["Error Message"]}
 
         try:
             for i in data["feed"][:max_feed]:

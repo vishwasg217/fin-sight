@@ -202,120 +202,130 @@ else:
 
 
         if st.session_state.company_overview:
-            with tab1:
-                with st.container():
-                    
-                    st.write("# Company Overview")
-                    # st.markdown("### Company Name:")
-                    st.markdown(f"""### {st.session_state.company_overview["Name"]}""")
-                    col1, col2, col3 = st.columns(3)
-                    col1.markdown("### Symbol:")
-                    col1.write(st.session_state.company_overview["Symbol"])
-                    col2.markdown("### Exchange:")
-                    col2.write(st.session_state.company_overview["Exchange"])
-                    col3.markdown("### Currency:")
-                    col3.write(st.session_state.company_overview["Currency"])
 
-                    col1, col2, col3 = st.columns(3)
-                    col1.markdown("### Sector:")
-                    col1.write(st.session_state.company_overview["Sector"])
-                    col2.markdown("### Industry:")
-                    col2.write(st.session_state.company_overview["Industry"])
-                    col3.write()
-                    st.markdown("### Description:")
-                    st.write(st.session_state.company_overview["Description"])
-                    
-                    col1, col2, col3 = st.columns(3)
-                    col1.markdown("### Country:")
-                    col1.write(st.session_state.company_overview["Country"])
-                    col2.markdown("### Address:")
-                    col2.write(st.session_state.company_overview["Address"])
-                    col3.write()
+            if "Error" in st.session_state.company_overview:
+                st.error(st.session_state.company_overview["Error Message"])
 
-                    col1, col2, col3 = st.columns(3)
-                    col1.markdown("### Fiscal Year End:")
-                    col1.write(st.session_state.company_overview["FiscalYearEnd"])
-                    col2.markdown("### Latest Quarter:")
-                    col2.write(st.session_state.company_overview["LatestQuarter"])
-                    col3.markdown("### Market Capitalization:")
-                    col3.write(format_currency(st.session_state.company_overview["MarketCapitalization"]))
+            else:
+                with tab1:
+                    with st.container():
+                        
+                        st.write("# Company Overview")
+                        # st.markdown("### Company Name:")
+                        st.markdown(f"""### {st.session_state.company_overview["Name"]}""")
+                        col1, col2, col3 = st.columns(3)
+                        col1.markdown("### Symbol:")
+                        col1.write(st.session_state.company_overview["Symbol"])
+                        col2.markdown("### Exchange:")
+                        col2.write(st.session_state.company_overview["Exchange"])
+                        col3.markdown("### Currency:")
+                        col3.write(st.session_state.company_overview["Currency"])
+
+                        col1, col2, col3 = st.columns(3)
+                        col1.markdown("### Sector:")
+                        col1.write(st.session_state.company_overview["Sector"])
+                        col2.markdown("### Industry:")
+                        col2.write(st.session_state.company_overview["Industry"])
+                        col3.write()
+                        st.markdown("### Description:")
+                        st.write(st.session_state.company_overview["Description"])
+                        
+                        col1, col2, col3 = st.columns(3)
+                        col1.markdown("### Country:")
+                        col1.write(st.session_state.company_overview["Country"])
+                        col2.markdown("### Address:")
+                        col2.write(st.session_state.company_overview["Address"])
+                        col3.write()
+
+                        col1, col2, col3 = st.columns(3)
+                        col1.markdown("### Fiscal Year End:")
+                        col1.write(st.session_state.company_overview["FiscalYearEnd"])
+                        col2.markdown("### Latest Quarter:")
+                        col2.write(st.session_state.company_overview["LatestQuarter"])
+                        col3.markdown("### Market Capitalization:")
+                        col3.write(format_currency(st.session_state.company_overview["MarketCapitalization"]))
 
 
         if st.session_state.income_statement:
 
-            with tab2:
-                
-                st.write("# Income Statement")
-                st.write("## Metrics")
+            if "Error" in st.session_state.income_statement:
+                st.error(st.session_state.income_statement["Error Message"])
 
-                with st.container():
+            else:
 
-                    col1, col2, col3 = st.columns(3)
-
-                    col1.metric("Gross Profit Margin", round_numeric(st.session_state.income_statement["metrics"]["gross_profit_margin"], 2))
-                    col2.metric("Operating Profit Margin", round_numeric(st.session_state.income_statement["metrics"]["operating_profit_margin"], 2))
-                    col3.metric("Net Profit Margin", round_numeric(st.session_state.income_statement["metrics"]["net_profit_margin"], 2))
-                    col1.metric("Cost Efficiency", round_numeric(st.session_state.income_statement["metrics"]["cost_efficiency"], 2))
-                    col2.metric("SG&A Efficiency", round_numeric(st.session_state.income_statement["metrics"]["sg_and_a_efficiency"], 2))
-                    col3.metric("Interest Coverage Ratio", round_numeric(st.session_state.income_statement["metrics"]["interest_coverage_ratio"], 2))
-            
-                
-                st.write("## Insights")
-
-                
-                if revenue_health:
-                    if st.session_state["revenue_health"]:
-                        st.write("### Revenue Health")
-                        st.markdown(st.session_state["revenue_health"])
-                        total_revenue_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
-                                                                    "total_revenue", 
-                                                                    "Revenue Growth")
-                        st.write(total_revenue_chart)
-                    else:
-                        st.error("Revenue Health insight has not been generated")
-            
-
-                if operational_efficiency:
-                    if st.session_state["operational_efficiency"]:
-                        st.write("### Operational Efficiency")
-                        st.write(st.session_state["operational_efficiency"])
-                    else:
-                        st.error("Operational Efficiency insight has not been generated")
-                
-                
-                if r_and_d_focus:
-                    if st.session_state["r_and_d_focus"]:
-                        st.write("### R&D Focus")
-                        st.write(st.session_state["r_and_d_focus"])
-                    else:
-                        st.error("R&D Focus insight has not been generated")
-               
-
-                
-                if debt_management:
-                    if st.session_state["debt_management"]:
-                        st.write("### Debt Management")
-                        st.write(st.session_state["debt_management"])
-                        interest_expense_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
-                                                                        "interest_expense", 
-                                                                        "Debt Service Obligation")
-                        st.write(interest_expense_chart)
-                    else:
-                        st.error("Debt Management insight has not been generated")
+                with tab2:
                     
+                    st.write("# Income Statement")
+                    st.write("## Metrics")
+
+                    with st.container():
+
+                        col1, col2, col3 = st.columns(3)
+
+                        col1.metric("Gross Profit Margin", round_numeric(st.session_state.income_statement["metrics"]["gross_profit_margin"], 2))
+                        col2.metric("Operating Profit Margin", round_numeric(st.session_state.income_statement["metrics"]["operating_profit_margin"], 2))
+                        col3.metric("Net Profit Margin", round_numeric(st.session_state.income_statement["metrics"]["net_profit_margin"], 2))
+                        col1.metric("Cost Efficiency", round_numeric(st.session_state.income_statement["metrics"]["cost_efficiency"], 2))
+                        col2.metric("SG&A Efficiency", round_numeric(st.session_state.income_statement["metrics"]["sg_and_a_efficiency"], 2))
+                        col3.metric("Interest Coverage Ratio", round_numeric(st.session_state.income_statement["metrics"]["interest_coverage_ratio"], 2))
+                
+                    
+                    st.write("## Insights")
+
+                    
+                    if revenue_health:
+                        if st.session_state["revenue_health"]:
+                            st.write("### Revenue Health")
+                            st.markdown(st.session_state["revenue_health"])
+                            total_revenue_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
+                                                                        "total_revenue", 
+                                                                        "Revenue Growth")
+                            st.write(total_revenue_chart)
+                        else:
+                            st.error("Revenue Health insight has not been generated")
                 
 
+                    if operational_efficiency:
+                        if st.session_state["operational_efficiency"]:
+                            st.write("### Operational Efficiency")
+                            st.write(st.session_state["operational_efficiency"])
+                        else:
+                            st.error("Operational Efficiency insight has not been generated")
+                    
+                    
+                    if r_and_d_focus:
+                        if st.session_state["r_and_d_focus"]:
+                            st.write("### R&D Focus")
+                            st.write(st.session_state["r_and_d_focus"])
+                        else:
+                            st.error("R&D Focus insight has not been generated")
                 
-                if profit_retention:
-                    if st.session_state["profit_retention"]:
-                        st.write("### Profit Retention")
-                        st.write(st.session_state["profit_retention"])
-                        net_income_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
-                                                                "net_income",
-                                                                "Profitability Trend")
-                        st.write(net_income_chart)
-                    else:
-                        st.error("Profit Retention insight has not been generated")
+
+                    
+                    if debt_management:
+                        if st.session_state["debt_management"]:
+                            st.write("### Debt Management")
+                            st.write(st.session_state["debt_management"])
+                            interest_expense_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
+                                                                            "interest_expense", 
+                                                                            "Debt Service Obligation")
+                            st.write(interest_expense_chart)
+                        else:
+                            st.error("Debt Management insight has not been generated")
+                        
+                    
+
+                    
+                    if profit_retention:
+                        if st.session_state["profit_retention"]:
+                            st.write("### Profit Retention")
+                            st.write(st.session_state["profit_retention"])
+                            net_income_chart = create_bar_chart(st.session_state.income_statement["chart_data"], 
+                                                                    "net_income",
+                                                                    "Profitability Trend")
+                            st.write(net_income_chart)
+                        else:
+                            st.error("Profit Retention insight has not been generated")
                 
 
 

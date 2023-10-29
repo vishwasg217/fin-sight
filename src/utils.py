@@ -28,14 +28,17 @@ import json
 import plotly.graph_objects as go
 from pydantic import create_model
 from langchain.llms import OpenAI
+import os
 # config = dotenv_values(".env")
 
 # OPENAI_API_KEY = config["OPENAI_API_KEY"]
 # AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
 
-OPENAI_API_KEY = st.secrets["openai_api_key"]
-AV_API_KEY = st.secrets["av_api_key"]
+# OPENAI_API_KEY = st.secrets["openai_api_key"]
+# AV_API_KEY = st.secrets["av_api_key"]
 
+AV_API_KEY = os.environ.get("AV_API_KEY")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 USER_ID = 'openai'
 APP_ID = 'chat-completion'

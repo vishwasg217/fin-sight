@@ -21,9 +21,10 @@ from src.fields2 import inc_stat, inc_stat_attributes
 # AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
 
 # AV_API_KEY = st.secrets["av_api_key"]
-OPENAI_API_KEY = st.secrets["openai_api_key"]
+# OPENAI_API_KEY = st.secrets["openai_api_key"]
 
-AV_API_KEY = os.environ.get("ALPHA_VANTAGE_API_KEY")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+AV_API_KEY = os.environ.get("AV_API_KEY")
 
 ## 
 
@@ -47,8 +48,6 @@ def charts(data):
         "net_income": net_income,
         "interest_expense": interest_expense
     }
-
-
 
 
 def metrics(data):
@@ -116,11 +115,11 @@ def income_statement(symbol, fields_to_include, api_key):
             print(f"No data found for {symbol}")
             return None
         
-        
     else:
         print(f"Error: {response.status_code} - {response.text}")
 
-    print(data)
+    if 'Error Message' in data:
+        return {"Error": data['Error Message']}    
 
     chart_data = charts(data)
 

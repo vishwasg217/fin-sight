@@ -6,11 +6,15 @@ sys.path.append(str(project_root))
 
 import requests
 import streamlit as st
+import os
 
 from src.utils import safe_float
 
 
-AV_API_KEY = st.secrets["av_api_key"]
+# AV_API_KEY = st.secrets["av_api_key"]
+
+AV_API_KEY = os.environ.get("AV_API_KEY")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 
 def company_overview(symbol):
@@ -28,6 +32,10 @@ def company_overview(symbol):
         if not data:
             print(f"No data found for {symbol}")
             return None
+        
+        if "Error Message" in data:
+            return {"Error": data["Error Message"]}
+
         extracted_data = {
             "Symbol": data.get("Symbol"),
             "AssetType": data.get("AssetType"),

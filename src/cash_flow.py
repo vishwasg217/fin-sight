@@ -7,6 +7,7 @@ sys.path.append(str(project_root))
 
 import requests
 import streamlit as st
+import os
 # from dotenv import dotenv_values
 
 from src.pydantic_models import CashFlowInsights
@@ -16,8 +17,12 @@ from src.fields2 import cashflow, cashflow_attributes
 # OPENAI_API_KEY = config["OPENAI_API_KEY"]
 # AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
 
-AV_API_KEY = st.secrets["av_api_key"]
-OPENAI_API_KEY = st.secrets["openai_api_key"]
+# AV_API_KEY = st.secrets["av_api_key"]
+# OPENAI_API_KEY = st.secrets["openai_api_key"]
+
+AV_API_KEY = os.environ.get("AV_API_KEY")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+
 
 def charts(data):
     dates = []
@@ -76,6 +81,9 @@ def cash_flow(symbol, fields_to_include, api_key):
     if not data:
         print(f"No data found for {symbol}")
         return None
+    
+    if "Error Message" in data:
+        return {"Error": data["Error Message"]}
     
     chart_data = charts(data)
 
