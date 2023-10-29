@@ -31,7 +31,6 @@ Section 4: Financial Statements
 
     Income statements: provide the net income, basic earnings per share, cost and expenses. provide insights from these metrics.
     
-
     Balance Sheet: provide the total assets, total liabilites, retained earnings. provide insights from these metrics.
 
 

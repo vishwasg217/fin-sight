@@ -120,6 +120,8 @@ def income_statement(symbol, fields_to_include, api_key):
     else:
         print(f"Error: {response.status_code} - {response.text}")
 
+    print(data)
+
     chart_data = charts(data)
 
     report = data["annualReports"][0]

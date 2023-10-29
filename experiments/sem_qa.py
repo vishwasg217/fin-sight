@@ -8,7 +8,7 @@ sys.path.append(str(project_root))
 import pandas as pd
 from llama_index import SimpleDirectoryReader
 from platform import node
-from llama_index.node_parser import UnstructuredElementNodeParser
+from llama_index.node_parser import UnstructuredElementNodeParser, SimpleNodeParser
 from llama_index.retrievers import RecursiveRetriever
 from llama_index.query_engine import RetrieverQueryEngine
 from llama_index import VectorStoreIndex
@@ -51,13 +51,14 @@ elif company =="meta":
     docs = reader.load_data()
 
 
-node_parser = UnstructuredElementNodeParser()
+# node_parser = UnstructuredElementNodeParser()
+node_parser = SimpleNodeParser()
 
 nodes = node_parser.get_nodes_from_documents(docs, show_progress=True)
-base_nodes, node_mappings = node_parser.get_base_nodes_and_mappings(nodes)
+# base_nodes, node_mappings = node_parser.get_base_nodes_and_mappings(nodes)
 
 
-vector_index = VectorStoreIndex(base_nodes)
+vector_index = VectorStoreIndex(nodes)
 vector_retriever = vector_index.as_retriever(similarity_top_k=3)
 query_engine = vector_index.as_query_engine(similarity_top_k=3)
 
