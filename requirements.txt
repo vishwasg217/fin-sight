@@ -235,7 +235,7 @@ validators==0.21.0
 watchdog==3.0.0
 watchfiles==0.20.0
 wcwidth==0.2.8
-weaviate-client==3.23.2
+# weaviate-client==3.23.2
 websockets==11.0.3
 wrapt==1.15.0
 xlrd==2.0.1

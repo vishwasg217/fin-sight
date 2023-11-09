@@ -33,7 +33,6 @@ from src.fields2 import (
 )
 
 import streamlit as st
-import weaviate
 import os
 import openai
 import faiss

@@ -29,6 +29,8 @@ st.sidebar.info("""
 You can get your API keys here: [OpenAI](https://openai.com/blog/openai-api), [AlphaVantage](https://www.alphavantage.co/support/#api-key), 
 """)
 
+st.write(st.session_state.company_overview)
+
 OPENAI_API_KEY = st.sidebar.text_input("Enter OpenAI API key", type="password")
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
@@ -123,6 +125,7 @@ else:
                     if not st.session_state.company_overview:
                         st.write("Getting company overview...")
                         st.session_state.company_overview = company_overview(ticker)
+                        print(st.session_state.company_overview)
                         
                     
                     if any(income_statement_feature_list):
@@ -131,10 +134,10 @@ else:
                             if st.session_state[insight]:
                                    income_statement_feature_list[i] = False 
 
-                        response = income_statement(ticker, income_statement_feature_list, OPENAI_API_KEY)
+                        response = income_statement(ticker, income_statement_feature_list)
 
                         st.session_state.income_statement = response
-                        
+                        print(response)
                         for key, value in response["insights"].items():
                             st.session_state[key] = value
                     
@@ -145,7 +148,7 @@ else:
                             if st.session_state[insight]:
                                    balance_sheet_feature_list[i] = False
 
-                        response = balance_sheet(ticker, balance_sheet_feature_list, OPENAI_API_KEY)
+                        response = balance_sheet(ticker, balance_sheet_feature_list)
 
                         st.session_state.balance_sheet = response
 
@@ -161,7 +164,7 @@ else:
 
                         
 
-                        response = cash_flow(ticker, cash_flow_feature_list, OPENAI_API_KEY)
+                        response = cash_flow(ticker, cash_flow_feature_list)
 
                         st.session_state.cash_flow = response
 
@@ -204,7 +207,7 @@ else:
         if st.session_state.company_overview:
 
             if "Error" in st.session_state.company_overview:
-                st.error(st.session_state.company_overview["Error Message"])
+                st.error(st.session_state.company_overview["Error"])
 
             else:
                 with tab1:
@@ -248,11 +251,10 @@ else:
 
         if st.session_state.income_statement:
 
-            if "Error" in st.session_state.income_statement:
-                st.error(st.session_state.income_statement["Error Message"])
+            # if "Error" in st.session_state.income_statement:
+            #     st.error(st.session_state.income_statement["Error Message"])
 
-            else:
-
+            # else:
                 with tab2:
                     
                     st.write("# Income Statement")

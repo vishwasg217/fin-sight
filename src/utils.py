@@ -19,7 +19,6 @@ from llama_index.llms import OpenAI
 
 
 # from dotenv import dotenv_values
-import weaviate
 from pypdf import PdfReader
 import streamlit as st
 import requests
@@ -146,7 +145,7 @@ def generate_pydantic_model(fields_to_include, attributes, base_fields):
     
     return create_model("DynamicModel", **selected_fields)
 
-def insights(insight_name, type_of_data, data, output_format, api_key):
+def insights(insight_name, type_of_data, data, output_format):
     print(type_of_data)
     
     with open("prompts/iv2.prompt", "r") as f:
@@ -159,7 +158,7 @@ def insights(insight_name, type_of_data, data, output_format, api_key):
         # partial_variables={"output_format": parser.get_format_instructions()}
     )
 
-    model = get_model("openai", api_key)
+    model = get_model("openai", OPENAI_API_KEY)
 
     data = json.dumps(data)
 

@@ -69,7 +69,7 @@ def metrics(data, total_revenue, total_debt):
     }
 
 
-def cash_flow(symbol, fields_to_include, api_key):
+def cash_flow(symbol, fields_to_include):
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "CASH_FLOW",
@@ -99,7 +99,7 @@ def cash_flow(symbol, fields_to_include, api_key):
     ins = {}
     for i, field in enumerate(cashflow_attributes):
         if fields_to_include[i]:
-            response = insights(field, "cash flow", data_for_insights, str({field: cashflow[field]}), api_key)
+            response = insights(field, "cash flow", data_for_insights, str({field: cashflow[field]}))
             ins[field] = response
 
 

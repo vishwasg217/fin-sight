@@ -93,7 +93,7 @@ def metrics(data, total_revenue):
     }
 
 
-def balance_sheet(symbol, fields_to_include, api_key):
+def balance_sheet(symbol, fields_to_include):
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "BALANCE_SHEET",
@@ -123,7 +123,7 @@ def balance_sheet(symbol, fields_to_include, api_key):
     ins = {}
     for i, field in enumerate(balance_sheet_attributes):
         if fields_to_include[i]:
-            response = insights(field, "balance sheet", data_for_insights, str({field: bal_sheet[field]}), api_key)
+            response = insights(field, "balance sheet", data_for_insights, str({field: bal_sheet[field]}))
             ins[field] = response
 
     return {
@@ -134,7 +134,7 @@ def balance_sheet(symbol, fields_to_include, api_key):
 
 if __name__ == "__main__":
     fields = [True, True, False, False, False]
-    data = balance_sheet("MSFT", fields, OPENAI_API_KEY)
+    data = balance_sheet("MSFT", fields)
     print("Metrics: ", data['metrics'])
     print("Chart Data: ", data['chart_data'])
     print("Insights", data['insights'])

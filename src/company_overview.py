@@ -18,12 +18,14 @@ OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 
 def company_overview(symbol):
+    print("api key", AV_API_KEY)
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "OVERVIEW",
         "symbol": symbol,
         "apikey": AV_API_KEY
     }
+
 
     # Send a GET request to the API
     response = requests.get(url, params=params)

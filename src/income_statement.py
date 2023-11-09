@@ -99,7 +99,7 @@ def metrics(data):
 
 
 
-def income_statement(symbol, fields_to_include, api_key):
+def income_statement(symbol, fields_to_include):
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "INCOME_STATEMENT",
@@ -111,6 +111,7 @@ def income_statement(symbol, fields_to_include, api_key):
     response = requests.get(url, params=params)
     if response.status_code == 200:
         data = response.json()
+        print(data)
         if not data:
             print(f"No data found for {symbol}")
             return None
@@ -120,8 +121,11 @@ def income_statement(symbol, fields_to_include, api_key):
 
     if 'Error Message' in data:
         return {"Error": data['Error Message']}    
+    
+    print(data)
 
     chart_data = charts(data)
+    
 
     report = data["annualReports"][0]
     met = metrics(report)
@@ -134,7 +138,7 @@ def income_statement(symbol, fields_to_include, api_key):
     ins = {}
     for i, field in enumerate(inc_stat_attributes):
         if fields_to_include[i]:
-            response = insights(field, "income statement", data_for_insights, str({field: inc_stat[field]}), api_key)
+            response = insights(field, "income statement", data_for_insights, str({field: inc_stat[field]}))
             ins[field] = response
 
     return {
