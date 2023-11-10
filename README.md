@@ -94,7 +94,7 @@ openai_api_key = "OPEN AI API KEY"
 
 6. **Run Finsight**:
 ```bash
-streamlit run src/🏡_Home.py
+streamlit run 🏡_Home.py
 ```
 
 After running the command, Streamlit will provide a local URL (usually `http://localhost:8501/`) which you can open in your web browser to access Finsight.
