@@ -1,0 +1,23 @@
+[
+    {
+        "symbol": "TSLA",
+
+        "fields_to_include": [true, true, true, true, true]
+    },
+    {
+        "symbol": "AAPL",
+        "fields_to_include": [false, false, false, false, false]
+    },
+    {
+        "symbol": "GOOG",
+        "fields_to_include": [true, false, true, false, true]
+    },
+    {
+        "symbol": "MSFT",
+        "fields_to_include": [false, true, false, true, false]
+    },
+    {
+        "symbol": "AMZN",
+        "fields_to_include": [true, true, false, false, true]
+    }
+]

@@ -1,9 +1,5 @@
 import sys
-from pathlib import Path
-script_dir = Path(__file__).resolve().parent
-project_root = script_dir.parent
-sys.path.append(str(project_root))
-
+print(sys.path)
 
 import streamlit as st
 import os
@@ -29,7 +25,7 @@ st.sidebar.info("""
 You can get your API keys here: [OpenAI](https://openai.com/blog/openai-api), [AlphaVantage](https://www.alphavantage.co/support/#api-key), 
 """)
 
-st.write(st.session_state.company_overview)
+# st.write(st.session_state.company_overview)
 
 OPENAI_API_KEY = st.sidebar.text_input("Enter OpenAI API key", type="password")
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
@@ -125,7 +121,9 @@ else:
                     if not st.session_state.company_overview:
                         st.write("Getting company overview...")
                         st.session_state.company_overview = company_overview(ticker)
-                        print(st.session_state.company_overview)
+
+                        if "Error" in st.session_state.company_overview:
+                            st.error(st.session_state.company_overview["Error"])
                         
                     
                     if any(income_statement_feature_list):
@@ -137,6 +135,10 @@ else:
                         response = income_statement(ticker, income_statement_feature_list)
 
                         st.session_state.income_statement = response
+
+                        if "Error" in st.session_state.income_statement:
+                            st.error(st.session_state.income_statement["Error"])
+
                         print(response)
                         for key, value in response["insights"].items():
                             st.session_state[key] = value
@@ -152,6 +154,9 @@ else:
 
                         st.session_state.balance_sheet = response
 
+                        if "Error" in st.session_state.balance_sheet:
+                            st.error(st.session_state.balance_sheet["Error"])
+
                         for key, value in response["insights"].items():
                             st.session_state[key] = value
                     
@@ -162,11 +167,14 @@ else:
                             if st.session_state[insight]:
                                    cash_flow_feature_list[i] = False
 
-                        
 
                         response = cash_flow(ticker, cash_flow_feature_list)
 
                         st.session_state.cash_flow = response
+
+                        if "Error" in st.session_state.cash_flow:
+                            st.error(st.session_state.cash_flow["Error"])
+                        
 
                         for key, value in response["insights"].items():
                             st.session_state[key] = value

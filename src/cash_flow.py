@@ -20,7 +20,7 @@ from src.fields2 import cashflow, cashflow_attributes
 # AV_API_KEY = st.secrets["av_api_key"]
 # OPENAI_API_KEY = st.secrets["openai_api_key"]
 
-AV_API_KEY = os.environ.get("AV_API_KEY")
+
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 
@@ -70,6 +70,7 @@ def metrics(data, total_revenue, total_debt):
 
 
 def cash_flow(symbol, fields_to_include):
+    AV_API_KEY = os.environ.get("AV_API_KEY")
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "CASH_FLOW",
@@ -82,8 +83,11 @@ def cash_flow(symbol, fields_to_include):
         print(f"No data found for {symbol}")
         return None
     
-    if "Error Message" in data:
-        return {"Error": data["Error Message"]}
+    if "Information" in data:
+            return {"Error": data["Information"]}
+
+    if 'Error Message' in data:
+        return {"Error": data['Error Message']}   
     
     chart_data = charts(data)
 
@@ -111,7 +115,7 @@ def cash_flow(symbol, fields_to_include):
 
 if __name__ == "__main__":
     fields = [True, True, False, False, False]
-    data = cash_flow("AAPL", fields, OPENAI_API_KEY)
+    data = cash_flow("AAPL", fields)
     print("Metrics: ", data['metrics'])
     print("Chart Data: ", data['chart_data'])
     print("Insights", data['insights'])

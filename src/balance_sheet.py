@@ -21,7 +21,7 @@ from src.fields2 import bal_sheet, balance_sheet_attributes
 # AV_API_KEY = st.secrets["av_api_key"]
 # OPENAI_API_KEY = st.secrets["openai_api_key"]
 
-AV_API_KEY = os.environ.get("AV_API_KEY")
+
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 def charts(data):
@@ -94,6 +94,7 @@ def metrics(data, total_revenue):
 
 
 def balance_sheet(symbol, fields_to_include):
+    AV_API_KEY = os.environ.get("AV_API_KEY")
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "BALANCE_SHEET",

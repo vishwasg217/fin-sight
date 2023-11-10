@@ -13,12 +13,12 @@ from src.utils import safe_float
 
 # AV_API_KEY = st.secrets["av_api_key"]
 
-AV_API_KEY = os.environ.get("AV_API_KEY")
+
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 
 def company_overview(symbol):
-    print("api key", AV_API_KEY)
+    AV_API_KEY = os.environ.get("AV_API_KEY")
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "OVERVIEW",
@@ -34,6 +34,9 @@ def company_overview(symbol):
         if not data:
             print(f"No data found for {symbol}")
             return None
+        
+        if "Information" in data:
+            return {"Error": data["Information"]}
         
         if "Error Message" in data:
             return {"Error": data["Error Message"]}

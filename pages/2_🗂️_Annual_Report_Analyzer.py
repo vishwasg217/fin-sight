@@ -1,10 +1,3 @@
-import sys
-from pathlib import Path
-script_dir = Path(__file__).resolve().parent
-project_root = script_dir.parent
-sys.path.append(str(project_root))
-
-
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 
@@ -34,7 +27,6 @@ from src.fields2 import (
 
 import streamlit as st
 import os
-import openai
 import faiss
 import time
 from pypdf import PdfReader
@@ -46,12 +38,6 @@ st.title(":card_index_dividers: Annual Report Analyzer")
 st.info("""
 Begin by uploading the annual report of your chosen company in PDF format. Afterward, click on 'Process PDF'. Once the document has been processed, tap on 'Analyze Report' and the system will start its magic. After a brief wait, you'll be presented with a detailed analysis and insights derived from the report for your reading.
 """)
-
-
-# OPENAI_API_KEY = st.secrets["openai_api_key"]
-
-
-# openai.api_key = os.environ["OPENAI_API_KEY"]
 
 def process_pdf(pdf):
     file = PdfReader(pdf)
@@ -68,7 +54,7 @@ def process_pdf(pdf):
 
 def get_vector_index(nodes, vector_store):
     print(nodes)
-    llm = get_model("openai", OPENAI_API_KEY)
+    llm = get_model("openai")
     if vector_store == "faiss":
         d = 1536
         faiss_index = faiss.IndexFlatL2(d)
@@ -135,7 +121,7 @@ def report_insights(engine, section_name, fields_to_include, section_num):
     }
 
 def get_query_engine(engine):
-    llm = get_model("openai", OPENAI_API_KEY)
+    llm = get_model("openai")
     service_context = ServiceContext.from_defaults(llm=llm)
 
     query_engine_tools = [

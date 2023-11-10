@@ -24,7 +24,7 @@ from src.fields2 import inc_stat, inc_stat_attributes
 # OPENAI_API_KEY = st.secrets["openai_api_key"]
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-AV_API_KEY = os.environ.get("AV_API_KEY")
+
 
 ## 
 
@@ -33,8 +33,6 @@ def charts(data):
     total_revenue = []
     net_income = []
     interest_expense = []
-
-    print(data)
 
     for report in reversed(data["annualReports"]):
         dates.append(report["fiscalDateEnding"])
@@ -100,6 +98,7 @@ def metrics(data):
 
 
 def income_statement(symbol, fields_to_include):
+    AV_API_KEY = os.environ.get("AV_API_KEY")
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "INCOME_STATEMENT",
@@ -111,7 +110,6 @@ def income_statement(symbol, fields_to_include):
     response = requests.get(url, params=params)
     if response.status_code == 200:
         data = response.json()
-        print(data)
         if not data:
             print(f"No data found for {symbol}")
             return None
@@ -119,11 +117,12 @@ def income_statement(symbol, fields_to_include):
     else:
         print(f"Error: {response.status_code} - {response.text}")
 
+    if "Information" in data:
+            return {"Error": data["Information"]}
+
     if 'Error Message' in data:
         return {"Error": data['Error Message']}    
     
-    print(data)
-
     chart_data = charts(data)
     
 
@@ -151,7 +150,7 @@ def income_statement(symbol, fields_to_include):
 if __name__ == "__main__":
     fields_to_include = [True, False, False, False, True]
 
-    data = income_statement("TSLA", fields_to_include, OPENAI_API_KEY)
+    data = income_statement("TSLA", fields_to_include)
     print("Metrics: ", data['metrics'])
     print("Chart Data: ", data['chart_data'])
     print("Insights", data['insights'])

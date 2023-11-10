@@ -37,16 +37,17 @@ import os
 # AV_API_KEY = st.secrets["av_api_key"]
 
 AV_API_KEY = os.environ.get("AV_API_KEY")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+
 
 USER_ID = 'openai'
 APP_ID = 'chat-completion'
 MODEL_ID = 'GPT-4'
 MODEL_VERSION_ID = '4aa760933afa4a33a0e5b4652cfa92fa'
 
-def get_model(model_name, api_key):
+def get_model(model_name):
+    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
     if model_name == "openai":
-        model = ChatOpenAI(openai_api_key=api_key, model_name="gpt-3.5-turbo")
+        model = ChatOpenAI(openai_api_key=OPENAI_API_KEY, model_name="gpt-3.5-turbo")
     return model
 
 def process_pdf(pdfs):
@@ -79,6 +80,7 @@ def process_pdf2(pdf):
 
 
 def faiss_db(splitted_text):
+    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
     embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
     db = FAISS.from_texts(splitted_text, embeddings)
     db.save_local("faiss_db")
@@ -146,7 +148,6 @@ def generate_pydantic_model(fields_to_include, attributes, base_fields):
     return create_model("DynamicModel", **selected_fields)
 
 def insights(insight_name, type_of_data, data, output_format):
-    print(type_of_data)
     
     with open("prompts/iv2.prompt", "r") as f:
         template = f.read()
@@ -158,16 +159,15 @@ def insights(insight_name, type_of_data, data, output_format):
         # partial_variables={"output_format": parser.get_format_instructions()}
     )
 
-    model = get_model("openai", OPENAI_API_KEY)
+    model = get_model("openai")
 
     data = json.dumps(data)
 
     formatted_input = prompt.format(insight_name=insight_name,type_of_data=type_of_data, inputs=data, output_format=output_format)
-
-    print("-"*30)
-    print("Formatted Input:")
-    print(formatted_input)
-    print("-"*30)
+    # print("-"*30)
+    # print("Formatted Input:")
+    # print(formatted_input)
+    # print("-"*30)
 
     response = model.predict(formatted_input)
     return response
