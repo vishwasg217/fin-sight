@@ -1,6 +1,8 @@
 venv
 .env
 src/__pycache__
+experiments/__pycache__
+__pycache__
 AAPL.pdf
 example.pdf
 .streamlit

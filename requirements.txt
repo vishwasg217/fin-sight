@@ -93,7 +93,6 @@ tzdata==2023.3
 tzlocal==5.2
 urllib3==1.26.18
 validators==0.22.0
-watchdog==3.0.0
 wrapt==1.16.0
 yarl==1.9.2
 zipp==3.17.0

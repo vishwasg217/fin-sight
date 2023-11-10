@@ -1,6 +1,3 @@
-import sys
-print(sys.path)
-
 import streamlit as st
 import os
 
