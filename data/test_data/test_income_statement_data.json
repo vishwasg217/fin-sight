@@ -1,7 +1,6 @@
 [
     {
         "symbol": "TSLA",
-
         "fields_to_include": [true, true, true, true, true]
     },
     {
