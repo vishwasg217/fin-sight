@@ -5,6 +5,7 @@ from tqdm import tqdm
 from dotenv import load_dotenv
 from src.company_overview import company_overview
 from src.income_statement import income_statement
+from src.ticker_search import get_companies
 
 load_dotenv(".env")
 os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
@@ -53,6 +54,17 @@ class TestIncomeStatement(unittest.TestCase):
                 except Exception as e:
                     self.fail(f"income_statement raised an exception for {test_case['symbol']}: {e}")
 
+class TestTickerSearch(unittest.TestCase):
+
+    def test_get_companies(self):
+        with self.subTest():
+            try:
+                companies = get_companies()
+                logger.info(companies[:10])
+            except Exception as e:
+                self.fail(e)
+
+        
 if __name__ == '__main__':
     unittest.main()
 
