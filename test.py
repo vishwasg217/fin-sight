@@ -5,7 +5,7 @@ from tqdm import tqdm
 from dotenv import load_dotenv
 from src.company_overview import company_overview
 from src.income_statement import income_statement
-from src.ticker_search import get_companies
+from src.ticker_search import get_companies , get_ticker
 
 load_dotenv(".env")
 os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
@@ -63,6 +63,21 @@ class TestTickerSearch(unittest.TestCase):
                 logger.info(companies[:10])
             except Exception as e:
                 self.fail(e)
+
+    def test_get_ticker_symbol(self):
+        with open('data/test_data/test_ticker_symbol_data.json', 'r') as f:
+            test_cases = json.load(f)
+
+        for test_case in tqdm(test_cases):
+            with self.subTest():
+                try:
+                    ticker = get_ticker(test_case['company_name'])
+                    logger.info(ticker)
+                    self.assertEqual(ticker, test_case['ticker_symbol'])
+
+                    logger.info(ticker)
+                except Exception as e:
+                    self.fail(f"get_ticker() raised an exception for {test_case['company_name']}: {e}")
 
         
 if __name__ == '__main__':
