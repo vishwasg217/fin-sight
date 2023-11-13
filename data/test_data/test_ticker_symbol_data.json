@@ -1,0 +1,24 @@
+[
+    {
+        "company_name": "Apple Inc",
+        "ticker_symbol" : "AAPL"
+    },
+    {
+        "company_name": "Microsoft Corporation",
+        "ticker_symbol" : "MSFT"
+    }, 
+    {
+        "company_name": "Tesla Inc",
+        "ticker_symbol" : "TSLA"
+    },
+    {
+        "company_name": "Alphabet Inc Class C",
+        "ticker_symbol" : "GOOG"
+    },
+    {
+        "company_name": "Apple Inc",
+        "ticker_symbol" : "MSFT"
+    }
+
+
+]

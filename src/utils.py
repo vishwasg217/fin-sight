@@ -120,6 +120,7 @@ def get_total_revenue(symbol):
     }
     response = requests.get(url, params=params)
     data = response.json()
+    print(data)
     total_revenue = safe_float(data["annualReports"][0]["totalRevenue"])
 
     return total_revenue
