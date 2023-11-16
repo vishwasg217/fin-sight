@@ -1,11 +1,14 @@
 import json
+from io import BytesIO
 import unittest
 import os
 from tqdm import tqdm
 from dotenv import load_dotenv
+
 from src.company_overview import company_overview
 from src.income_statement import income_statement
 from src.ticker_search import get_companies , get_ticker
+from src.rag.ingestion import Ingestion
 
 load_dotenv(".env")
 os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
@@ -79,7 +82,20 @@ class TestTickerSearch(unittest.TestCase):
                 except Exception as e:
                     self.fail(f"get_ticker() raised an exception for {test_case['company_name']}: {e}")
 
+class TestIngestion(unittest.TestCase):
+
+    def test_extract(self):
+        pdf_file_path = "data/streamlit/from_streamlit.pdf"  # Replace with the actual file path
+
+        with open(pdf_file_path, 'rb') as file:
+            pdf = file.read()
+
         
+        ingestion_instance = Ingestion(pdf)
+        ingestion_instance.extract()
+
+        self.assertIsNotNone(ingestion_instance.pdf)
+
 if __name__ == '__main__':
     unittest.main()
 
