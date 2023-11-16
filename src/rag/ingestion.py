@@ -5,17 +5,21 @@ from llmsherpa.readers import LayoutPDFReader
 from langchain.text_splitter import HTMLHeaderTextSplitter
 
 
+import logging
+from logger_config import setup_logging
+setup_logging()
+logger = logging.getLogger(__name__)
+
+
 class Ingestion:
 
-    def __init__(self, pdf):
-        self.pdf = pdf
-
-    
+    def __init__(self, path_or_url):
+        self.path_or_url = path_or_url
 
     def extract(self):
         llmsherpa_api_url = "https://readers.llmsherpa.com/api/document/developer/parseDocument?renderFormat=all"
         pdf_reader = LayoutPDFReader(llmsherpa_api_url)
-        self.pdf = pdf_reader.read_pdf(path_or_url="data/streamlit/from_streamlit.pdf")
+        self.pdf = pdf_reader.read_pdf(path_or_url=self.path_or_url)
 
     def get_tables(self):
         str_tables = self.pdf.tables()
@@ -60,7 +64,7 @@ class Ingestion:
                 items.append(row_content)
         return items
     
-    def get_documents(pdf):
+    def get_documents(self):
         headers = [
             ("h1", "Header 1"),
             ("h2", "Header 2"),
@@ -70,7 +74,7 @@ class Ingestion:
         splitter = HTMLHeaderTextSplitter(headers_to_split_on=headers, return_each_element=True)
         documents = []
         
-        sections = pdf.sections()
+        sections = self.pdf.sections()
         for section in sections:
             content = section.to_html(include_children=True, recurse=True)
             splits = splitter.split_text(content)
@@ -78,4 +82,52 @@ class Ingestion:
             documents.extend(splits)
         
         return documents
+    
+    def get_mapped_sections(self):
+        all_headers = []
+
+        sections = self.pdf.sections()
+        for header in sections:
+            all_headers.append(header.to_html(recurse=True))
+
+        def strip_html_tags(html):
+            return BeautifulSoup(html, "html.parser").get_text()
+
+        mapped_sections = {}
+        current_item = None
+        for header in all_headers:
+            text = strip_html_tags(header)
+            if 'Item' in text or 'ITEM' in text:
+                current_item = text
+            else:
+                if current_item:
+                    mapped_sections[text] = current_item
+
+        return mapped_sections
+    
+    def add_item_metadata(self, documents, mapped_sections):
+        final_documents = []
+        for doc in documents:
+            if 'Header 1' in doc.metadata:
+                header1 = doc.metadata['Header 1']
+                if header1 in mapped_sections:
+                    print(f"{header1} : {mapped_sections[header1]}")
+                    doc.metadata['Item'] = mapped_sections[header1]
+            elif 'Header 2' in doc.metadata:
+                header2 = doc.metadata['Header 2']
+                if header2 in mapped_sections:
+                    print(f"{header2}: {mapped_sections[header2]}")
+                    doc.metadata['Item'] = mapped_sections[header2]
+            elif 'Header 3' in doc.metadata:
+                header3 = doc.metadata['Header 3']
+                if header3 in mapped_sections:
+                    print(f"{header3}: {mapped_sections[header3]}")
+                    doc.metadata['Item'] = mapped_sections[header3]
+
+            final_documents.append(doc)
+        return final_documents
+    
+    
+    
+
 

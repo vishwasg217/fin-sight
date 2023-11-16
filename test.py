@@ -1,5 +1,4 @@
 import json
-from io import BytesIO
 import unittest
 import os
 from tqdm import tqdm
@@ -85,16 +84,41 @@ class TestTickerSearch(unittest.TestCase):
 class TestIngestion(unittest.TestCase):
 
     def test_extract(self):
-        pdf_file_path = "data/streamlit/from_streamlit.pdf"  # Replace with the actual file path
+        path_or_url = ["data/streamlit/from_streamlit.pdf", "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/b4266e40-1de6-4a34-9dfb-8632b8bd57e0.pdf"]
 
-        with open(pdf_file_path, 'rb') as file:
-            pdf = file.read()
+        for path in path_or_url:
+            with self.subTest(path=path):
+                try:
+                    logger.info(f"Extracting {path}")
+                    ingestion_instance = Ingestion(path_or_url=path)
+                    ingestion_instance.extract()
+                    logger.info(f"Extraction successful")
+                except Exception as e:
+                    self.fail(f"extract() raised an exception for {path}: {e}")    
 
-        
-        ingestion_instance = Ingestion(pdf)
-        ingestion_instance.extract()
+    def test_get_documents(self):
 
-        self.assertIsNotNone(ingestion_instance.pdf)
+        with self.subTest():
+            path_or_url = "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/b4266e40-1de6-4a34-9dfb-8632b8bd57e0.pdf"
+            logger.info(f"Extracting {path_or_url}")
+            ingestion_instance = Ingestion(path_or_url=path_or_url)
+            ingestion_instance.extract()
+            docs = ingestion_instance.get_documents()
+            for doc in docs[:5]:
+                logger.info(f"Metadata: {doc.metadata}\n\nContent: {doc.page_content}")
+
+    
+    def test_get_mapped_sections(self):
+        with self.subTest():
+            path_or_url = "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/b4266e40-1de6-4a34-9dfb-8632b8bd57e0.pdf"
+            logger.info(f"Extracting {path_or_url}")
+            ingestion_instance = Ingestion(path_or_url=path_or_url)
+            ingestion_instance.extract()
+            mapped_sections = ingestion_instance.get_mapped_sections()
+
+            for k, v in mapped_sections.items():
+                logger.info(f"{k}: {v}")
+
 
 if __name__ == '__main__':
     unittest.main()
