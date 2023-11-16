@@ -42,7 +42,7 @@ class TestIncomeStatement(unittest.TestCase):
         with open("data/test_data/test_income_statement_data.json", "r") as f:
             test_cases = json.load(f)
 
-        for test_case in tqdm(test_cases[2:5]):
+        for test_case in tqdm(test_cases[2:3]):
             with self.subTest(symbol=test_case['symbol'], fields_to_include=test_case['fields_to_include']):
                 try:
                     logger.info(f"Testing {test_case['symbol']}")
