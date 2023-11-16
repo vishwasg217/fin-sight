@@ -17,6 +17,7 @@ from src.company_overview import company_overview
 from src.utils import round_numeric, format_currency, create_donut_chart, create_bar_chart
 from src.pdf_gen import gen_pdf
 from src.fields2 import inc_stat, inc_stat_attributes, bal_sheet, balance_sheet_attributes, cashflow, cashflow_attributes
+from src.ticker_search import get_companies , get_ticker
 
 st.sidebar.info("""
 You can get your API keys here: [OpenAI](https://openai.com/blog/openai-api), [AlphaVantage](https://www.alphavantage.co/support/#api-key), 
@@ -74,7 +75,9 @@ else:
 
 
     with col2:
-        ticker = st.text_input("**Enter ticker symbol**")
+        company_options=get_companies()
+        selected_company_option = st.selectbox("Select company:", company_options)
+        ticker = get_ticker(selected_company_option)
         st.warning("Example Tickers: Apple Inc. - AAPL, Microsoft Corporation - MSFT, Tesla Inc. - TSLA")
 
 
