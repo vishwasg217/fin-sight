@@ -1,5 +1,3 @@
-import json
-import os
 from bs4 import BeautifulSoup
 from llmsherpa.readers import LayoutPDFReader
 from langchain.text_splitter import HTMLHeaderTextSplitter
