@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 from llmsherpa.readers import LayoutPDFReader
 from langchain.text_splitter import HTMLHeaderTextSplitter
 
-
 import logging
 from logger_config import setup_logging
 setup_logging()
@@ -18,8 +17,10 @@ class Ingestion:
 
     def extract(self):
         llmsherpa_api_url = "https://readers.llmsherpa.com/api/document/developer/parseDocument?renderFormat=all"
+        logger.info(f"Extracting from {self.path_or_url}")
         pdf_reader = LayoutPDFReader(llmsherpa_api_url)
         self.pdf = pdf_reader.read_pdf(path_or_url=self.path_or_url)
+        logger.info(f"Extraction successful")
 
     def get_tables(self):
         str_tables = self.pdf.tables()
@@ -65,6 +66,7 @@ class Ingestion:
         return items
     
     def get_documents(self):
+        logger.info(f"Getting documents...")
         headers = [
             ("h1", "Header 1"),
             ("h2", "Header 2"),
@@ -80,10 +82,13 @@ class Ingestion:
             splits = splitter.split_text(content)
             splits
             documents.extend(splits)
+
+        logger.info(f"Got {len(documents)} documents")
         
         return documents
     
     def get_mapped_sections(self):
+        logger.info(f"Mapping sections to items...")
         all_headers = []
 
         sections = self.pdf.sections()
@@ -103,31 +108,38 @@ class Ingestion:
                 if current_item:
                     mapped_sections[text] = current_item
 
+        logger.info(f"Mapped {len(mapped_sections)} sections to items")
         return mapped_sections
     
     def add_item_metadata(self, documents, mapped_sections):
+        logger.info(f"Adding item metadata...")
         final_documents = []
         for doc in documents:
             if 'Header 1' in doc.metadata:
                 header1 = doc.metadata['Header 1']
                 if header1 in mapped_sections:
-                    print(f"{header1} : {mapped_sections[header1]}")
                     doc.metadata['Item'] = mapped_sections[header1]
             elif 'Header 2' in doc.metadata:
                 header2 = doc.metadata['Header 2']
                 if header2 in mapped_sections:
-                    print(f"{header2}: {mapped_sections[header2]}")
                     doc.metadata['Item'] = mapped_sections[header2]
             elif 'Header 3' in doc.metadata:
                 header3 = doc.metadata['Header 3']
                 if header3 in mapped_sections:
-                    print(f"{header3}: {mapped_sections[header3]}")
                     doc.metadata['Item'] = mapped_sections[header3]
 
             final_documents.append(doc)
+
+        logger.info(f"Added item metadata to {len(final_documents)} documents")
         return final_documents
     
-    
-    
+    def ingest(self):
+        self.extract()
+        documents = self.get_documents()
+        mapped_sections = self.get_mapped_sections()
+        final_docs = self.add_item_metadata(documents=documents, mapped_sections=mapped_sections)
+
+        logger.info("Ingestion Complete!!")
+        return final_docs
 
 

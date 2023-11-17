@@ -89,7 +89,6 @@ class TestIngestion(unittest.TestCase):
         for path in path_or_url:
             with self.subTest(path=path):
                 try:
-                    logger.info(f"Extracting {path}")
                     ingestion_instance = Ingestion(path_or_url=path)
                     ingestion_instance.extract()
                     logger.info(f"Extraction successful")
@@ -97,10 +96,8 @@ class TestIngestion(unittest.TestCase):
                     self.fail(f"extract() raised an exception for {path}: {e}")    
 
     def test_get_documents(self):
-
         with self.subTest():
             path_or_url = "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/b4266e40-1de6-4a34-9dfb-8632b8bd57e0.pdf"
-            logger.info(f"Extracting {path_or_url}")
             ingestion_instance = Ingestion(path_or_url=path_or_url)
             ingestion_instance.extract()
             docs = ingestion_instance.get_documents()
@@ -111,13 +108,34 @@ class TestIngestion(unittest.TestCase):
     def test_get_mapped_sections(self):
         with self.subTest():
             path_or_url = "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/b4266e40-1de6-4a34-9dfb-8632b8bd57e0.pdf"
-            logger.info(f"Extracting {path_or_url}")
             ingestion_instance = Ingestion(path_or_url=path_or_url)
             ingestion_instance.extract()
             mapped_sections = ingestion_instance.get_mapped_sections()
 
             for k, v in mapped_sections.items():
                 logger.info(f"{k}: {v}")
+
+    def test_add_item_metadata(self):
+        with self.subTest():
+            path_or_url = "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/b4266e40-1de6-4a34-9dfb-8632b8bd57e0.pdf"
+            ingestion_instance = Ingestion(path_or_url=path_or_url)
+            ingestion_instance.extract()
+            documents = ingestion_instance.get_documents()
+            mapped_sections = ingestion_instance.get_mapped_sections()
+            items = ingestion_instance.add_item_metadata(documents, mapped_sections)
+
+            for item in items[:5]:
+                logger.info(item)
+
+    def test_ingest(self):
+        with self.subTest():
+            path_or_url = "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/b4266e40-1de6-4a34-9dfb-8632b8bd57e0.pdf"
+            ingestion_instance = Ingestion(path_or_url=path_or_url)
+            final_docs = ingestion_instance.ingest()
+
+            for doc in final_docs[:5]:
+                logger.info(doc)
+
 
 
 if __name__ == '__main__':
