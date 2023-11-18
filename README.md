@@ -5,7 +5,7 @@
 
 Finsight is a cutting-edge finance AI assistant tailored to meet the needs of portfolio managers, investors, and finance enthusiasts. By leveraging `GPT-4` and financial data, Finsight provides deep insights and actionable summaries about a company, aiding in more informed investment decisions.
 
-![demo](docs/demo.gif)
+![demo](docs/demo.gif) /
 
 If you'd like to learn more about the technical details of FinSight, check out the LlamaIndex blogpost below where I do a deep dive into the project:
            
