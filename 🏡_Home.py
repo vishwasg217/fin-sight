@@ -1,4 +1,12 @@
+# home_page.py
 import streamlit as st
+
+
+if not 'loggedIn' in st.session_state:
+        st.session_state['loggedIn'] = False
+
+
+    
 
 st.set_page_config(page_title="FinSight", page_icon=":money_with_wings:", layout="wide")
 
@@ -19,3 +27,9 @@ with open("docs/news.md", "r") as f:
 with open("docs/main.md", "r") as f:
     st.info(f.read())
 
+with st.sidebar:
+    if st.session_state["loggedIn"] == True:
+        if st.button("Logout"):
+            st.success("Successfully logged out....")
+            time.sleep(1)
+            st.session_state['loggedIn'] = False
