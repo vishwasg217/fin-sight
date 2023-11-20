@@ -2,6 +2,11 @@ import requests
 import json
 import os
 import streamlit_js_eval
+from  dotenv import load_dotenv
+
+
+load_dotenv(".env")
+os.environ['FIREBASE_API_KEY'] = os.getenv("FIREBASE_API_KEY")
 
 class Users:
 

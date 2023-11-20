@@ -1,6 +1,6 @@
 # home_page.py
 import streamlit as st
-
+import time
 
 if not 'loggedIn' in st.session_state:
         st.session_state['loggedIn'] = False
@@ -33,3 +33,4 @@ with st.sidebar:
             st.success("Successfully logged out....")
             time.sleep(1)
             st.session_state['loggedIn'] = False
+            st.rerun()
