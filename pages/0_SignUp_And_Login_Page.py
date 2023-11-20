@@ -45,6 +45,7 @@ elif page == "Login":
 elif page == "Forgot Password":
         st.write("Please write a mail to : productiveai23@gmail.com , with the Subject as: FORGOT PASSWORD")
 
+        #TO BE RESOLVED 
         # email = st.text_input("Enter your email:",key="th_em_ip")
 
         # if st.button("Reset Password"):

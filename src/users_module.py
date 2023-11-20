@@ -3,21 +3,13 @@ import json
 import os
 import streamlit_js_eval
 
-# from dotenv import load_dotenv
-
-# load_dotenv()
-
 class Users:
 
 #constants which are there throughout
 
 
     def __init__(self):
-        # SECRETS_DIR = "secrets"
-        # API_KEY_FILE = os.path.join(SECRETS_DIR, "firebase_api_key.txt")
-        # with open(API_KEY_FILE, "r") as key_file:
-        #     self.FIREBASE_API_KEY = key_file.read().strip()
-
+        
         self.FIREBASE_API_KEY = os.environ.get("FIREBASE_API_KEY")
 
 
