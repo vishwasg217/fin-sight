@@ -1,0 +1,58 @@
+{
+    "company_background": {
+        "section_name": "Company Background",
+        "specific_topic": "Provide the company overview in a neatly formatted way",
+        "specific_elements": "Include key historical highlights, mission, and core values",
+        "desired_length": "Medium: 50-70 words",
+        "complexity_level": "Simple",
+        "output_format": "Multiple Paragraphs"
+    },
+    "products_services": {
+        "section_name": "Products and Services",
+        "specific_topic": "List out the products and services offered by the company in a neatly formatted way",
+        "specific_elements": "Include categories, key features, and target markets",
+        "desired_length": "Long: 70-100 words",
+        "complexity_level": "Simple",
+        "output_format": "List"
+    },
+    "competition_strategy": {
+        "section_name": "Competition and Strategy",
+        "specific_topic": "Provide the details about the company's competition and their strategy to compete with them",
+        "specific_elements": "Discuss primary competitors, market position, and strategic approaches",
+        "desired_length": "Long: 70-100 words",
+        "complexity_level": "Intermediate",
+        "output_format": "Multiple Paragraphs"
+    },
+    "ip_human_resources": {
+        "section_name": "Intellectual Property and Human Resources",
+        "specific_topic": "Provide details about the company's intellectual property and steps taken to protect and enhance human capital",
+        "specific_elements": "Include IP assets, HR policies, and talent management strategies",
+        "desired_length": "Medium: 50-70 words",
+        "complexity_level": "Intermediate",
+        "output_format": "Bullet Points"
+    },
+    "regulatory_legal_matters": {
+        "section_name": "Regulatory and Legal Matters",
+        "specific_topic": "What are the regulatory and legal issues? List them out in bullet points in detail",
+        "specific_elements": "Cover compliance, ongoing litigations, and legal risks",
+        "desired_length": "Short: 30-50 words",
+        "complexity_level": "Intermediate",
+        "output_format": "Bullet Points"
+    },
+    "product_operational_risks": {
+        "section_name": "Product and Operational Risks",
+        "specific_topic": "Discuss the combined product and operational risks, including product design and quality, operational challenges, and their interrelation",
+        "specific_elements": "Consider manufacturing processes, supply chain, and quality control",
+        "desired_length": "Medium: 50-70 words",
+        "complexity_level": "Intermediate",
+        "output_format": "Bullet Points"
+    },
+    "regulatory_compliance_market_risks": {
+        "section_name": "Regulatory, Compliance, and Market Risks",
+        "specific_topic": "Explore regulatory and market risks, focusing on compliance challenges and market dynamics",
+        "specific_elements": "Include factors like market volatility, legal compliance, and industry regulations",
+        "desired_length": "Long: 70-100 words",
+        "complexity_level": "Intermediate",
+        "output_format": "Bullet Points"
+    }
+}

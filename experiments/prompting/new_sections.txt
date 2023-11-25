@@ -8,18 +8,14 @@ Section 1: Business
 
     Intellectual Property and Human Resources: Provide details about the company's intellectual property and steps taken to protect and enchance human capital
 
-    Regulatory and Legal Matters: What are the regulatory and legal issues? List them out in detail
+    Regulatory and Legal Matters: What are the regulatory and legal issues? List them out in bullet points in detail.
 
 
 Section 2: Risk Factors
 
-    Product Related Risks: What are the risks related to the product? List them out in detail
-
-    Regulatory and Enforcement Risks: What are the risks faced by the company in enforcing regulations?
-
-    Operational Risks: what are the risks faced in day to day operations by the company?
-
-    Market Risk: what are the market risks faced by the company? List them in detail
+    Product and Operational Risks: Discuss the combined product and operational risks, including product design and quality, operational challenges, and their interrelation.
+    
+    Regulatory, Compliance, and Market Risks: Explore regulatory and market risks, focusing on compliance challenges and market dynamics. 
 
 
 Section 3: Management's Discussion and Analysis
