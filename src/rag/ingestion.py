@@ -137,7 +137,15 @@ class Ingestion:
         mapped_sections = self.get_mapped_sections()
         final_docs = self.add_item_metadata(documents=documents, mapped_sections=mapped_sections)
 
+        chunks = []
+
+        for doc in final_docs:
+            chunk = {}
+            chunk['content'] = doc['page_content']
+            chunk['metadata'] = doc['metadata']
+            chunks.append(chunk)
+
         logger.info("Ingestion Complete!!")
-        return final_docs
+        return chunks
 
 

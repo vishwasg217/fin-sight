@@ -131,10 +131,10 @@ class TestIngestion(unittest.TestCase):
         with self.subTest():
             path_or_url = "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/b4266e40-1de6-4a34-9dfb-8632b8bd57e0.pdf"
             ingestion_instance = Ingestion(path_or_url=path_or_url)
-            final_docs = ingestion_instance.ingest()
+            chunks = ingestion_instance.ingest()
 
-            for doc in final_docs[:5]:
-                logger.info(doc)
+            for chunk in chunks[:5]:
+                logger.info(chunk)
 
 
 
