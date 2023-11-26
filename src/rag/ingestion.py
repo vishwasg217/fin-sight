@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from llmsherpa.readers import LayoutPDFReader
-from langchain.text_splitter import HTMLHeaderTextSplitter
+from langchain.text_splitter import HTMLHeaderTextSplitter, TokenTextSplitter
 
 import logging
 from logger_config import setup_logging
@@ -71,14 +71,19 @@ class Ingestion:
             ("h3", "Header 3")
         ]
 
-        splitter = HTMLHeaderTextSplitter(headers_to_split_on=headers, return_each_element=True)
+        html_splitter = HTMLHeaderTextSplitter(headers_to_split_on=headers, return_each_element=True)
+        token_splitter = TokenTextSplitter(
+            chunk_size = 1000,
+            chunk_overlap = 100,
+        )
+
         documents = []
         
         sections = self.pdf.sections()
         for section in sections:
             content = section.to_html(include_children=True, recurse=True)
-            splits = splitter.split_text(content)
-            splits
+            splits = html_splitter.split_text(content)
+            splits = token_splitter.split_documents(splits)
             documents.extend(splits)
 
         logger.info(f"Got {len(documents)} documents")
