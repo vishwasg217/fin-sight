@@ -35,7 +35,6 @@ class Ingestion:
                 soup = BeautifulSoup(html, "html.parser")
                 return bool(soup.find("table"))
 
-            # Identify documents that contain tables
             str_tables = [html for html in html_docs if contains_table(html)]
             return str_tables
 
