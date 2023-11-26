@@ -8,10 +8,14 @@ from src.company_overview import company_overview
 from src.income_statement import income_statement
 from src.ticker_search import get_companies , get_ticker
 from src.rag.ingestion import Ingestion
+from src.users import Users
 
 load_dotenv(".env")
-os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
+openai_api_key = os.getenv("OPENAI_API_KEY")
+os.environ['OPENAI_API_KEY'] = openai_api_key
 os.environ['AV_API_KEY'] = os.getenv("AV_API_KEY")
+os.environ['FIREBASE_API_KEY'] = os.getenv("FIREBASE_API_KEY")
+
 
 import logging
 from logger_config import setup_logging
@@ -136,7 +140,9 @@ class TestIngestion(unittest.TestCase):
             for doc in final_docs[:5]:
                 logger.info(doc)
 
-
+class TestUsersClass(unittest.TestCase):
+    def pass_for_now():
+        pass
 
 if __name__ == '__main__':
     unittest.main()
