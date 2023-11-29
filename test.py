@@ -1,6 +1,8 @@
 import json
 import unittest
 import os
+import requests
+
 from tqdm import tqdm
 from dotenv import load_dotenv
 
@@ -8,7 +10,7 @@ from src.company_overview import company_overview
 from src.income_statement import income_statement
 from src.ticker_search import get_companies , get_ticker
 from src.rag.ingestion import Ingestion
-from src.users import Users
+from src.users import Users 
 
 load_dotenv(".env")
 openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -21,6 +23,7 @@ import logging
 from logger_config import setup_logging
 setup_logging()
 logger = logging.getLogger(__name__)
+
 
 
 class TestCompanyOverview(unittest.TestCase):
@@ -141,8 +144,40 @@ class TestIngestion(unittest.TestCase):
                 logger.info(doc)
 
 class TestUsersClass(unittest.TestCase):
-    def pass_for_now():
-        pass
+
+    def setUp(self):
+        self.FIREBASE_API_KEY = os.environ.get("FIREBASE_API_KEY")
+
+    def test_login(self):
+        #Arrange
+        email = "new_email@example.com"
+        password = "new_password"
+        
+        #Act
+        users_instance = Users()
+        result = users_instance.login_section(email=email, password=password)
+        
+        #Assert
+        self.assertTrue(result["success"])
+        self.assertIn("Login successful", result["message"])
+
+    def test_signup_user_success(self):
+        # Arrange
+        email = "new_email@example.com"
+        password = "new_password"
+        handle_name = "John"
+
+        # Act
+        users_instance = Users()
+        result = users_instance.signup_section(email=email, password=password, handle_name=handle_name)
+
+        # Assert
+        self.assertTrue(result["success"])
+        self.assertIn("Sign up successful", result["message"])
+        self.assertIn("localId", result)
+
+
+    
 
 if __name__ == '__main__':
     unittest.main()

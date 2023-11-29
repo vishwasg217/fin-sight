@@ -16,7 +16,7 @@ page = option_menu(
         orientation="horizontal"
 )
 
-if page == "Sign Up":
+if page == "SignUp":
         username = st.text_input("Enter a username")
         email = st.text_input("Enter your email:")
         password = st.text_input("Enter your password:", type="password")
