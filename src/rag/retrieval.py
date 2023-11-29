@@ -17,7 +17,7 @@ class Retrieve():
 
     def __init__(self, chunks):
         self.chunks = chunks
-        self.llm = get_model("OpenAI")
+        self.llm = get_model("openai")
         self.service_context = ServiceContext.from_defaults(llm=self.llm)
 
     def convert_chunks_to_nodes(self):
@@ -61,4 +61,12 @@ class Retrieve():
         )
 
         return sub_question_query_engine
+    
+    def engine(self):
+        nodes = self.convert_chunks_to_nodes()
+        engine = self.get_vector_index_engine(nodes)
+        sub_question_query_engine = self.get_sub_question_query_engine(engine)
+        return sub_question_query_engine
+    
+    
 
