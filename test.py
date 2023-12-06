@@ -163,7 +163,7 @@ class TestUsersClass(unittest.TestCase):
         result = users_instance.signup_section(
             email=data["email"],
             password=data["password"],
-            handle_name=data["handle_name"]
+            username=data["handle_name"]
         )
 
         # Assert
@@ -181,7 +181,7 @@ class TestUsersClass(unittest.TestCase):
         result = users_instance.signup_user(
             email=data["email"],
             password=data["password"],
-            handle_name=data["handle_name"]
+            username=data["handle_name"]
         )
 
         # Assert
