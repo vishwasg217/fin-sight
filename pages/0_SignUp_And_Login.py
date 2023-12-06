@@ -10,13 +10,14 @@ user = Users()
 
 page = option_menu(
         menu_title=None,
-        options=["Login", "Sign Up","Forgot Password"],
+        options=["Login", "SignUp","Forgot Password"],
         icons=["person-lock", "person-plus","arrow-clockwise"],
         default_index=0,
         orientation="horizontal"
 )
 
 if page == "SignUp":
+        
         username = st.text_input("Enter a username")
         email = st.text_input("Enter your email:")
         password = st.text_input("Enter your password:", type="password")

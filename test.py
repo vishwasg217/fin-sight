@@ -148,34 +148,89 @@ class TestUsersClass(unittest.TestCase):
     def setUp(self):
         self.FIREBASE_API_KEY = os.environ.get("FIREBASE_API_KEY")
 
-    def test_login(self):
-        #Arrange
-        email = "new_email@example.com"
-        password = "new_password"
-        
-        #Act
-        users_instance = Users()
-        result = users_instance.login_section(email=email, password=password)
-        
-        #Assert
-        self.assertTrue(result["success"])
-        self.assertIn("Login successful", result["message"])
+    @classmethod
+    def setUpClass(cls):
+        # Load test data from the file
+        with open("data/test_data/test_signup_login.json", "r") as f:
+            cls.test_data = json.load(f)
 
     def test_signup_user_success(self):
         # Arrange
-        email = "new_email@example.com"
-        password = "new_password"
-        handle_name = "John"
+        data = self.test_data["signup_user_success"]
 
         # Act
         users_instance = Users()
-        result = users_instance.signup_section(email=email, password=password, handle_name=handle_name)
+        result = users_instance.signup_section(
+            email=data["email"],
+            password=data["password"],
+            handle_name=data["handle_name"]
+        )
 
         # Assert
         self.assertTrue(result["success"])
         self.assertIn("Sign up successful", result["message"])
         self.assertIn("localId", result)
 
+    def test_signup_user_existing_email(self):
+        # Arrange
+        data = self.test_data["signup_user_existing_email"]
+
+        # Act
+        users_instance = Users()
+        # Perform a signup with an existing email, which should fail
+        result = users_instance.signup_user(
+            email=data["email"],
+            password=data["password"],
+            handle_name=data["handle_name"]
+        )
+
+        # Assert
+        self.assertEqual(str(result), '<Response [400]>')
+
+    def test_login(self):
+        # Arrange
+        data = self.test_data["login"]
+
+        # Act
+        users_instance = Users()
+        result = users_instance.login_section(
+            email=data["email"],
+            password=data["password"]
+        )
+
+        # Assert
+        self.assertTrue(result["success"])
+        self.assertIn("Login successful", result["message"])
+
+    def test_failed_login(self):
+        # Arrange
+        data = self.test_data["failed_login"]
+
+        # Act
+        users_instance = Users()
+        result = users_instance.login_section(
+            email=data["email"],
+            password=data["password"]
+        )
+
+        # Assert
+        self.assertFalse(result["success"])
+        self.assertEqual(result["message"], "Error occurred: INVALID_LOGIN_CREDENTIALS")
+
+    def test_save_into_database_success(self):
+        # Arrange
+        data = self.test_data["save_into_database_success"]
+
+        # Act
+        users_instance = Users()
+        result = users_instance.save_into_database(
+            username=data["username"],
+            email=data["email"],
+            local_id=data["local_id"]
+        )
+
+        # Assert
+        self.assertTrue(result["success"])
 
     
 
