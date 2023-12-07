@@ -12,6 +12,7 @@ from src.ticker_search import get_companies , get_ticker
 from src.rag.ingestion import Ingestion
 from src.users import Users 
 
+
 load_dotenv(".env")
 openai_api_key = os.getenv("OPENAI_API_KEY")
 os.environ['OPENAI_API_KEY'] = openai_api_key
