@@ -31,8 +31,15 @@ import faiss
 import time
 from pypdf import PdfReader
 
-
 st.set_page_config(page_title="Annual Report Analyzer", page_icon=":card_index_dividers:", initial_sidebar_state="expanded", layout="wide")
+
+
+if st.session_state['loggedIn'] == False:
+    st.error("LOGIN")
+    st.stop()
+    
+
+
 
 st.title(":card_index_dividers: Annual Report Analyzer")
 st.info("""
@@ -419,3 +426,11 @@ if OPENAI_API_KEY:
                             st.error("Innovation Focus insight has not been generated")
                 except:
                     st.error("This insight has not been generated")
+
+with st.sidebar:
+    if st.session_state["loggedIn"] == True:
+        if st.button("Logout"):
+            st.success("Successfully logged out....")
+            st.session_state['loggedIn'] = False
+            time.sleep(1)
+            st.rerun()

@@ -1,6 +1,8 @@
 import json
 import unittest
 import os
+import requests
+
 from tqdm import tqdm
 from dotenv import load_dotenv
 
@@ -8,16 +10,21 @@ from src.company_overview import company_overview
 from src.income_statement import income_statement
 from src.ticker_search import get_companies , get_ticker
 from src.rag.ingestion import Ingestion
+from src.users import Users 
 from src.rag.retrieval import Retrieve
 
 load_dotenv(".env")
-os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
+openai_api_key = os.getenv("OPENAI_API_KEY")
+os.environ['OPENAI_API_KEY'] = openai_api_key
 os.environ['AV_API_KEY'] = os.getenv("AV_API_KEY")
+os.environ['FIREBASE_API_KEY'] = os.getenv("FIREBASE_API_KEY")
+
 
 import logging
 from logger_config import setup_logging
 setup_logging()
 logger = logging.getLogger(__name__)
+
 
 
 class TestCompanyOverview(unittest.TestCase):
@@ -137,6 +144,97 @@ class TestIngestion(unittest.TestCase):
             for chunk in chunks[:5]:
                 logger.info(chunk)
 
+
+class TestUsersClass(unittest.TestCase):
+
+    def setUp(self):
+        self.FIREBASE_API_KEY = os.environ.get("FIREBASE_API_KEY")
+
+    @classmethod
+    def setUpClass(cls):
+        # Load test data from the file
+        with open("data/test_data/test_signup_login.json", "r") as f:
+            cls.test_data = json.load(f)
+
+    def test_signup_user_success(self):
+        # Arrange
+        data = self.test_data["signup_user_success"]
+
+        # Act
+        users_instance = Users()
+        result = users_instance.signup_section(
+            email=data["email"],
+            password=data["password"],
+            username=data["handle_name"]
+        )
+
+        # Assert
+        self.assertTrue(result["success"])
+        self.assertIn("Sign up successful", result["message"])
+        self.assertIn("localId", result)
+
+    def test_signup_user_existing_email(self):
+        # Arrange
+        data = self.test_data["signup_user_existing_email"]
+
+        # Act
+        users_instance = Users()
+        # Perform a signup with an existing email, which should fail
+        result = users_instance.signup_user(
+            email=data["email"],
+            password=data["password"],
+            username=data["handle_name"]
+        )
+
+        # Assert
+        self.assertEqual(str(result), '<Response [400]>')
+
+    def test_login(self):
+        # Arrange
+        data = self.test_data["login"]
+
+        # Act
+        users_instance = Users()
+        result = users_instance.login_section(
+            email=data["email"],
+            password=data["password"]
+        )
+
+        # Assert
+        self.assertTrue(result["success"])
+        self.assertIn("Login successful", result["message"])
+
+    def test_failed_login(self):
+        # Arrange
+        data = self.test_data["failed_login"]
+
+        # Act
+        users_instance = Users()
+        result = users_instance.login_section(
+            email=data["email"],
+            password=data["password"]
+        )
+
+        # Assert
+        self.assertFalse(result["success"])
+        self.assertEqual(result["message"], "Error occurred: INVALID_LOGIN_CREDENTIALS")
+
+    def test_save_into_database_success(self):
+        # Arrange
+        data = self.test_data["save_into_database_success"]
+
+        # Act
+        users_instance = Users()
+        result = users_instance.save_into_database(
+            username=data["username"],
+            email=data["email"],
+            local_id=data["local_id"]
+        )
+
+        # Assert
+        self.assertTrue(result["success"])
+
+        
 class TestRetrieve(unittest.TestCase):
 
     def test_convert_chunks_to_nodes(self):
@@ -190,7 +288,7 @@ class TestRetrieve(unittest.TestCase):
 
 
     
-
+    
 
 if __name__ == '__main__':
     unittest.main()

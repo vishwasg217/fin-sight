@@ -1,14 +1,20 @@
 import streamlit as st
 import os
+import time
 
 st.set_page_config(page_title="Finance Metrics Reviews", page_icon=":bar_chart:", layout="wide", initial_sidebar_state="collapsed")
+
+
+if st.session_state['loggedIn'] == False:
+    st.error("LOGIN")  
+    st.stop()
+
+
 
 st.title(":chart_with_upwards_trend: Finance Metrics Review")
 st.info("""
 Simply input the ticker symbol of your desired company and hit the 'Generate Insights' button. Allow a few moments for the system to compile the data and insights tailored to the selected company. Once done, you have the option to browse through these insights directly on the platform or download a comprehensive report by selecting 'Generate PDF', followed by 'Download PDF'.
 """)
-        
-
 from src.income_statement import income_statement
 from src.balance_sheet import balance_sheet
 from src.cash_flow import cash_flow
@@ -92,7 +98,7 @@ else:
         for insight in cashflow_attributes:
             if insight not in st.session_state:
                 st.session_state[insight] = None
- 
+
 
         if "company_overview" not in st.session_state:
             st.session_state.company_overview = None
@@ -130,7 +136,7 @@ else:
                         st.write("Generating income statement insights...")
                         for i, insight in enumerate(inc_stat_attributes):
                             if st.session_state[insight]:
-                                   income_statement_feature_list[i] = False 
+                                income_statement_feature_list[i] = False 
 
                         response = income_statement(ticker, income_statement_feature_list)
 
@@ -148,7 +154,7 @@ else:
                         st.write("Generating balance sheet insights...")
                         for i, insight in enumerate(balance_sheet_attributes):
                             if st.session_state[insight]:
-                                   balance_sheet_feature_list[i] = False
+                                balance_sheet_feature_list[i] = False
 
                         response = balance_sheet(ticker, balance_sheet_feature_list)
 
@@ -165,7 +171,7 @@ else:
                         st.write("Generating cash flow insights...")
                         for i, insight in enumerate(cashflow_attributes):
                             if st.session_state[insight]:
-                                   cash_flow_feature_list[i] = False
+                                cash_flow_feature_list[i] = False
 
 
                         response = cash_flow(ticker, cash_flow_feature_list)
@@ -386,7 +392,7 @@ else:
                         st.write(liabilities_comp_chart)
                     else:
                         st.error("Capital Structure insight has not been generated")
-                   
+                
 
                 if inventory_management:
                     if st.session_state['inventory_management']:
@@ -514,3 +520,10 @@ else:
                 
                 st.dataframe(st.session_state.news["news"], column_config=column_config)
 
+with st.sidebar:
+    if st.session_state["loggedIn"] == True:
+        if st.button("Logout"):
+            st.success("Successfully logged out....")
+            st.session_state['loggedIn'] = False
+            time.sleep(1)
+            st.rerun()

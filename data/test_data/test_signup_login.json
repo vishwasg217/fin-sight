@@ -1,0 +1,26 @@
+{
+    "signup_user_success": {
+      "email": "new_email@example.com",
+      "password": "new_password",
+      "handle_name": "John"
+    },
+    "signup_user_existing_email": {
+      "email": "new_email@example.com",
+      "password": "new_password",
+      "handle_name": "John"
+    },
+    "login": {
+      "email": "new_email@example.com",
+      "password": "new_password"
+    },
+    "failed_login": {
+      "email": "new_email@example.com",
+      "password": "wrong_password"
+    },
+    "save_into_database_success": {
+      "username": "John",
+      "email": "test@example.com",
+      "local_id": "789"
+    }
+  }
+  
