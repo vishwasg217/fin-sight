@@ -11,7 +11,7 @@ from src.income_statement import income_statement
 from src.ticker_search import get_companies , get_ticker
 from src.rag.ingestion import Ingestion
 from src.users import Users 
-
+from src.rag.retrieval import Retrieve
 
 load_dotenv(".env")
 openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -139,10 +139,11 @@ class TestIngestion(unittest.TestCase):
         with self.subTest():
             path_or_url = "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/b4266e40-1de6-4a34-9dfb-8632b8bd57e0.pdf"
             ingestion_instance = Ingestion(path_or_url=path_or_url)
-            final_docs = ingestion_instance.ingest()
+            chunks = ingestion_instance.ingest()
 
-            for doc in final_docs[:5]:
-                logger.info(doc)
+            for chunk in chunks[:5]:
+                logger.info(chunk)
+
 
 class TestUsersClass(unittest.TestCase):
 
@@ -233,6 +234,60 @@ class TestUsersClass(unittest.TestCase):
         # Assert
         self.assertTrue(result["success"])
 
+        
+class TestRetrieve(unittest.TestCase):
+
+    def test_convert_chunks_to_nodes(self):
+        with self.subTest():
+            path = "data/test_data/test_retrieval_microsoft.json"
+            with open(path, "r") as f:
+                chunks = json.load(f)
+
+            retrieve_obj = Retrieve(chunks)
+            nodes = retrieve_obj.convert_chunks_to_nodes()
+            for node in nodes[:5]:
+                logger.info(node)
+        
+
+    def test_get_vector_index_engine(self):
+        with self.subTest():
+            path = "data/test_data/test_retrieval_microsoft.json"
+            with open(path, "r") as f:
+                chunks = json.load(f)
+
+            retrieve_obj = Retrieve(chunks)
+            nodes = retrieve_obj.convert_chunks_to_nodes()
+            engine = retrieve_obj.get_vector_index_engine(nodes)
+
+            self.assertIsNotNone(engine, "get_vector_index_engine() returned None")
+
+    def test_get_sub_question_query_engine(self):
+        with self.subTest():
+            path = "data/test_data/test_retrieval_microsoft.json"
+            with open(path, "r") as f:
+                chunks = json.load(f)
+
+            retrieve_obj = Retrieve(chunks)
+            nodes = retrieve_obj.convert_chunks_to_nodes()
+            engine = retrieve_obj.get_vector_index_engine(nodes)
+            sub_question_query_engine = retrieve_obj.get_sub_question_query_engine(engine)
+
+            self.assertIsNotNone(sub_question_query_engine, "get_sub_question_query_engine() returned None")
+
+
+    def test_engine(self):
+        with self.subTest():
+            path = "data/test_data/test_retrieval_microsoft.json"
+            with open(path, "r") as f:
+                chunks = json.load(f)
+
+            retrieve_obj = Retrieve(chunks)
+            engine = retrieve_obj.engine()
+
+            self.assertIsNotNone(engine, "engine() returned None")
+
+
+    
     
 
 if __name__ == '__main__':

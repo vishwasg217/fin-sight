@@ -1,10 +1,3 @@
-import sys
-from pathlib import Path
-script_dir = Path(__file__).resolve().parent
-project_root = script_dir.parent
-sys.path.append(str(project_root))
-
-
 from langchain.vectorstores import FAISS
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
@@ -28,15 +21,11 @@ import plotly.graph_objects as go
 from pydantic import create_model
 from langchain.llms import OpenAI
 import os
-# config = dotenv_values(".env")
 
-# OPENAI_API_KEY = config["OPENAI_API_KEY"]
-# AV_API_KEY = config["ALPHA_VANTAGE_API_KEY"]
-
-# OPENAI_API_KEY = st.secrets["openai_api_key"]
-# AV_API_KEY = st.secrets["av_api_key"]
-
-AV_API_KEY = os.environ.get("AV_API_KEY")
+import logging
+from logger_config import setup_logging
+setup_logging()
+logger = logging.getLogger(__name__)
 
 
 USER_ID = 'openai'
@@ -111,6 +100,7 @@ def format_currency(value):
         return f"${value:.2f}"
 
 def get_total_revenue(symbol):
+    AV_API_KEY = os.environ.get("AV_API_KEY")
     time.sleep(3)
     url = "https://www.alphavantage.co/query"
     params = {
@@ -120,12 +110,13 @@ def get_total_revenue(symbol):
     }
     response = requests.get(url, params=params)
     data = response.json()
-    print(data)
+    logger.info(f"total rev: {data}")
     total_revenue = safe_float(data["annualReports"][0]["totalRevenue"])
 
     return total_revenue
 
 def get_total_debt(symbol):
+    AV_API_KEY = os.environ.get("AV_API_KEY")
     time.sleep(3)
     url = "https://www.alphavantage.co/query"
     params = {

@@ -1,9 +1,3 @@
-import sys
-from pathlib import Path
-script_dir = Path(__file__).resolve().parent
-project_root = script_dir.parent
-sys.path.append(str(project_root))
-
 import requests
 import streamlit as st
 import os
@@ -11,7 +5,6 @@ import os
 
 from src.pydantic_models import BalanceSheetInsights
 from src.utils import insights, get_total_revenue, safe_float, generate_pydantic_model
-# from src.fields import balance_sheet_fields, balance_sheet_attributes
 from src.fields2 import bal_sheet, balance_sheet_attributes
 
 # config = dotenv_values(".env")
@@ -20,6 +13,11 @@ from src.fields2 import bal_sheet, balance_sheet_attributes
 
 # AV_API_KEY = st.secrets["av_api_key"]
 # OPENAI_API_KEY = st.secrets["openai_api_key"]
+
+import logging
+from logger_config import setup_logging
+setup_logging()
+logger = logging.getLogger(__name__)
 
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
@@ -95,6 +93,7 @@ def metrics(data, total_revenue):
 
 def balance_sheet(symbol, fields_to_include):
     AV_API_KEY = os.environ.get("AV_API_KEY")
+    logger.info(f"AV API Key: {AV_API_KEY}")
     url = "https://www.alphavantage.co/query"
     params = {
         "function": "BALANCE_SHEET",
