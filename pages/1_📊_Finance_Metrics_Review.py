@@ -75,11 +75,21 @@ else:
 
 
     with col2:
+
+        if 'current_ticker' not in st.session_state:
+            st.session_state['current_ticker'] = None
+
+        if 'previous_ticker' not in st.session_state:
+            st.session_state['previous_ticker'] = None
+
         company_options=get_companies()
         selected_company_option = st.selectbox("Select company:", company_options)
         ticker = get_ticker(selected_company_option)
-        st.warning("Example Tickers: Apple Inc. - AAPL, Microsoft Corporation - MSFT, Tesla Inc. - TSLA")
+        
 
+        st.session_state['previous_ticker'] = st.session_state['current_ticker']
+        st.session_state['current_ticker'] = ticker
+        st.warning("Example Tickers: Apple Inc. - AAPL, Microsoft Corporation - MSFT, Tesla Inc. - TSLA")
 
         for insight in inc_stat_attributes:
             if insight not in st.session_state:
@@ -93,23 +103,23 @@ else:
             if insight not in st.session_state:
                 st.session_state[insight] = None
  
-
-        if "company_overview" not in st.session_state:
+        if st.session_state['previous_ticker'] != st.session_state['current_ticker']:
+            # if "company_overview" not in st.session_state:
             st.session_state.company_overview = None
 
-        if "income_statement" not in st.session_state:
+            # if "income_statement" not in st.session_state:
             st.session_state.income_statement = None
 
-        if "balance_sheet" not in st.session_state:
+            # if "balance_sheet" not in st.session_state:
             st.session_state.balance_sheet = None
 
-        if "cash_flow" not in st.session_state:
+            # if "cash_flow" not in st.session_state:
             st.session_state.cash_flow = None
 
-        if "news" not in st.session_state:
+            # if "news" not in st.session_state:
             st.session_state.news = None
 
-        if "all_outputs" not in st.session_state:
+            # if "all_outputs" not in st.session_state:
             st.session_state.all_outputs = None
 
         if ticker:
@@ -117,7 +127,7 @@ else:
 
                 with st.status("**Generating Insights...**"):
 
-
+                    
                     if not st.session_state.company_overview:
                         st.write("Getting company overview...")
                         st.session_state.company_overview = company_overview(ticker)
