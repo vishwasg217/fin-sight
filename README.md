@@ -24,17 +24,17 @@ If you'd like to learn more about the technical details of FinSight, check out t
 
 📄 **Annual Report Analyzer**:
 - Simply upload a company's annual report.
-- Finsight will then provide comprehensive insights into:
+- FinSight will then provide comprehensive insights into:
   - **Fiscal Year Highlights**: Major achievements, milestones, and financial highlights.
   - **Strategy Outlook and Future Direction**: Understand the company's strategic plans and anticipated future trajectory.
   - **Risk Management**: Insight into the company's risk assessment, potential challenges, and mitigation strategies.
   - **Innovation and R&D**: Get a grasp on the company's commitment to innovation and its R&D endeavors.
 
 ## Tech Stack 
-**Streamlit**: Powers the frontend, providing a seamless user interface. 
-**LangChain**: Acts as the foundation for integrating the LLM into the web app.
-**Llama Index**: The data framework behind the Research Agent Generator (RAG) and agent-based features, such as the Annual Report Analyzer.
-**Alpha Vantage**: The go-to API service for fetching the most recent financial data about companies.
+-- **Streamlit**: Powers the front end, providing a seamless user interface. 
+-- **LangChain**: The foundation for integrating the LLM into the web app.
+-- **Llama Index**: Simple, flexible data framework for connecting custom data sources to large language models.
+-- **Alpha Vantage**: The go-to API service for fetching the most recent financial data about companies.
 
 ## How to Use
 ### Website Access: 
