@@ -130,11 +130,11 @@ class TestIngestion(unittest.TestCase):
 
     def test_ingest(self):
         with self.subTest():
-            path_or_url = "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/b4266e40-1de6-4a34-9dfb-8632b8bd57e0.pdf"
+            path_or_url = "data/meta/meta.pdf"
             ingestion_instance = Ingestion(path_or_url=path_or_url)
             chunks = ingestion_instance.ingest()
 
-            for chunk in chunks[:5]:
+            for chunk in chunks[:10]:
                 logger.info(chunk)
 
 class TestRetrieve(unittest.TestCase):

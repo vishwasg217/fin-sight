@@ -1,3 +1,4 @@
+env
 venv
 .env
 src/__pycache__

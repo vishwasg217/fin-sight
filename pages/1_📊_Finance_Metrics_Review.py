@@ -89,7 +89,7 @@ else:
 
         st.session_state['previous_ticker'] = st.session_state['current_ticker']
         st.session_state['current_ticker'] = ticker
-        st.warning("Example Tickers: Apple Inc. - AAPL, Microsoft Corporation - MSFT, Tesla Inc. - TSLA")
+        # st.warning("Example Tickers: Apple Inc. - AAPL, Microsoft Corporation - MSFT, Tesla Inc. - TSLA")
 
         for insight in inc_stat_attributes:
             if insight not in st.session_state:
@@ -201,21 +201,21 @@ else:
 
         if st.session_state.all_outputs:
             st.toast("Insights successfully Generated!")
-            if st.button("Generate PDF"):
-                gen_pdf(st.session_state.company_overview["Name"], 
-                    st.session_state.company_overview,
-                    st.session_state.income_statement,
-                    st.session_state.balance_sheet,
-                    st.session_state.cash_flow,
-                    None)
-                st.toast("PDF successfully generated!")
-                with open("pdf/final_report.pdf", "rb") as file:
-                    st.download_button(
-                        label="Download PDF",
-                        data=file,
-                        file_name="final_report.pdf",
-                        mime="application/pdf"
-                    )
+            # if st.button("Generate PDF"):
+            #     gen_pdf(st.session_state.company_overview["Name"], 
+            #         st.session_state.company_overview,
+            #         st.session_state.income_statement,
+            #         st.session_state.balance_sheet,
+            #         st.session_state.cash_flow,
+            #         None)
+            #     st.toast("PDF successfully generated!")
+            #     with open("pdf/final_report.pdf", "rb") as file:
+            #         st.download_button(
+            #             label="Download PDF",
+            #             data=file,
+            #             file_name="final_report.pdf",
+            #             mime="application/pdf"
+            #         )
 
             
 

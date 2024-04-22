@@ -1,22 +1,13 @@
 from langchain.prompts import PromptTemplate
-from langchain.output_parsers import PydanticOutputParser
+from llama_index.core import VectorStoreIndex, ServiceContext, StorageContext
+from langchain_community.embeddings.openai import OpenAIEmbeddings
+from llama_index.core.tools import QueryEngineTool, ToolMetadata
+from llama_index.core.query_engine import SubQuestionQueryEngine
+from llama_index.embeddings.langchain import LangchainEmbedding
+from llama_index.core.schema import Document
+from llama_index.core.node_parser import UnstructuredElementNodeParser
 
-from llama_index import VectorStoreIndex, ServiceContext, StorageContext
-from llama_index.vector_stores import FaissVectorStore
-from llama_index.tools import QueryEngineTool, ToolMetadata
-from llama_index.query_engine import SubQuestionQueryEngine
-from llama_index.embeddings import OpenAIEmbedding
-from llama_index.schema import Document
-from llama_index.node_parser import UnstructuredElementNodeParser
-
-from src.utils import get_model, process_pdf2, generate_pydantic_model
-from src.pydantic_models import FiscalYearHighlights, StrategyOutlookFutureDirection, RiskManagement, CorporateGovernanceSocialResponsibility, InnovationRnD
-# from src.fields import (
-#     fiscal_year_fields, fiscal_year_attributes, 
-#     strat_outlook_fields, strat_outlook_attributes, 
-#     risk_management_fields, risk_management_attributes, 
-#     innovation_fields, innovation_attributes
-# )
+from src.utils import get_model
 
 from src.fields2 import (
     fiscal_year, fiscal_year_attributes,
@@ -27,7 +18,6 @@ from src.fields2 import (
 
 import streamlit as st
 import os
-import faiss
 import time
 from pypdf import PdfReader
 
@@ -53,23 +43,24 @@ def process_pdf(pdf):
 
 
 def get_vector_index(nodes, vector_store):
-    print(nodes)
+    # print(nodes)
     llm = get_model("openai")
     if vector_store == "faiss":
         d = 1536
-        faiss_index = faiss.IndexFlatL2(d)
-        vector_store = FaissVectorStore(faiss_index=faiss_index)
-        storage_context = StorageContext.from_defaults(vector_store=vector_store)
-        # embed_model = OpenAIEmbedding()
-        # service_context = ServiceContext.from_defaults(embed_model=embed_model)
-        service_context = ServiceContext.from_defaults(llm=llm) 
+        
         index = VectorStoreIndex(nodes, 
-            service_context=service_context,
-            storage_context=storage_context
+            # service_context=service_context,
+            # storage_context=storage_context
         )
     elif vector_store == "simple":
-        index = VectorStoreIndex.from_documents(nodes)
-
+        print("CREATING EMBEDDINGS")
+        emb = OpenAIEmbeddings()
+        embed_model = LangchainEmbedding(emb)
+        service_context = ServiceContext.from_defaults(embed_model=embed_model)
+        index = VectorStoreIndex(
+                    nodes=nodes, 
+                    service_context=service_context
+                )
 
     return index
 
@@ -93,7 +84,6 @@ def generate_insight(engine, insight_name, section_name, output_format):
 
 
 def report_insights(engine, section_name, fields_to_include, section_num):
-
     fields = None
     attribs = None
 
@@ -133,8 +123,6 @@ def get_query_engine(engine):
             ),
         ),
     ]
-
-
     s_engine = SubQuestionQueryEngine.from_defaults(
         query_engine_tools=query_engine_tools,
         service_context=service_context
@@ -187,15 +175,12 @@ if OPENAI_API_KEY:
     if st.sidebar.button("Process Document"):
         with st.spinner("Processing Document..."):
             nodes = process_pdf(pdfs)
-            st.session_state.index = get_vector_index(nodes, vector_store="faiss")
+            st.session_state.index = get_vector_index(nodes, vector_store="simple")
             st.session_state.process_doc = True
             
-
         st.toast("Document Processsed!")
 
-
     if st.session_state.process_doc:
-
         col1, col2 = st.columns([0.25, 0.75])
 
         with col1:
@@ -236,7 +221,6 @@ if OPENAI_API_KEY:
                 start_time = time.time()
 
                 with st.status("**Analyzing Report...**"):
-
 
                     if any(fiscal_year_highlights_list):
                         st.write("Fiscal Year Highlights...")
@@ -288,22 +272,15 @@ if OPENAI_API_KEY:
                             st.session_state[key] = value
 
                     st.session_state["end_time"] = "{:.2f}".format((time.time() - start_time))
-
-
-
                     st.toast("Report Analysis Complete!")
             
             if st.session_state.end_time:
                 st.write("Report Analysis Time: ", st.session_state.end_time, "s")
 
-
         # if st.session_state.all_report_outputs:
         #     st.toast("Report Analysis Complete!")
             
             tab1, tab2, tab3, tab4 = st.tabs(["Fiscal Year Highlights", "Strategy Outlook and Future Direction", "Risk Management", "Innovation and R&D"])
-
-            
-                
 
             with tab1:
                 st.write("## Fiscal Year Highlights")
@@ -337,8 +314,6 @@ if OPENAI_API_KEY:
                     st.error("This insight has not been generated")
                 # st.write("### Milestone Achievements")
                 # st.write(str(st.session_state.fiscal_year_highlights.milestone_achievements))
-
-
             
             with tab2:
                 st.write("## Strategy Outlook and Future Direction")
@@ -375,7 +350,6 @@ if OPENAI_API_KEY:
 
             with tab3:
                 st.write("## Risk Management")
-
                 try:
                     if risk_factors:
                         if st.session_state["risk_factors"]:
@@ -399,7 +373,6 @@ if OPENAI_API_KEY:
 
             with tab4:
                 st.write("## Innovation and R&D")
-
                 try:
                     if r_and_d_activities:
                         if st.session_state["r_and_d_activities"]:

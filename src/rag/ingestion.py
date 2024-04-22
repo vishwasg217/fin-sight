@@ -145,8 +145,8 @@ class Ingestion:
 
         for doc in final_docs:
             chunk = {}
-            chunk['content'] = doc['page_content']
-            chunk['metadata'] = doc['metadata']
+            chunk['content'] = doc.page_content
+            chunk['metadata'] = doc.metadata
             chunks.append(chunk)
 
         logger.info("Ingestion Complete!!")
