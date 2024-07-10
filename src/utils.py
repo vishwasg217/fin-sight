@@ -42,6 +42,8 @@ def get_model(model_name):
     OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
     if model_name == "openai":
         model = ChatOpenAI(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo")
+    else:
+        model=ChatOpenAI(api_key=OPENAI_API_KEY, model="gpt-4o")
     return model
 
 def process_pdf(pdfs):

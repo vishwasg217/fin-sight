@@ -6,14 +6,24 @@ from llama_index.core.query_engine import SubQuestionQueryEngine
 from llama_index.embeddings.langchain import LangchainEmbedding
 from llama_index.core.schema import Document
 from llama_index.core.node_parser import UnstructuredElementNodeParser
-
+from ragas.metrics import (
+    answer_relevancy,
+    faithfulness,
+    context_recall,
+    context_precision,
+)
+from datasets import Dataset
+from ragas import evaluate
+import pandas as pd
 from src.utils import get_model
 
 from src.fields2 import (
     fiscal_year, fiscal_year_attributes,
     strat_outlook, strat_outlook_attributes,
     risk_management, risk_management_attributes,
-    innovation, innovation_attributes
+    innovation, innovation_attributes,fiscal_year_questions,
+    strat_outlook_questions,risk_management_questions,
+    innovation_questions
 )
 
 import streamlit as st
@@ -66,6 +76,8 @@ def get_vector_index(nodes, vector_store):
 
 
 
+
+
 def generate_insight(engine, insight_name, section_name, output_format):
 
     with open("prompts/report.prompt", "r") as f:
@@ -79,40 +91,62 @@ def generate_insight(engine, insight_name, section_name, output_format):
     formatted_input = prompt_template.format(insight_name=insight_name, section_name=section_name, output_format=output_format)
     print(formatted_input)
     response = engine.query(formatted_input)
-    return response.response
+    # print(len(response.source_nodes))
+    return response
     
 
 
 def report_insights(engine, section_name, fields_to_include, section_num):
     fields = None
     attribs = None
+    questions=None
 
     if section_num == 1:
         fields = fiscal_year
         attribs = fiscal_year_attributes
+        questions=fiscal_year_questions
     elif section_num == 2:
         fields = strat_outlook
         attribs = strat_outlook_attributes
+        questions=strat_outlook_questions
     elif section_num == 3:
         fields = risk_management
         attribs = risk_management_attributes
+        questions=risk_management_questions
     elif section_num == 4:
         fields = innovation
         attribs = innovation_attributes
-
+        questions=innovation_questions
+    rageseval={}
+    rageseval["answer"]=[]
+    rageseval["contexts"]=[]
+    rageseval["question"]=[]
+    rageseval["ground_truth"]=[]
     ins = {}
+    engine2=get_query_engine(st.session_state.index.as_query_engine(similarity_top_k=3),"openai-1")
     for i, field in enumerate(attribs):
         if fields_to_include[i]:
             response = generate_insight(engine, field, section_name, str({field: fields[field]}))
-            ins[field] = response
+            gtobject=generate_insight(engine2, field, section_name, str({field: fields[field]}))
+            ins[field] = response.response
+            rageseval["answer"].append(response.response)
+            source_node=response.source_nodes[0]
+            text_node = source_node.node
+            context=[text_node.text]
+            rageseval["contexts"].append(context)
+            rageseval["question"].append(questions[field])
+            rageseval["ground_truth"].append(gtobject.response)
 
+    print("Printing ragesval : ")        
+    print(rageseval)
     return {
         "insights": ins
-    }
+    },rageseval
 
-def get_query_engine(engine):
-    llm = get_model("openai")
+def get_query_engine(engine,model_name):
+    llm = get_model(model_name)
     service_context = ServiceContext.from_defaults(llm=llm)
+
 
     query_engine_tools = [
         QueryEngineTool(
@@ -213,24 +247,36 @@ if OPENAI_API_KEY:
                 innovation_focus = st.toggle("Innovation Focus")
 
                 innovation_and_rd_list = [r_and_d_activities, innovation_focus]
-
-
+        results={}
+        result=None
         with col2:
             if st.button("Analyze Report"):
-                engine = get_query_engine(st.session_state.index.as_query_engine(similarity_top_k=3))
+                engine = get_query_engine(st.session_state.index.as_query_engine(similarity_top_k=3),"openai")
+                print(st.session_state.index.service_context)
                 start_time = time.time()
 
                 with st.status("**Analyzing Report...**"):
-
                     if any(fiscal_year_highlights_list):
                         st.write("Fiscal Year Highlights...")
-
                         for i, insight in enumerate(fiscal_year_attributes):
                             if st.session_state[insight]:
                                 fiscal_year_highlights_list[i] = False
-
-                        response = report_insights(engine, "Fiscal Year Highlights", fiscal_year_highlights_list, 1)
-
+                                print(insight)
+                        response,ragesval = report_insights(engine, "Fiscal Year Highlights", fiscal_year_highlights_list, 1)
+                        dataframe=pd.DataFrame(ragesval)
+                        df=Dataset.from_dict(dataframe)
+                        result = evaluate(
+                                    df,
+                                    metrics=[
+                                        context_precision,
+                                        faithfulness,
+                                        answer_relevancy,
+                                        context_recall,
+                                    ],
+                                )
+                        results["Fiscal Year Highlights"]=result
+                        print("Printing Results: ")
+                        print(results)
                         for key, value in response["insights"].items():
                             st.session_state[key] = value
 
@@ -240,8 +286,21 @@ if OPENAI_API_KEY:
                         for i, insight in enumerate(strat_outlook_attributes):
                             if st.session_state[insight]:
                                 strategy_outlook_future_direction_list[i] = False
-                        response = report_insights(engine, "Strategy Outlook and Future Direction", strategy_outlook_future_direction_list, 2)
-
+                        response,ragesval = report_insights(engine, "Strategy Outlook and Future Direction", strategy_outlook_future_direction_list, 2)
+                        dataframe=pd.DataFrame(ragesval)
+                        df=Dataset.from_dict(dataframe)
+                        result = evaluate(
+                                    df,
+                                    metrics=[
+                                        context_precision,
+                                        faithfulness,
+                                        answer_relevancy,
+                                        context_recall,
+                                    ],
+                                )
+                        results["Strategy Outlook and Future Direction"]=result
+                        print("Printing Results: ")
+                        print(results)
                         for key, value in response["insights"].items():
                             st.session_state[key] = value
 
@@ -253,8 +312,21 @@ if OPENAI_API_KEY:
                             if st.session_state[insight]:
                                 risk_management_list[i] = False
                         
-                        response = report_insights(engine, "Risk Management", risk_management_list, 3)
-
+                        response,ragesval = report_insights(engine, "Risk Management", risk_management_list, 3)
+                        dataframe=pd.DataFrame(ragesval)
+                        df=Dataset.from_dict(dataframe)
+                        result = evaluate(
+                                    df,
+                                    metrics=[
+                                        context_precision,
+                                        faithfulness,
+                                        answer_relevancy,
+                                        context_recall,
+                                    ],
+                                )
+                        results["Risk Management"]=result
+                        print("Printing Results: ")
+                        print(results)
                         for key, value in response["insights"].items():
                             st.session_state[key] = value
 
@@ -265,7 +337,22 @@ if OPENAI_API_KEY:
                             if st.session_state[insight]:
                                 innovation_and_rd_list[i] = False
 
-                        response = report_insights(engine, "Innovation and R&D", innovation_and_rd_list, 4)
+                        response,ragesval = report_insights(engine, "Innovation and R&D", innovation_and_rd_list, 4)
+                        dataframe=pd.DataFrame(ragesval)
+                        df=Dataset.from_dict(dataframe)
+                        result = evaluate(
+                                    df,
+                                    metrics=[
+                                        context_precision,
+                                        faithfulness,
+                                        answer_relevancy,
+                                        context_recall,
+                                    ],
+                                )
+                        results["Innovation and R&D"]=result
+                        print("Printing Results: ")
+                        print(results)
+
                         st.session_state.innovation_and_rd = response
 
                         for key, value in response["insights"].items():
@@ -314,7 +401,8 @@ if OPENAI_API_KEY:
                     st.error("This insight has not been generated")
                 # st.write("### Milestone Achievements")
                 # st.write(str(st.session_state.fiscal_year_highlights.milestone_achievements))
-            
+                if results: 
+                    st.write(results["Fiscal Year Highlights"].to_pandas())
             with tab2:
                 st.write("## Strategy Outlook and Future Direction")
                 try:
@@ -347,6 +435,8 @@ if OPENAI_API_KEY:
                             st.error("Product Roadmap insight has not been generated")
                 except:
                     st.error("This insight has not been generated")
+                if results: 
+                    st.write(results["Strategy Outlook and Future Direction"].to_pandas())
 
             with tab3:
                 st.write("## Risk Management")
@@ -369,7 +459,8 @@ if OPENAI_API_KEY:
                             st.error("Risk Mitigation insight has not been generated")
                 except:
                     st.error("This insight has not been generated")
-
+                if results: 
+                    st.write(results["Risk Management"].to_pandas())
 
             with tab4:
                 st.write("## Innovation and R&D")
@@ -392,3 +483,5 @@ if OPENAI_API_KEY:
                             st.error("Innovation Focus insight has not been generated")
                 except:
                     st.error("This insight has not been generated")
+                if results: 
+                    st.write(results["Innovation and R&D"].to_pandas())
