@@ -39,9 +39,12 @@ MODEL_ID = 'GPT-4'
 MODEL_VERSION_ID = '4aa760933afa4a33a0e5b4652cfa92fa'
 
 def get_model(model_name):
+    # os.environ["OPENAI_API_KEY"] = "openai-api-key"
     OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
     if model_name == "openai":
         model = ChatOpenAI(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo")
+    else:
+        model = ChatOpenAI(api_key=OPENAI_API_KEY, model="gpt-4")
     return model
 
 def process_pdf(pdfs):
@@ -230,14 +233,3 @@ def create_bar_chart(data, type_of_data: str, title: str = None):
                       yaxis_title=yaxis_title)
    
     return fig
-
-
-
-
-
-
-
-
-
-
-
